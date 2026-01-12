@@ -3,7 +3,7 @@ import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 // Importamos los iconos de Lucide
-import { Users, Mail, Plus, Trash2, Settings, X, Search } from "lucide-react";
+import { Users, Mail, Plus, Trash2, Settings, X } from "lucide-react";
 
 function AdminDashboard() {
   const [courses, setCourses] = useState([]);
@@ -69,38 +69,41 @@ function AdminDashboard() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto p-6 relative min-h-screen">
+    // RESPONSIVE: p-4 en móvil, p-6 en escritorio
+    <div className="max-w-7xl mx-auto p-4 md:p-6 relative min-h-screen">
       
       {/* HEADER: Título y Acciones */}
-      <div className="flex flex-col md:flex-row justify-between items-end md:items-center mb-10 gap-6">
+      {/* RESPONSIVE: Flex columna en móvil, fila en escritorio. Alineación start en móvil, center en escritorio */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-10 gap-4 md:gap-6">
         <div>
-            <h1 className="text-3xl font-bold text-[#1B3854]">Panel de Control</h1>
-            <p className="text-gray-500 mt-1">Gestiona tu academia y comunidad desde aquí.</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-[#1B3854]">Panel de Control</h1>
+            <p className="text-gray-500 mt-1 text-sm md:text-base">Gestiona tu academia y comunidad desde aquí.</p>
         </div>
         
-        <div className="flex flex-wrap gap-3">
+        {/* RESPONSIVE: Botones con ancho flexible si es necesario */}
+        <div className="flex flex-wrap gap-3 w-full md:w-auto">
           {/* Botón Usuarios */}
           <Link 
             to="/admin/users" 
-            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-[#1B3854] rounded-xl hover:bg-[#FDE5E5] hover:border-[#FDE5E5] transition-all font-medium shadow-sm"
+            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-[#1B3854] rounded-xl hover:bg-[#FDE5E5] hover:border-[#FDE5E5] transition-all font-medium shadow-sm whitespace-nowrap"
           >
             <Users size={18} />
-            <span className="hidden sm:inline">Usuarios</span>
+            <span className="inline">Usuarios</span>
           </Link>
 
           {/* Botón Invitar */}
           <button 
             onClick={() => setShowInviteModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-[#1B3854] rounded-xl hover:bg-[#FDE5E5] hover:border-[#FDE5E5] transition-all font-medium shadow-sm"
+            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-[#1B3854] rounded-xl hover:bg-[#FDE5E5] hover:border-[#FDE5E5] transition-all font-medium shadow-sm whitespace-nowrap"
           >
             <Mail size={18} />
-            <span className="hidden sm:inline">Invitar</span>
+            <span className="inline">Invitar</span>
           </button>
 
           {/* Botón Crear Curso (Destacado) */}
           <Link 
             to="/admin/create-course" 
-            className="flex items-center gap-2 px-6 py-2.5 bg-[#905361] text-white rounded-xl hover:bg-[#5E2B35] transition-all font-bold shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+            className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-[#905361] text-white rounded-xl hover:bg-[#5E2B35] transition-all font-bold shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
           >
             <Plus size={20} />
             Crear Curso
@@ -110,13 +113,13 @@ function AdminDashboard() {
 
       {/* SECCIÓN: Cursos */}
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-[#1B3854] mb-6 flex items-center gap-2">
-            <span className="w-2 h-8 bg-[#905361] rounded-full"></span>
+        <h2 className="text-lg md:text-xl font-bold text-[#1B3854] mb-4 md:mb-6 flex items-center gap-2">
+            <span className="w-2 h-6 md:h-8 bg-[#905361] rounded-full"></span>
             Cursos Activos
         </h2>
         
         {courses.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
+          <div className="text-center py-12 md:py-20 bg-white rounded-3xl border border-dashed border-gray-300 px-4">
             <div className="mx-auto w-16 h-16 bg-[#FDE5E5] text-[#905361] rounded-full flex items-center justify-center mb-4">
                 <Plus size={32} />
             </div>
@@ -126,12 +129,13 @@ function AdminDashboard() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          // RESPONSIVE GRID: 1 col móvil, 2 col tablet, 3 col desktop
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {courses.map((course) => (
               <div key={course._id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100 flex flex-col group h-full">
                 
                 {/* Imagen con Overlay al Hover */}
-                <div className="relative h-48 overflow-hidden">
+                <div className="relative h-40 md:h-48 overflow-hidden">
                     <img 
                         src={course.thumbnail} 
                         alt={course.title} 
@@ -140,8 +144,8 @@ function AdminDashboard() {
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
                 </div>
 
-                <div className="p-6 flex flex-col grow">
-                  <h3 className="font-bold text-xl text-[#1B3854] mb-2 line-clamp-1">{course.title}</h3>
+                <div className="p-4 md:p-6 flex flex-col grow">
+                  <h3 className="font-bold text-lg md:text-xl text-[#1B3854] mb-2 line-clamp-1">{course.title}</h3>
                   <p className="text-gray-500 text-sm line-clamp-2 mb-6 grow">{course.description}</p>
                   
                   <div className="flex gap-3 pt-4 border-t border-gray-50 mt-auto">
@@ -173,7 +177,8 @@ function AdminDashboard() {
       {/* MODAL DE INVITACIÓN */}
       {showInviteModal && (
         <div className="fixed inset-0 bg-[#1B3854]/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md relative animate-in fade-in zoom-in duration-200">
+          {/* RESPONSIVE: Padding interno ajustado (p-6 en móvil, p-8 en md) */}
+          <div className="bg-white p-6 md:p-8 rounded-3xl shadow-2xl w-full max-w-md relative animate-in fade-in zoom-in duration-200">
             
             <button 
                 onClick={() => setShowInviteModal(false)}
@@ -186,7 +191,7 @@ function AdminDashboard() {
                 <div className="w-12 h-12 bg-[#FDE5E5] text-[#905361] rounded-full flex items-center justify-center mx-auto mb-3">
                     <Mail size={24} />
                 </div>
-                <h3 className="text-2xl font-bold text-[#1B3854]">Invitar Alumna</h3>
+                <h3 className="text-xl md:text-2xl font-bold text-[#1B3854]">Invitar Alumna</h3>
                 <p className="text-gray-500 text-sm mt-1">Envía un acceso directo por correo.</p>
             </div>
 
@@ -198,7 +203,7 @@ function AdminDashboard() {
                     <input 
                         type="email" 
                         required
-                        className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#905361] focus:border-transparent outline-none transition"
+                        className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#905361] focus:border-transparent outline-none transition text-sm md:text-base"
                         placeholder="ejemplo@correo.com"
                         value={inviteEmail}
                         onChange={(e) => setInviteEmail(e.target.value)}
@@ -210,14 +215,14 @@ function AdminDashboard() {
                 <button 
                   type="button"
                   onClick={() => setShowInviteModal(false)}
-                  className="flex-1 py-3 text-gray-600 hover:bg-gray-50 rounded-xl font-medium transition"
+                  className="flex-1 py-3 text-gray-600 hover:bg-gray-50 rounded-xl font-medium transition text-sm md:text-base"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit"
                   disabled={sendingInvite}
-                  className="flex-1 py-3 bg-[#905361] text-white rounded-xl hover:bg-[#5E2B35] font-bold shadow-md disabled:opacity-70 transition flex justify-center items-center gap-2"
+                  className="flex-1 py-3 bg-[#905361] text-white rounded-xl hover:bg-[#5E2B35] font-bold shadow-md disabled:opacity-70 transition flex justify-center items-center gap-2 text-sm md:text-base"
                 >
                   {sendingInvite ? (
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
