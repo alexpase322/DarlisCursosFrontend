@@ -3,7 +3,7 @@ import io from "socket.io-client";
 import axios from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-hot-toast";
-// Iconos modernos
+// Iconos modernos (Añadimos ArrowLeft para el botón de volver en móvil)
 import { 
     Send, 
     Plus, 
@@ -14,7 +14,8 @@ import {
     Video,
     X,
     Smile,
-    Trash2 // <--- Nuevo icono
+    Trash2,
+    ArrowLeft // <--- Nuevo icono para móvil
 } from "lucide-react";
 
 // Conexión fuera del componente
@@ -96,7 +97,7 @@ function ChatPage() {
       socket.emit("join_room", chat._id);
   };
 
-  // --- NUEVA FUNCIÓN: ELIMINAR CHAT ---
+  // --- FUNCIÓN: ELIMINAR CHAT ---
   const handleDeleteChat = async () => {
       if(!currentChat) return;
       if(!window.confirm("¿Seguro que quieres eliminar esta conversación? Se borrará para ambos.")) return;
@@ -106,7 +107,7 @@ function ChatPage() {
           
           // Actualizar estado local
           setConversations(conversations.filter(c => c._id !== currentChat._id));
-          setCurrentChat(null);
+          setCurrentChat(null); // Esto nos devolverá a la lista en móvil automáticamente
           setMessages([]);
           toast.success("Chat eliminado");
       } catch (error) {
@@ -152,10 +153,18 @@ function ChatPage() {
   });
 
   return (
-    <div className="flex h-[calc(100vh-100px)] bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+    // CONTENEDOR PRINCIPAL: Ajustamos la altura para móvil
+    <div className="flex h-[calc(100vh-130px)] md:h-[calc(100vh-100px)] bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
       
-      {/* SIDEBAR: Lista de Chats */}
-      <div className="w-1/3 border-r border-gray-100 flex flex-col bg-white">
+      {/* SIDEBAR: Lista de Chats 
+         LOGICA RESPONSIVE:
+         - Si hay chat seleccionado (currentChat) -> hidden (oculto) en móvil, flex en md.
+         - Si NO hay chat -> w-full en móvil, w-1/3 en md.
+      */}
+      <div className={`
+          flex-col bg-white border-r border-gray-100
+          ${currentChat ? 'hidden md:flex md:w-1/3' : 'flex w-full md:w-1/3'}
+      `}>
         
         {/* Header Sidebar */}
         <div className="p-6 border-b border-gray-50">
@@ -206,7 +215,7 @@ function ChatPage() {
                         }`}
                     >
                         <div className="relative">
-                            <img src={otherUser?.avatar} alt="Avatar" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+                            <img src={otherUser?.avatar || "https://via.placeholder.com/40"} alt="Avatar" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
                             <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
                         </div>
                         <div className="flex-1 min-w-0">
@@ -226,16 +235,32 @@ function ChatPage() {
         </div>
       </div>
 
-      {/* CHAT AREA */}
-      <div className="flex-1 flex flex-col bg-[#F7F2EF]">
+      {/* CHAT AREA 
+          LOGICA RESPONSIVE:
+          - Si hay chat (currentChat) -> flex w-full en móvil, flex-1 en md.
+          - Si NO hay chat -> hidden en móvil, flex-1 en md (mostrando placeholder).
+      */}
+      <div className={`
+          flex-col bg-[#F7F2EF]
+          ${currentChat ? 'flex w-full md:w-2/3' : 'hidden md:flex md:w-2/3'}
+      `}>
         {currentChat ? (
           <>
             {/* Header del Chat */}
-            <div className="h-20 px-6 bg-white border-b border-gray-100 flex justify-between items-center shadow-sm z-10">
-                <div className="flex items-center gap-4">
-                    <img src={currentChat.members.find(m => m._id !== user._id)?.avatar} className="w-10 h-10 rounded-full object-cover shadow-sm" />
+            <div className="h-20 px-4 md:px-6 bg-white border-b border-gray-100 flex justify-between items-center shadow-sm z-10">
+                <div className="flex items-center gap-2 md:gap-4">
+                    
+                    {/* BOTÓN VOLVER (Solo visible en móvil) */}
+                    <button 
+                        onClick={() => setCurrentChat(null)} 
+                        className="md:hidden p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-full"
+                    >
+                        <ArrowLeft size={22} />
+                    </button>
+
+                    <img src={currentChat.members.find(m => m._id !== user._id)?.avatar || "https://via.placeholder.com/40"} className="w-10 h-10 rounded-full object-cover shadow-sm" />
                     <div>
-                        <span className="font-bold text-[#1B3854] block text-lg leading-tight">
+                        <span className="font-bold text-[#1B3854] block text-base md:text-lg leading-tight">
                             {currentChat.members.find(m => m._id !== user._id)?.username}
                         </span>
                         <span className="text-xs text-green-500 font-medium flex items-center gap-1">
@@ -244,11 +269,11 @@ function ChatPage() {
                     </div>
                 </div>
                 
-                <div className="flex items-center gap-2 text-gray-400">
-                    <button className="hover:text-[#1B3854] hover:bg-gray-100 p-2 rounded-full transition"><Phone size={20} /></button>
-                    <button className="hover:text-[#1B3854] hover:bg-gray-100 p-2 rounded-full transition"><Video size={20} /></button>
+                <div className="flex items-center gap-1 md:gap-2 text-gray-400">
+                    <button className="hidden md:block hover:text-[#1B3854] hover:bg-gray-100 p-2 rounded-full transition"><Phone size={20} /></button>
+                    <button className="hidden md:block hover:text-[#1B3854] hover:bg-gray-100 p-2 rounded-full transition"><Video size={20} /></button>
                     
-                    {/* BOTÓN ELIMINAR CHAT (NUEVO) */}
+                    {/* BOTÓN ELIMINAR CHAT */}
                     <button 
                         onClick={handleDeleteChat} 
                         className="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-full transition"
@@ -260,7 +285,7 @@ function ChatPage() {
             </div>
 
             {/* Mensajes */}
-            <div className="flex-1 p-6 overflow-y-auto space-y-4 custom-scrollbar bg-slate-50">
+            <div className="flex-1 p-4 md:p-6 overflow-y-auto space-y-4 custom-scrollbar bg-slate-50">
                 {messages.length === 0 && (
                     <div className="flex flex-col items-center justify-center h-full text-gray-400 opacity-60">
                         <MessageSquare size={48} />
@@ -273,7 +298,7 @@ function ChatPage() {
                     return (
                         <div ref={scrollRef} key={idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                             <div 
-                                className={`max-w-[70%] px-5 py-3 shadow-sm text-sm leading-relaxed relative group ${
+                                className={`max-w-[85%] md:max-w-[70%] px-5 py-3 shadow-sm text-sm leading-relaxed relative group ${
                                     isMe 
                                     ? 'bg-[#1B3854] text-white rounded-2xl rounded-tr-sm' 
                                     : 'bg-white text-gray-800 rounded-2xl rounded-tl-sm border border-gray-100'
@@ -299,7 +324,7 @@ function ChatPage() {
                     
                     <input 
                         type="text" 
-                        className="flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-400 ml-2"
+                        className="flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-400 ml-2 text-sm md:text-base"
                         placeholder="Escribe un mensaje..."
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
@@ -325,15 +350,15 @@ function ChatPage() {
                 <MessageSquare size={40} className="text-gray-300" />
             </div>
             <p className="text-xl font-medium text-gray-400">Selecciona un chat</p>
-            <p className="text-sm">O inicia una nueva conversación desde el menú</p>
+            <p className="text-sm px-4 text-center">O inicia una nueva conversación desde el menú</p>
           </div>
         )}
       </div>
 
-      {/* MODAL NUEVO CHAT */}
+      {/* MODAL NUEVO CHAT (Responsive) */}
       {showModal && (
-          <div className="fixed inset-0 bg-[#1B3854]/40 backdrop-blur-sm flex items-center justify-center z-50">
-              <div className="bg-white p-6 rounded-3xl shadow-2xl w-96 max-h-[80vh] flex flex-col animate-in fade-in zoom-in duration-200">
+          <div className="fixed inset-0 bg-[#1B3854]/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+              <div className="bg-white p-6 rounded-3xl shadow-2xl w-full max-w-md max-h-[80vh] flex flex-col animate-in fade-in zoom-in duration-200">
                   <div className="flex justify-between items-center mb-6">
                     <h3 className="font-bold text-xl text-[#1B3854]">Nueva Conversación</h3>
                     <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-red-500 transition"><X size={20}/></button>
@@ -346,7 +371,7 @@ function ChatPage() {
                             onClick={() => startChat(u._id)} 
                             className="flex items-center gap-4 p-3 hover:bg-[#FDE5E5] cursor-pointer rounded-2xl transition-colors group"
                         >
-                            <img src={u.avatar} className="w-10 h-10 rounded-full object-cover shadow-sm group-hover:scale-110 transition-transform" />
+                            <img src={u.avatar || "https://via.placeholder.com/40"} className="w-10 h-10 rounded-full object-cover shadow-sm group-hover:scale-110 transition-transform" />
                             <span className="font-medium text-gray-700 group-hover:text-[#905361]">{u.username}</span>
                         </div>
                     ))}
