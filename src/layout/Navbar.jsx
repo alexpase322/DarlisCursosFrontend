@@ -1,47 +1,37 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "../api/axios"; // Tu axios configurado
+import axios from "../api/axios"; 
 import io from "socket.io-client";
-// Iconos
-import { LogOut, Bell, User, Settings, Check, MessageCircle, Heart, Info } from "lucide-react";
+// AÑADIDO: Importamos icono Menu
+import { LogOut, Bell, Menu, Check, MessageCircle, Heart, Info } from "lucide-react";
 
-// Conexión al socket (Asegúrate que coincida con tu backend)
 const socket = io(import.meta.env.VITE_BACKEND_URL || "http://localhost:5000");
 
-const Navbar = () => {
+// AÑADIDO: Recibimos toggleSidebar como prop
+const Navbar = ({ toggleSidebar }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   
-  // Estados para notificaciones
   const [notifications, setNotifications] = useState([]);
   const [showNotifMenu, setShowNotifMenu] = useState(false);
-  const notifRef = useRef(null); // Para detectar clic fuera
+  const notifRef = useRef(null); 
 
-  // Calcular no leídas
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   useEffect(() => {
     if (user) {
-        // 1. Unirse a sala personal para recibir notificaciones
         socket.emit("join_room", user._id);
-
-        // 2. Cargar notificaciones históricas
         fetchNotifications();
-
-        // 3. Escuchar nuevas notificaciones en tiempo real
         socket.on("new_notification", (newNotif) => {
-            // Agregamos al inicio y reproducimos sonido opcional
             setNotifications(prev => [newNotif, ...prev]);
         });
     }
-
     return () => {
         socket.off("new_notification");
     };
   }, [user]);
 
-  // Cerrar menú al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event) => {
         if (notifRef.current && !notifRef.current.contains(event.target)) {
@@ -81,7 +71,6 @@ const Navbar = () => {
       if (notif.link) navigate(notif.link);
   };
 
-  // Icono según el tipo de notificación
   const getIcon = (type) => {
       switch(type) {
           case 'like': return <Heart size={16} className="text-red-500 fill-red-500" />;
@@ -91,19 +80,29 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-white h-20 flex items-center justify-between px-8 shadow-sm border-b border-gray-100 z-50 relative">
+    <header className="bg-white h-20 flex items-center justify-between px-4 md:px-8 shadow-sm border-b border-gray-100 z-10 relative">
       
-      {/* Saludo */}
-      <div>
-        <h2 className="text-2xl font-bold text-[#1B3854]">
-          Hola, <span className="text-[#905361] capitalize">{user?.username?.split(" ")[0] || "Compañera"}</span> 👋
-        </h2>
-        <p className="text-xs text-gray-400 font-medium hidden md:block">
-          {user?.role === 'admin' ? 'Panel de Administración' : 'Bienvenida a tu espacio'}
-        </p>
+      <div className="flex items-center gap-3">
+        {/* AÑADIDO: Botón Hamburguesa (Solo visible en móvil) */}
+        <button 
+            onClick={toggleSidebar} 
+            className="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg md:hidden"
+        >
+            <Menu size={24} />
+        </button>
+
+        {/* Saludo */}
+        <div>
+            <h2 className="text-xl md:text-2xl font-bold text-[#1B3854]">
+            Hola, <span className="text-[#905361] capitalize">{user?.username?.split(" ")[0] || "Compañera"}</span> 👋
+            </h2>
+            <p className="text-xs text-gray-400 font-medium hidden md:block">
+            {user?.role === 'admin' ? 'Panel de Administración' : 'Bienvenida a tu espacio'}
+            </p>
+        </div>
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-4 md:gap-6">
         
         {/* --- CENTRO DE NOTIFICACIONES --- */}
         <div className="relative" ref={notifRef}>
@@ -117,14 +116,14 @@ const Navbar = () => {
                 )}
             </button>
 
-            {/* Dropdown Menu */}
+            {/* Dropdown Menu (Ajustado para móvil: w-72 en vez de w-80 fijo si la pantalla es muy pequeña) */}
             {showNotifMenu && (
-                <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in duration-200 origin-top-right">
+                <div className="absolute right-0 mt-3 w-72 md:w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in duration-200 origin-top-right z-50">
                     <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
                         <h3 className="font-bold text-[#1B3854] text-sm">Notificaciones</h3>
                         {unreadCount > 0 && (
                             <button onClick={() => handleMarkAsRead()} className="text-xs text-[#905361] hover:underline flex items-center gap-1">
-                                <Check size={12} /> Marcar todas leídas
+                                <Check size={12} /> Marcar todas
                             </button>
                         )}
                     </div>
@@ -153,7 +152,7 @@ const Navbar = () => {
                                             {notif.content}
                                         </p>
                                         <p className="text-[10px] text-gray-400 mt-1">
-                                            {new Date(notif.createdAt).toLocaleDateString()} • {new Date(notif.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                            {new Date(notif.createdAt).toLocaleDateString()}
                                         </p>
                                     </div>
                                     {!notif.isRead && <div className="w-2 h-2 bg-[#905361] rounded-full self-center"></div>}
@@ -166,13 +165,13 @@ const Navbar = () => {
         </div>
 
         {/* Separador */}
-        <div className="h-8 w-px bg-gray-200"></div>
+        <div className="h-8 w-px bg-gray-200 hidden sm:block"></div>
 
         {/* Perfil */}
-        <div className="flex items-center gap-4">
-          <div className="text-right hidden sm:block">
+        <div className="flex items-center gap-2 md:gap-4">
+          <div className="text-right hidden md:block">
             <p className="text-sm font-bold text-[#1B3854] leading-none">{user?.username}</p>
-            <p className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">
+            <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">
               {user?.role === 'admin' ? 'Admin' : 'Estudiante'}
             </p>
           </div>
@@ -181,13 +180,13 @@ const Navbar = () => {
              <img 
               src={user?.avatar || "https://via.placeholder.com/40"} 
               alt="Avatar" 
-              className="w-10 h-10 rounded-full object-cover border-2 border-[#FDE5E5] group-hover:border-[#905361] transition-colors shadow-sm"
+              className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover border-2 border-[#FDE5E5] group-hover:border-[#905361] transition-colors shadow-sm"
             />
           </div>
 
           <button
             onClick={logout}
-            className="flex items-center gap-2 text-gray-500 hover:text-[#5E2B35] px-3 py-2 rounded-lg hover:bg-[#FDE5E5] transition-all duration-300 text-sm font-medium ml-2"
+            className="flex items-center gap-2 text-gray-500 hover:text-[#5E2B35] p-2 md:px-3 md:py-2 rounded-lg hover:bg-[#FDE5E5] transition-all duration-300 text-sm font-medium"
             title="Cerrar Sesión"
           >
             <LogOut size={18} />

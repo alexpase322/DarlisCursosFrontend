@@ -1,13 +1,13 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"; 
-// Importamos iconos modernos
-import { LayoutDashboard, MessageCircle, BookOpen, User, Users, ShieldCheck } from "lucide-react";
+// AÑADIDO: Importamos icono X para cerrar en móvil
+import { LayoutDashboard, MessageCircle, BookOpen, User, Users, ShieldCheck, X } from "lucide-react";
 
-const Sidebar = () => {
+// AÑADIDO: Recibimos isOpen y closeSidebar
+const Sidebar = ({ isOpen, closeSidebar }) => {
   const { user } = useAuth();
   const location = useLocation();
 
-  // Definimos los items con sus iconos correspondientes
   const menuItems = [
     { name: "Muro Social", path: "/muro", icon: <Users size={20} /> },
     { name: "Mis Cursos", path: "/dashboard", icon: <BookOpen size={20} /> },
@@ -15,18 +15,34 @@ const Sidebar = () => {
     { name: "Mi Perfil", path: "/perfil", icon: <User size={20} /> },
   ];
 
-  // Panel Admin al inicio si corresponde
   if (user?.role === "admin") {
     menuItems.unshift({ name: "Panel Admin", path: "/admin", icon: <ShieldCheck size={20} /> });
   }
 
   return (
-    <aside className="w-64 bg-[#1B3854] text-white min-h-screen hidden md:flex flex-col shadow-xl z-20">
+    <>
+    {/* MODIFICADO: Clases CSS para responsive.
+       - 'fixed inset-y-0 left-0 z-30': Fijo en móvil, por encima de todo.
+       - 'transform transition-transform duration-300': Animación suave.
+       - isOpen ? 'translate-x-0' : '-translate-x-full': Muestra u oculta en móvil.
+       - 'md:relative md:translate-x-0': En escritorio siempre visible y relativo (no flota).
+    */}
+    <aside className={`
+        fixed inset-y-0 left-0 z-30 w-64 bg-[#1B3854] text-white shadow-xl 
+        transform transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        md:relative md:translate-x-0 md:flex md:flex-col min-h-screen
+    `}>
+      
       {/* Header del Sidebar */}
-      <div className="h-20 flex items-center justify-center border-b border-[#2a4d6e]">
+      <div className="h-20 flex items-center justify-between px-6 border-b border-[#2a4d6e]">
         <h1 className="text-2xl font-bold tracking-wider">
           Moms<span className="text-[#905361]">Digitales</span>
         </h1>
+        {/* Botón cerrar solo visible en móvil */}
+        <button onClick={closeSidebar} className="md:hidden text-gray-300 hover:text-white">
+            <X size={24} />
+        </button>
       </div>
 
       {/* Navegación */}
@@ -39,18 +55,17 @@ const Sidebar = () => {
               <li key={item.path}>
                 <Link
                   to={item.path}
+                  onClick={closeSidebar} // AÑADIDO: Cerrar menú al hacer clic en un link (UX móvil)
                   className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group ${
                     isActive 
                       ? "bg-[#905361] text-white shadow-lg shadow-[#905361]/40 translate-x-1" 
                       : "text-gray-300 hover:bg-[#2a4d6e] hover:text-white"
                   }`}
                 >
-                  {/* Icono */}
                   <span className={`${isActive ? "text-white" : "text-gray-400 group-hover:text-white"} transition-colors`}>
                     {item.icon}
                   </span>
                   
-                  {/* Texto */}
                   <span className="font-medium text-sm tracking-wide">
                     {item.name}
                   </span>
@@ -61,11 +76,12 @@ const Sidebar = () => {
         </ul>
       </nav>
 
-      {/* Footer del Sidebar (Opcional, versión de la app) */}
+      {/* Footer */}
       <div className="p-4 border-t border-[#2a4d6e] text-center">
         <p className="text-xs text-gray-400">v1.0.0 MomsPlatform</p>
       </div>
     </aside>
+    </>
   );
 };
 
