@@ -4,7 +4,12 @@ import { motion } from "framer-motion";
 import axios from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-hot-toast";
-import { Check, Loader2, Instagram, Video, Brain, Code, Cpu, Sparkles, Mail, Send } from "lucide-react";
+// AÑADIDOS NUEVOS ICONOS PARA EL CURRICULUM
+import { 
+  Check, Loader2, Instagram, Video, Brain, Code, Cpu, Sparkles, Mail, Send, 
+  Hammer, Palette, Bot, Smartphone, Layout, DollarSign, Package, PieChart 
+} from "lucide-react";
+
 import darlisImg from "../assets/DarlisFoto.png"
 import lizbethImg from "../assets/Lizbeth foto.png"
 import alexImg from "../assets/Alex foto.png"
@@ -17,13 +22,79 @@ const HomePage = () => {
 
   // --- ESTADOS PARA EL FORMULARIO DE CONTACTO ---
   const [sendingContact, setSendingContact] = useState(false);
-  
-  // Mantenemos el estado para poder limpiar los campos visualmente después del envío
   const [contactForm, setContactForm] = useState({
     name: "",
     email: "",
     message: ""
   });
+
+  // --- DATOS DEL PROGRAMA (NUEVO) ---
+  const CURRICULUM = [
+    {
+      phase: "Fase 1: Los Cimientos",
+      title: "Mentalidad y Organización",
+      desc: "Prepara el terreno y demuele viejas estructuras de empleada.",
+      topics: ["Ingeniería Mental y Reprogramación", "La Oficina de Proyectos (Notion & Time Blocking)"],
+      icon: <Hammer size={24} />,
+      color: "bg-blue-100 text-blue-700"
+    },
+    {
+      phase: "Fase 2: Diseño de Interiores",
+      title: "Creatividad y Fachada",
+      desc: "Diseña una identidad visual de lujo y crea contenido viral.",
+      topics: ["Estudio de Diseño (Canva Expert)", "Producción Visual (CapCut Pro)"],
+      icon: <Palette size={24} />,
+      color: "bg-pink-100 text-pink-700"
+    },
+    {
+      phase: "Fase 3: Tecnología",
+      title: "Inteligencia Artificial",
+      desc: "Usa maquinaria pesada para trabajar menos y producir más.",
+      topics: ["Ingeniería de Prompts", "Dobles Digitales & Avatares", "Redacción con ChatGPT"],
+      icon: <Bot size={24} />,
+      color: "bg-purple-100 text-purple-700"
+    },
+    {
+      phase: "Fase 4: Vías de Acceso",
+      title: "Redes Sociales & Tráfico",
+      desc: "Construye las autopistas para atraer clientes a tu edificio.",
+      topics: ["Instagram: La Gran Avenida", "TikTok & Shop: La Autopista Viral"],
+      icon: <Smartphone size={24} />,
+      color: "bg-orange-100 text-orange-700"
+    },
+    {
+      phase: "Fase 5: Arquitectura Web",
+      title: "Desarrollo & Embudos",
+      desc: "Construye tu oficina virtual y automatiza la recepción.",
+      topics: ["Tu Oficina Express (Beacons)", "Ingeniería de Landing Pages"],
+      icon: <Layout size={24} />,
+      color: "bg-teal-100 text-teal-700"
+    },
+    {
+      phase: "Fase 6: Subcontratos",
+      title: "Monetización Diversificada",
+      desc: "Factura rápido trabajando con marcas y franquicias.",
+      topics: ["Contratista UGC", "Franquicias Digitales (Amazon Influencer)"],
+      icon: <DollarSign size={24} />,
+      color: "bg-green-100 text-green-700"
+    },
+    {
+      phase: "Fase 7: Inmobiliaria",
+      title: "Tus Productos Digitales",
+      desc: "De obra gris a obra blanca: Crea y vende tus propios activos.",
+      topics: ["Validación de Ideas", "Creación de Infoproductos", "Meta Ads (Publicidad)"],
+      icon: <Package size={24} />,
+      color: "bg-indigo-100 text-indigo-700"
+    },
+    {
+      phase: "Fase 8: Administración",
+      title: "Finanzas Inteligentes",
+      desc: "Asegura que el edificio no colapse por falta de presupuesto.",
+      topics: ["Mentalidad de Dueña", "Profit First & Tablas de Costos"],
+      icon: <PieChart size={24} />,
+      color: "bg-red-100 text-red-700"
+    }
+  ];
 
   // --- DATOS DEL EQUIPO ---
   const TEAM = [
@@ -73,7 +144,7 @@ const HomePage = () => {
     }
   };
 
-  // --- MANEJO DEL FORMULARIO (INTEGRACIÓN WEB3FORMS) ---
+  // --- MANEJO DEL FORMULARIO ---
   const handleContactChange = (e) => {
     setContactForm({ ...contactForm, [e.target.name]: e.target.value });
   };
@@ -83,13 +154,9 @@ const HomePage = () => {
     setSendingContact(true);
 
     try {
-        // 1. Creamos el FormData con los datos del formulario actual
         const formData = new FormData(e.target);
-        
-        // 2. Añadimos tu Access Key de Web3Forms
         formData.append("access_key", "df696c8e-5159-4f10-9179-230fa2e8f6c9");
 
-        // 3. Enviamos la petición
         const response = await fetch("https://api.web3forms.com/submit", {
             method: "POST",
             body: formData
@@ -97,18 +164,15 @@ const HomePage = () => {
 
         const data = await response.json();
 
-        // 4. Manejamos la respuesta
         if (data.success) {
             toast.success("¡Mensaje enviado con éxito! Te responderemos pronto.");
-            setContactForm({ name: "", email: "", message: "" }); // Limpia el estado
-            e.target.reset(); // Limpia el formulario HTML
+            setContactForm({ name: "", email: "", message: "" }); 
+            e.target.reset(); 
         } else {
             toast.error("Hubo un problema al enviar el mensaje. Intenta de nuevo.");
-            console.error("Web3Forms Error:", data);
         }
 
     } catch (error) {
-        console.error("Error de red:", error);
         toast.error("Error de conexión. Verifica tu internet.");
     } finally {
         setSendingContact(false);
@@ -123,7 +187,7 @@ const HomePage = () => {
 
   const staggerContainer = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
   };
 
   return (
@@ -190,8 +254,56 @@ const HomePage = () => {
         </motion.div>
       </header>
 
+      {/* --- NUEVA SECCIÓN: CURRICULUM / QUE APRENDERÁS --- */}
+      <section className="py-24 bg-white relative">
+        <div className="max-w-[1400px] mx-auto px-6">
+            <div className="text-center mb-16 max-w-3xl mx-auto">
+                <h4 className="text-[#905361] font-bold tracking-widest uppercase text-sm mb-3">Programa Académico</h4>
+                <h2 className="text-4xl font-bold text-[#1B3854] mb-4">Arquitecta de tu Propio Éxito</h2>
+                <p className="text-gray-600 text-lg">
+                    Un viaje paso a paso desde los cimientos hasta el rascacielos. 8 Fases diseñadas para construir un negocio sólido.
+                </p>
+            </div>
+
+            <motion.div 
+                className="grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6"
+                initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer}
+            >
+                {CURRICULUM.map((item, index) => (
+                    <motion.div 
+                        key={index} 
+                        variants={fadeInUp}
+                        className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 flex gap-5 group"
+                    >
+                        {/* Icono */}
+                        <div className={`w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 ${item.color} bg-opacity-20 group-hover:scale-110 transition-transform`}>
+                            {item.icon}
+                        </div>
+
+                        {/* Contenido */}
+                        <div>
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">{item.phase}</span>
+                            <h3 className="text-xl font-bold text-[#1B3854] mb-2">{item.title}</h3>
+                            <p className="text-sm text-gray-500 mb-3">{item.desc}</p>
+                            
+                            {/* Puntos clave */}
+                            <ul className="space-y-1">
+                                {item.topics.map((topic, i) => (
+                                    <li key={i} className="flex items-center gap-2 text-sm text-gray-700 font-medium">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-[#905361]"></div>
+                                        {topic}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </motion.div>
+                ))}
+            </motion.div>
+        </div>
+      </section>
+
       {/* --- TEAM SECTION --- */}
-      <section className="py-32 bg-white relative">
+      <section className="py-32 bg-[#F7F2EF] relative">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="text-center mb-20 max-w-3xl mx-auto">
             <h4 className="text-[#905361] font-bold tracking-widest uppercase text-sm mb-3">Equipo Fundador</h4>
@@ -341,7 +453,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* --- SECCIÓN DE CONTACTO (NUEVA) --- */}
+      {/* --- SECCIÓN DE CONTACTO --- */}
       <section id="contacto" className="py-24 bg-white relative">
         <div className="max-w-[1200px] mx-auto px-6">
             <motion.div 
@@ -386,10 +498,9 @@ const HomePage = () => {
                         </div>
                     </div>
 
-                    {/* Columna Derecha: Formulario (AHORA FUNCIONAL CON WEB3FORMS) */}
+                    {/* Columna Derecha: Formulario */}
                     <div className="lg:w-1/2">
                         <form onSubmit={handleContactSubmit} className="bg-white p-8 rounded-3xl shadow-lg space-y-5">
-                            {/* Input oculto para Honeypot (Anti-spam de web3forms) */}
                             <input type="checkbox" name="botcheck" className="hidden" style={{display: 'none'}} />
 
                             <div>
