@@ -41,7 +41,7 @@ const HomePage = () => {
     {
       phase: "Fase 2: Diseño de Interiores",
       title: "Creatividad y Fachada",
-      desc: "Diseña una identidad visual de lujo y crea contenido viral.",
+      desc: "Diseña una identidad visual en redes sociales y crea contenido que conecte.",
       topics: ["Estudio de Diseño (Canva Expert)", "Producción Visual (CapCut Pro)"],
       icon: <Palette size={24} />,
       color: "bg-pink-100 text-pink-700"
@@ -49,7 +49,7 @@ const HomePage = () => {
     {
       phase: "Fase 3: Tecnología",
       title: "Inteligencia Artificial",
-      desc: "Usa maquinaria pesada para trabajar menos y producir más.",
+      desc: "Usa maquinaria pesada para trabajar menos, producir más y automatizar tu negocio.",
       topics: ["Ingeniería de Prompts", "Dobles Digitales & Avatares", "Redacción con ChatGPT"],
       icon: <Bot size={24} />,
       color: "bg-purple-100 text-purple-700"
@@ -57,15 +57,15 @@ const HomePage = () => {
     {
       phase: "Fase 4: Vías de Acceso",
       title: "Redes Sociales & Tráfico",
-      desc: "Construye las autopistas para atraer clientes a tu edificio.",
-      topics: ["Instagram: La Gran Avenida", "TikTok & Shop: La Autopista Viral"],
+      desc: "Cómo atraer clientes a tu negocio digital utilizando las diferentes plataformas.",
+      topics: ["Instagram: La Gran Avenida", "TikTok, Live & Shop: La Autopista Viral"],
       icon: <Smartphone size={24} />,
       color: "bg-orange-100 text-orange-700"
     },
     {
       phase: "Fase 5: Arquitectura Web",
       title: "Desarrollo & Embudos",
-      desc: "Construye tu oficina virtual y automatiza la recepción.",
+      desc: "Aprende desde 0 a crear tu oficina virtual y sitios web.",
       topics: ["Tu Oficina Express (Beacons)", "Ingeniería de Landing Pages"],
       icon: <Layout size={24} />,
       color: "bg-teal-100 text-teal-700"
@@ -81,7 +81,7 @@ const HomePage = () => {
     {
       phase: "Fase 7: Inmobiliaria",
       title: "Tus Productos Digitales",
-      desc: "De obra gris a obra blanca: Crea y vende tus propios activos.",
+      desc: "Aprende a darle propósito a tu conocimiento: crea y vende tus propios productos digitales.",
       topics: ["Validación de Ideas", "Creación de Infoproductos", "Meta Ads (Publicidad)"],
       icon: <Package size={24} />,
       color: "bg-indigo-100 text-indigo-700"
@@ -227,7 +227,7 @@ const HomePage = () => {
             Domina el <span className="text-[#905361]">Negocio Digital</span> sin descuidar a tu familia.
           </h1>
           <p className="text-xl text-gray-600 max-w-lg mx-auto lg:mx-0 leading-relaxed">
-            Una plataforma integral donde combinamos <strong>Estrategia, Mentalidad y Tecnología</strong>. Creada por expertos, pensada para mamás.
+            Una plataforma integral donde combinamos <strong>Estrategia, Mentalidad y Tecnología</strong>. Creada por expertos, pensada para mamás que quieran iniciar su negocio digital.
           </p>
           <div className="pt-6 flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
             <a href="#planes" className="px-10 py-4 bg-[#905361] text-white rounded-full font-bold text-lg shadow-xl hover:bg-[#5E2B35] hover:scale-105 transition transform duration-300">
@@ -261,7 +261,7 @@ const HomePage = () => {
                 <h4 className="text-[#905361] font-bold tracking-widest uppercase text-sm mb-3">Programa Académico</h4>
                 <h2 className="text-4xl font-bold text-[#1B3854] mb-4">Arquitecta de tu Propio Éxito</h2>
                 <p className="text-gray-600 text-lg">
-                    Un viaje paso a paso desde los cimientos hasta el rascacielos. 8 Fases diseñadas para construir un negocio sólido.
+                    Un viaje paso a paso desde los cimientos hasta el rascacielos. 8 Fases diseñadas para construir un negocio digital.
                 </p>
             </div>
 
