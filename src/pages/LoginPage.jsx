@@ -125,7 +125,7 @@ function LoginPage() {
             <p className="text-sm text-gray-500">
                 ¿Aún no tienes cuenta?{' '}
                 <a 
-                    href="https://wa.me/573000000000?text=Hola,%20me%20gustaría%20solicitar%20acceso%20a%20la%20plataforma." 
+                    href="https://wa.me/573177644289?text=Hola,%20me%20gustaría%20solicitar%20acceso%20a%20la%20plataforma." 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-[#905361] font-bold cursor-pointer hover:underline"
