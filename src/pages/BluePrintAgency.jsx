@@ -252,7 +252,7 @@ const BluePrintAgency = () => {
               <p className="text-sm font-semibold text-[#905361] mb-6">Embudos y Conversión</p>
               <p className="text-gray-600 text-sm mb-8 flex-grow">Para creadores o empresas que quieren lanzar un infoproducto o servicio de alto valor.</p>
               <ul className="space-y-3 mb-8">
-                {["Landing Page + Copywriting", "Configuración del embudo", "Integración de dominio", "Automatización de emails", "Link in bio avanzado"].map((item, i) => (
+                {["Landing Page + Copywriting", "Configuración del embudo", "Integración de dominio", "Automatización de emails", "Link in bio avanzado (Beacons)"].map((item, i) => (
                   <li key={i} className="flex gap-2 text-sm text-gray-700"><CheckCircle2 size={18} className="text-green-500 flex-shrink-0"/> {item}</li>
                 ))}
               </ul>
