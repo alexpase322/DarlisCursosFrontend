@@ -4,14 +4,12 @@ import { motion } from "framer-motion";
 import axios from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-hot-toast";
-// AÑADIDOS NUEVOS ICONOS PARA EL CURRICULUM
 import { 
   Check, Loader2, Instagram, Video, Brain, Code, Cpu, Sparkles, Mail, Send, 
   Hammer, Palette, Bot, Smartphone, Layout, DollarSign, Package, PieChart 
 } from "lucide-react";
 
 import darlisImg from "../assets/DarlisFoto.png"
-import lizbethImg from "../assets/Lizbeth foto.png"
 import alexImg from "../assets/Alex foto.png"
 import equipoHeroImg from "../assets/Fotogrupal.png"
 
@@ -28,7 +26,7 @@ const HomePage = () => {
     message: ""
   });
 
-  // --- DATOS DEL PROGRAMA (NUEVO) ---
+  // --- DATOS DEL PROGRAMA ---
   const CURRICULUM = [
     {
       phase: "Fase 1: Los Cimientos",
@@ -96,7 +94,7 @@ const HomePage = () => {
     }
   ];
 
-  // --- DATOS DEL EQUIPO ---
+  // --- DATOS DEL EQUIPO (Actualizado a 2 personas) ---
   const TEAM = [
     {
       name: "Darlis Franco",
@@ -105,14 +103,6 @@ const HomePage = () => {
       tags: ["Infoproductos", "CapCut", "Estrategia"],
       icon: <Video size={20} />,
       image: darlisImg 
-    },
-    {
-      name: "Lizbeth Andrade",
-      role: "Mentalidad & Hábitos",
-      desc: "Reprograma tu mente para el éxito. Trabajaremos en tu disciplina, hábitos de alto rendimiento y crecimiento en TikTok.",
-      tags: ["Mindset", "TikTok", "Hábitos"],
-      icon: <Brain size={20} />,
-      image: lizbethImg
     },
     {
       name: "Alexander Pastrana",
@@ -254,7 +244,7 @@ const HomePage = () => {
         </motion.div>
       </header>
 
-      {/* --- NUEVA SECCIÓN: CURRICULUM / QUE APRENDERÁS --- */}
+      {/* --- SECCIÓN: CURRICULUM / QUE APRENDERÁS --- */}
       <section className="py-24 bg-white relative">
         <div className="max-w-[1400px] mx-auto px-6">
             <div className="text-center mb-16 max-w-3xl mx-auto">
@@ -275,18 +265,13 @@ const HomePage = () => {
                         variants={fadeInUp}
                         className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 flex gap-5 group"
                     >
-                        {/* Icono */}
                         <div className={`w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 ${item.color} bg-opacity-20 group-hover:scale-110 transition-transform`}>
                             {item.icon}
                         </div>
-
-                        {/* Contenido */}
                         <div>
                             <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">{item.phase}</span>
                             <h3 className="text-xl font-bold text-[#1B3854] mb-2">{item.title}</h3>
                             <p className="text-sm text-gray-500 mb-3">{item.desc}</p>
-                            
-                            {/* Puntos clave */}
                             <ul className="space-y-1">
                                 {item.topics.map((topic, i) => (
                                     <li key={i} className="flex items-center gap-2 text-sm text-gray-700 font-medium">
@@ -302,20 +287,21 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* --- TEAM SECTION --- */}
+      {/* --- TEAM SECTION (Centrado a 2 columnas) --- */}
       <section className="py-32 bg-[#F7F2EF] relative">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="text-center mb-20 max-w-3xl mx-auto">
             <h4 className="text-[#905361] font-bold tracking-widest uppercase text-sm mb-3">Equipo Fundador</h4>
             <h2 className="text-4xl lg:text-5xl font-bold text-[#1B3854] mb-6">Conoce a tus Mentores</h2>
             <p className="text-gray-600 text-lg">
-              No somos solo una plataforma, somos un equipo multidisciplinario unido para darte todas las herramientas: 
+              No somos solo una plataforma, somos un equipo unido para darte todas las herramientas: 
               <strong> Creación, Mentalidad y Tecnología.</strong>
             </p>
           </div>
 
           <motion.div 
-            className="grid md:grid-cols-3 gap-10"
+            // CAMBIO AQUÍ: md:grid-cols-2 max-w-5xl mx-auto
+            className="grid md:grid-cols-2 max-w-5xl mx-auto gap-10"
             initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}
           >
             {TEAM.map((member, index) => (
@@ -460,7 +446,6 @@ const HomePage = () => {
                 className="bg-[#1B3854] rounded-[3rem] p-10 md:p-16 overflow-hidden relative shadow-2xl"
                 initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
             >
-                {/* Elementos decorativos de fondo */}
                 <div className="absolute top-0 right-0 w-96 h-96 bg-[#905361] rounded-full mix-blend-screen filter blur-3xl opacity-20 transform translate-x-1/2 -translate-y-1/2"></div>
                 
                 <div className="flex flex-col lg:flex-row gap-12 relative z-10">
@@ -567,7 +552,7 @@ const HomePage = () => {
                 <a href="#" className="hover:text-white transition">Privacidad</a>
                 <a href="#" className="hover:text-white transition">Soporte</a>
             </div>
-            <p>&copy; 2024 MomsDigitales. Todos los derechos reservados.</p>
+            <p>&copy; 2026 MomsDigitales. Todos los derechos reservados.</p>
         </div>
       </footer>
 
