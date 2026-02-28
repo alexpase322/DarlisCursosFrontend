@@ -187,21 +187,31 @@ const HomePage = () => {
       <nav className="flex justify-between items-center px-6 md:px-12 py-6 w-full max-w-[1400px] mx-auto relative z-20">
         <div className="text-2xl font-bold text-[#1B3854]">MomsDigitales<span className="text-[#905361]">.</span></div>
         
-        {user ? (
-             <Link 
-             to="/dashboard" 
-             className="px-6 py-2 rounded-full bg-[#1B3854] text-white font-bold hover:bg-[#905361] transition duration-300"
-           >
-             Ir al Dashboard
-           </Link>
-        ) : (
-            <Link 
-            to="/login" 
-            className="px-6 py-2 rounded-full border-2 border-[#1B3854] text-[#1B3854] font-bold hover:bg-[#1B3854] hover:text-white transition duration-300"
+        <div className="flex items-center gap-8">
+          {/* NUEVO ENLACE A LA AGENCIA */}
+          <Link 
+            to="/agencia" 
+            className="hidden md:block font-bold text-[#1B3854] hover:text-[#905361] transition duration-300"
           >
-            Iniciar Sesión
+            Agencia BluePrint
           </Link>
-        )}
+
+          {user ? (
+              <Link 
+              to="/dashboard" 
+              className="px-6 py-2 rounded-full bg-[#1B3854] text-white font-bold hover:bg-[#905361] transition duration-300"
+            >
+              Ir al Dashboard
+            </Link>
+          ) : (
+              <Link 
+              to="/login" 
+              className="px-6 py-2 rounded-full border-2 border-[#1B3854] text-[#1B3854] font-bold hover:bg-[#1B3854] hover:text-white transition duration-300"
+            >
+              Iniciar Sesión
+            </Link>
+          )}
+        </div>
       </nav>
 
       {/* --- HERO SECTION --- */}
