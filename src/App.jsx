@@ -23,6 +23,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import BluePrintAgency from './pages/BluePrintAgency';
+import MetodoADN from './pages/MetodoADN';
 // Placeholders
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="/agencia" element={<BluePrintAgency />} />
+            <Route path="/metodo-adn" element={<MetodoADN />} />
             <Route path="/setup-account/:token" element={<SetupAccount />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
