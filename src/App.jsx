@@ -2,7 +2,7 @@ import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "react-hot-toast";
-
+import { Analytics } from '@vercel/analytics/react';
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -31,6 +31,7 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <div className="min-h-screen bg-gray-50 font-sans">
+          <Analytics />
           <Routes>
             {/* Rutas Públicas (Sin Layout) */}
             <Route path="/login" element={<LoginPage />} />
