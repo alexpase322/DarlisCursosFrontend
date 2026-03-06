@@ -25,6 +25,7 @@ import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import BluePrintAgency from './pages/BluePrintAgency';
 import MetodoADN from './pages/MetodoADN';
 import GuiaPrimerIngreso from './pages/GuiaPrimerIngreso';
+import PilaresContenido from './pages/PilaresContenido';
 // Placeholders
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
             <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
             <Route path="/payment/success" element={<PaymentSuccessPage />} />
             <Route path="/guia-ingreso" element={<GuiaPrimerIngreso />} />
+            <Route path="/pilares-contenido" element={<PilaresContenido />} />
             {/* Rutas Privadas (CON Layout) */}
             <Route element={<ProtectedRoute />}>
               

@@ -11,7 +11,8 @@ import {
   CheckSquare, 
   ArrowRight,
   Copy,
-  Terminal
+  Terminal,
+  Youtube // <-- NUEVO ICONO
 } from "lucide-react";
 
 const MetodoADN = () => {
@@ -88,6 +89,21 @@ Entrégame este perfil en formato de viñetas claras, con un tono empático y mu
           MÉTODO <span className="text-[#905361]">ADN</span>
         </motion.h1>
         <p className="text-xl md:text-2xl text-gray-500 font-light italic">"Arquitecta de tu Marca Digital"</p>
+        
+        {/* --- NUEVO BOTÓN DE YOUTUBE --- */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+          className="mt-8 flex justify-center"
+        >
+          <a 
+            href="https://youtu.be/qiBQXvVkv98" // Pon aquí tu link de YouTube
+            target="_blank" 
+            rel="noreferrer" 
+            className="px-8 py-4 bg-[#FF0000] text-white font-black rounded-full hover:bg-[#CC0000] transition-all flex items-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+          >
+            <Youtube size={24} /> VER CLASE EN YOUTUBE
+          </a>
+        </motion.div>
         
         <div className="mt-12 max-w-2xl mx-auto p-6 bg-white rounded-3xl shadow-sm border border-[#1B3854]/10 relative">
             <Construction className="absolute -top-6 -left-6 text-[#905361] bg-[#F7F2EF] p-2 rounded-full" size={48} />
