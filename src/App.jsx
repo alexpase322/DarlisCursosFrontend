@@ -26,6 +26,7 @@ import BluePrintAgency from './pages/BluePrintAgency';
 import MetodoADN from './pages/MetodoADN';
 import GuiaPrimerIngreso from './pages/GuiaPrimerIngreso';
 import PilaresContenido from './pages/PilaresContenido';
+import MemoriaEmocional from './pages/MemoriaEmocional';
 // Placeholders
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
             <Route path="/payment/success" element={<PaymentSuccessPage />} />
             <Route path="/guia-ingreso" element={<GuiaPrimerIngreso />} />
             <Route path="/pilares-contenido" element={<PilaresContenido />} />
+            <Route path="/memoria-emocional" element={<MemoriaEmocional />} />
             {/* Rutas Privadas (CON Layout) */}
             <Route element={<ProtectedRoute />}>
               
