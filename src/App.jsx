@@ -27,6 +27,8 @@ import MetodoADN from './pages/MetodoADN';
 import GuiaPrimerIngreso from './pages/GuiaPrimerIngreso';
 import PilaresContenido from './pages/PilaresContenido';
 import MemoriaEmocional from './pages/MemoriaEmocional';
+import AmazonResenas from './pages/AmazonResenas';
+import AmazonInfluencerGuide from './pages/AmazonInfluencerGuide';
 // Placeholders
 
 function App() {
@@ -48,6 +50,8 @@ function App() {
             <Route path="/guia-ingreso" element={<GuiaPrimerIngreso />} />
             <Route path="/pilares-contenido" element={<PilaresContenido />} />
             <Route path="/memoria-emocional" element={<MemoriaEmocional />} />
+            <Route path="/amazon-resenas" element={<AmazonResenas />} />
+            <Route path="/amazon-influencer" element={<AmazonInfluencerGuide />} />
             {/* Rutas Privadas (CON Layout) */}
             <Route element={<ProtectedRoute />}>
               
