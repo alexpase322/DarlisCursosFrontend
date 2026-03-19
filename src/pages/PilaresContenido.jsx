@@ -1,17 +1,19 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
-import { 
-  Building2, 
-  Heart, 
-  Award, 
-  Megaphone, 
+import {
+  Building2,
+  Heart,
+  Award,
+  Megaphone,
   ArrowRight,
   CheckCircle2,
   Copy,
   Terminal,
-  Youtube // <-- NUEVO ICONO
+  Youtube
 } from "lucide-react";
+import Seo from "../components/Seo";
+import { seoConfigs } from "../seo";
 
 const PilaresContenido = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -82,7 +84,9 @@ IMPORTANTE:
     •    Que el contenido sea natural para redes sociales.`;
 
   return (
-    <div className="min-h-screen bg-[#F7F2EF] font-sans selection:bg-[#905361] selection:text-white pb-32">
+    <>
+      <Seo {...seoConfigs.pilaresContenido} />
+      <div className="min-h-screen bg-[#F7F2EF] font-sans selection:bg-[#905361] selection:text-white pb-32">
       
       {/* --- BACKGROUND GRID --- */}
       <div className="fixed inset-0 pointer-events-none opacity-[0.04]" 
@@ -311,7 +315,8 @@ IMPORTANTE:
         </div>
       </section>
 
-    </div>
+      </div>
+    </>
   );
 };
 

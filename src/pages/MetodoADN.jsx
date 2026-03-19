@@ -1,19 +1,21 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
-import { 
-  DraftingCompass, 
-  Ruler, 
-  Construction, 
-  FileText, 
-  MessageSquare, 
-  UserSearch, 
-  CheckSquare, 
+import {
+  DraftingCompass,
+  Ruler,
+  Construction,
+  FileText,
+  MessageSquare,
+  UserSearch,
+  CheckSquare,
   ArrowRight,
   Copy,
   Terminal,
-  Youtube // <-- NUEVO ICONO
+  Youtube
 } from "lucide-react";
+import Seo from "../components/Seo";
+import { seoConfigs } from "../seo";
 
 const MetodoADN = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -67,7 +69,9 @@ Entrégame este perfil en formato de viñetas claras, con un tono empático y mu
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F2EF] font-sans selection:bg-[#905361] selection:text-white">
+    <>
+      <Seo {...seoConfigs.metodoAdn} />
+      <div className="min-h-screen bg-[#F7F2EF] font-sans selection:bg-[#905361] selection:text-white">
       
       {/* --- BACKGROUND GRID EFFECT --- */}
       <div className="fixed inset-0 pointer-events-none opacity-[0.03]" 
@@ -279,7 +283,8 @@ Entrégame este perfil en formato de viñetas claras, con un tono empático y mu
           <h2 className="text-3xl font-bold mb-8 italic">Como Arquitecta.</h2>
       </footer>
 
-    </div>
+      </div>
+    </>
   );
 };
 

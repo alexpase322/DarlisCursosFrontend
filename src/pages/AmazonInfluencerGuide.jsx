@@ -1,10 +1,12 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { 
-  Star, Youtube, HelpCircle, ShieldCheck, 
+import {
+  Star, Youtube, HelpCircle, ShieldCheck,
   TrendingUp, Users, CheckCircle2, Image as ImageIcon,
   AlertTriangle, MousePointerClick, Smartphone, BarChart, ShoppingBag
 } from "lucide-react";
+import Seo from "../components/Seo";
+import { seoConfigs } from "../seo";
 
 const AmazonInfluencerGuide = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -25,7 +27,9 @@ const AmazonInfluencerGuide = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#F7F2EF] font-sans selection:bg-[#905361] selection:text-white pb-32">
+    <>
+      <Seo {...seoConfigs.amazonInfluencer} />
+      <div className="min-h-screen bg-[#F7F2EF] font-sans selection:bg-[#905361] selection:text-white pb-32">
       
       {/* --- HERO & VIDEO SECTION --- */}
       <header className="relative pt-24 pb-16 px-6 text-center z-10">
@@ -297,7 +301,8 @@ const AmazonInfluencerGuide = () => {
           <p className="text-sm font-bold uppercase tracking-widest opacity-30">@Darlisfv • Programa Amazon Influencer</p>
       </footer>
 
-    </div>
+      </div>
+    </>
   );
 };
 

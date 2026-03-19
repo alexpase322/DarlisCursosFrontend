@@ -12,6 +12,8 @@ import {
 import darlisImg from "../assets/DarlisFoto.png"
 import alexImg from "../assets/Alex foto.png"
 import equipoHeroImg from "../assets/Fotogrupal.png"
+import Seo from "../components/Seo";
+import { seoConfigs } from "../seo";
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -181,6 +183,8 @@ const HomePage = () => {
   };
 
   return (
+    <>
+      <Seo {...seoConfigs.home} />
     <div className="min-h-screen bg-[#F7F2EF] font-sans overflow-x-hidden">
       
       {/* --- NAVBAR --- */}
@@ -567,6 +571,7 @@ const HomePage = () => {
       </footer>
 
     </div>
+    </>
   );
 };
 
