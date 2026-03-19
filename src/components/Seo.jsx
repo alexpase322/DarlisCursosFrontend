@@ -1,13 +1,7 @@
 import { useEffect } from "react";
 
-const DEFAULT_IMAGE = "/social-preview.svg";
-
-const getSiteOrigin = () => window.location.origin;
-
-const toAbsoluteUrl = (value) => {
-  if (!value) return "";
-  return new URL(value, getSiteOrigin()).toString();
-};
+const SITE_URL = "https://arquitectadetupropioexito.com";
+const DEFAULT_IMAGE = `${SITE_URL}/social-preview.svg`;
 
 const upsertMeta = (selector, attributes) => {
   let element = document.head.querySelector(selector);
@@ -38,16 +32,14 @@ const upsertLink = (selector, attributes) => {
 const Seo = ({
   title,
   description,
-  path,
+  path = "/",
   image = DEFAULT_IMAGE,
   type = "website",
   robots = "index,follow",
   jsonLd,
 }) => {
   useEffect(() => {
-    const canonicalPath = path ?? window.location.pathname;
-    const canonicalUrl = toAbsoluteUrl(canonicalPath);
-    const absoluteImage = toAbsoluteUrl(image);
+    const canonicalUrl = new URL(path, SITE_URL).toString();
 
     document.title = title;
 
@@ -98,12 +90,12 @@ const Seo = ({
 
     upsertMeta('meta[property="og:image"]', {
       property: "og:image",
-      content: absoluteImage,
+      content: image,
     });
 
     upsertMeta('meta[name="twitter:card"]', {
       name: "twitter:card",
-      content: absoluteImage ? "summary_large_image" : "summary",
+      content: image ? "summary_large_image" : "summary",
     });
 
     upsertMeta('meta[name="twitter:title"]', {
@@ -118,7 +110,7 @@ const Seo = ({
 
     upsertMeta('meta[name="twitter:image"]', {
       name: "twitter:image",
-      content: absoluteImage,
+      content: image,
     });
 
     if (jsonLd) {
@@ -139,3 +131,4 @@ const Seo = ({
 };
 
 export default Seo;
+export { SITE_URL };

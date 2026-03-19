@@ -1,4 +1,6 @@
-const defaultImage = "/social-preview.svg";
+import { SITE_URL } from "./components/Seo";
+
+const defaultImage = `${SITE_URL}/social-preview.svg`;
 
 export const seoConfigs = {
   home: {
@@ -13,6 +15,7 @@ export const seoConfigs = {
         {
           "@type": "Organization",
           name: "Arquitecta de tu Propio Éxito",
+          url: SITE_URL,
           email: "soporte@arquitectadetupropioexito.com",
           description:
             "Plataforma de cursos de negocio digital para mamás y mujeres emprendedoras.",
@@ -24,6 +27,7 @@ export const seoConfigs = {
         {
           "@type": "WebSite",
           name: "Arquitecta de tu Propio Éxito",
+          url: SITE_URL,
           description:
             "Cursos de negocio digital para mamás con estrategia, mentalidad y tecnología.",
         },
