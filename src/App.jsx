@@ -29,7 +29,7 @@ import PilaresContenido from './pages/PilaresContenido';
 import MemoriaEmocional from './pages/MemoriaEmocional';
 import AmazonResenas from './pages/AmazonResenas';
 import AmazonInfluencerGuide from './pages/AmazonInfluencerGuide';
-// Placeholders
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
   return (
@@ -77,6 +77,7 @@ function App() {
             </Route>
           </Routes>
           <Toaster position="top-right" />
+          <SpeedInsights />
         </div>
       </BrowserRouter>
     </AuthProvider>
