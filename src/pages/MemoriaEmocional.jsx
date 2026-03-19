@@ -1,12 +1,14 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
-import { 
-  Youtube, Copy, Zap, Target, MessageSquare, 
-  Repeat, Smartphone, Layout, Video, ArrowRight, 
+import {
+  Youtube, Copy, Zap, Target, MessageSquare,
+  Repeat, Smartphone, Layout, Video, ArrowRight,
   Sparkles, Quote, CheckCircle2, Mic2, Building2,
-  Ruler, Construction, Box, Heart, Award, Megaphone  
+  Ruler, Construction, Box, Heart, Award, Megaphone
 } from "lucide-react";
+import Seo from "../components/Seo";
+import { seoConfigs } from "../seo";
 
 const MemoriaEmocional = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -27,7 +29,9 @@ const MemoriaEmocional = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F2EF] font-sans selection:bg-[#905361] selection:text-white pb-32 overflow-x-hidden">
+    <>
+      <Seo {...seoConfigs.memoriaEmocional} />
+      <div className="min-h-screen bg-[#F7F2EF] font-sans selection:bg-[#905361] selection:text-white pb-32 overflow-x-hidden">
       
       {/* --- HERO SECTION --- */}
       <header className="relative pt-24 pb-16 px-6 text-center z-10 border-b border-gray-200 bg-white">
@@ -266,7 +270,8 @@ const MemoriaEmocional = () => {
          <p className="text-sm font-bold uppercase tracking-widest text-[#1B3854] opacity-30">@darlisfrancov • Taller Arquitecta de Contenido</p>
       </footer>
 
-    </div>
+      </div>
+    </>
   );
 };
 

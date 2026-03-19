@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
-import { 
-  Building2, Target, Eye, Compass, Bot, Code2, 
+import {
+  Building2, Target, Eye, Compass, Bot, Code2,
   Smartphone, Layers, Zap, ChevronRight, CheckCircle2,
   Mail, Instagram, Send, Loader2
 } from "lucide-react";
+import Seo from "../components/Seo";
+import { seoConfigs } from "../seo";
 
 const BluePrintAgency = () => {
   // Hace que la página cargue desde arriba al entrar
@@ -68,7 +70,9 @@ const BluePrintAgency = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F2EF] font-sans overflow-x-hidden selection:bg-[#905361] selection:text-white">
+    <>
+      <Seo {...seoConfigs.agencia} />
+      <div className="min-h-screen bg-[#F7F2EF] font-sans overflow-x-hidden selection:bg-[#905361] selection:text-white">
       
       {/* --- NAVBAR SIMPLIFICADO --- */}
       <nav className="flex justify-between items-center px-6 md:px-12 py-6 w-full max-w-[1400px] mx-auto absolute top-0 left-0 right-0 z-50">
@@ -404,7 +408,8 @@ const BluePrintAgency = () => {
         </div>
       </footer>
 
-    </div>
+      </div>
+    </>
   );
 };
 

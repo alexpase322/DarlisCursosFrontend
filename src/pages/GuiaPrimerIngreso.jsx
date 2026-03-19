@@ -8,6 +8,8 @@ import {
 import analiticas from "../assets/Analiticas.jpeg"
 import perfilTiktok from "../assets/perfiltiktok.jpeg"
 import darlisFoto from "../assets/DarlisFoto.png"
+import Seo from "../components/Seo";
+import { seoConfigs } from "../seo";
 // --- CONFIGURACIÓN DE LINKS EXTERNOS (CÁMBIALOS AQUÍ) ---
 const EXTERNAL_LINKS = {
   whatsappTribu: "https://chat.whatsapp.com/TU_CODIGO",
@@ -66,6 +68,8 @@ const GuiaPrimerIngreso = () => {
   ];
 
   return (
+    <>
+      <Seo {...seoConfigs.guiaIngreso} />
     <div className="min-h-screen bg-[#F7F2EF] font-sans selection:bg-[#905361] selection:text-white">
       
       {/* --- HERO SECTION --- */}
@@ -271,6 +275,7 @@ const GuiaPrimerIngreso = () => {
         }
       ` }} />
     </div>
+    </>
   );
 };
 

@@ -1,20 +1,22 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
-import { 
-  ShoppingBag, 
-  DollarSign, 
-  MessageCircle, 
-  Star, 
-  AlertTriangle, 
-  Copy, 
-  CheckCircle2, 
+import {
+  ShoppingBag,
+  DollarSign,
+  MessageCircle,
+  Star,
+  AlertTriangle,
+  Copy,
+  CheckCircle2,
   ImageIcon,
   Youtube,
   CreditCard,
   Store,
   RefreshCcw
 } from "lucide-react";
+import Seo from "../components/Seo";
+import { seoConfigs } from "../seo";
 
 const AmazonResenas = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -34,7 +36,9 @@ Thank you very much, I'll be attentive.`;
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F2EF] font-sans selection:bg-[#905361] selection:text-white pb-32">
+    <>
+      <Seo {...seoConfigs.amazonResenas} />
+      <div className="min-h-screen bg-[#F7F2EF] font-sans selection:bg-[#905361] selection:text-white pb-32">
       
       {/* --- HERO & VIDEO SECTION --- */}
       <header className="relative pt-24 pb-16 px-6 text-center z-10">
@@ -303,7 +307,8 @@ Thank you very much, I'll be attentive.`;
           <p className="text-sm font-bold uppercase tracking-widest opacity-30">@Darlisfv • Amazon Reseñas</p>
       </footer>
 
-    </div>
+      </div>
+    </>
   );
 };
 
