@@ -233,6 +233,9 @@ const HomePage = () => {
           <p className="text-xl text-gray-600 max-w-lg mx-auto lg:mx-0 leading-relaxed">
             Una membresía para mujeres que quieren aprender, en vivo y en comunidad, a descubrir distintas formas de monetización digital, desarrollar la mentalidad correcta y encontrar el camino que mejor se adapta a su realidad, sus metas y la vida que desean construir.
           </p>
+          <p className="text-lg text-gray-600 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+            Conviértete en la arquitecta de tu propio éxito con una membresía de cursos de negocio digital para mamás, creada para ayudarte a generar ingresos con estrategia, mentalidad y tecnología.
+          </p>
           <div className="pt-6 flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
             <a href="#planes" className="px-10 py-4 bg-[#905361] text-white rounded-full font-bold text-lg shadow-xl hover:bg-[#5E2B35] hover:scale-105 transition transform duration-300 text-center">
               Quiero unirme hoy

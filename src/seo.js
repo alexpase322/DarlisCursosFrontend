@@ -4,9 +4,9 @@ const defaultImage = `${SITE_URL}/social-preview.svg`;
 
 export const seoConfigs = {
   home: {
-    title: "Arquitecta de tu Propio Éxito | Cursos de negocio digital para mamás",
+    title: "Arquitecta de tu Propio Éxito | Membresía y cursos de negocio digital para mamás",
     description:
-      "Cursos de negocio digital para mamás con estrategia, mentalidad y tecnología para crear ingresos sin descuidar a tu familia.",
+      "Membresía y cursos de negocio digital para mamás con estrategia, mentalidad y tecnología para crear ingresos sin descuidar a tu familia.",
     path: "/",
     image: defaultImage,
     jsonLd: {
@@ -18,7 +18,7 @@ export const seoConfigs = {
           url: SITE_URL,
           email: "soporte@arquitectadetupropioexito.com",
           description:
-            "Plataforma de cursos de negocio digital para mamás y mujeres emprendedoras.",
+            "Plataforma de membresía y cursos de negocio digital para mamás y mujeres emprendedoras.",
           sameAs: [
             "https://www.instagram.com/darlisfrancov?igsh=MWdyNThneWJqdWx6dg==",
             "https://www.tiktok.com/@darlisfv?_r=1&_t=ZS-94OR6yTfuCt",
@@ -29,7 +29,7 @@ export const seoConfigs = {
           name: "Arquitecta de tu Propio Éxito",
           url: SITE_URL,
           description:
-            "Cursos de negocio digital para mamás con estrategia, mentalidad y tecnología.",
+            "Membresía y cursos de negocio digital para mamás con estrategia, mentalidad y tecnología.",
         },
       ],
     },
