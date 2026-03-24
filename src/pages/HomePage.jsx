@@ -6,7 +6,8 @@ import { useAuth } from "../context/AuthContext";
 import { toast } from "react-hot-toast";
 import { 
   Check, Loader2, Instagram, Video, Brain, Code, Cpu, Sparkles, Mail, Send, 
-  Hammer, Palette, Bot, Smartphone, Layout, DollarSign, Package, PieChart 
+  Hammer, Palette, Bot, Smartphone, Layout, DollarSign, Package, PieChart,
+  CheckCircle2, Target, Users, PlayCircle, CalendarPlus, HeartHandshake, Rocket
 } from "lucide-react";
 
 import darlisImg from "../assets/DarlisFoto.png"
@@ -96,7 +97,7 @@ const HomePage = () => {
     }
   ];
 
-  // --- DATOS DEL EQUIPO (Actualizado a 2 personas) ---
+  // --- DATOS DEL EQUIPO ---
   const TEAM = [
     {
       name: "Darlis Franco",
@@ -192,7 +193,6 @@ const HomePage = () => {
         <div className="text-2xl font-bold text-[#1B3854]">MomsDigitales<span className="text-[#905361]">.</span></div>
         
         <div className="flex items-center gap-8">
-          {/* NUEVO ENLACE A LA AGENCIA */}
           <Link 
             to="/agencia" 
             className="hidden md:block font-bold text-[#1B3854] hover:text-[#905361] transition duration-300"
@@ -228,19 +228,19 @@ const HomePage = () => {
             <Sparkles size={16} /> Tu independencia financiera empieza hoy
           </span>
           <h1 className="text-5xl lg:text-7xl font-extrabold text-[#1B3854] leading-[1.1]">
-            Domina el <span className="text-[#905361]">Negocio Digital</span> sin descuidar a tu familia.
+            Conviértete en la <span className="text-[#905361]">arquitecta</span> de tu propio éxito.
           </h1>
           <p className="text-xl text-gray-600 max-w-lg mx-auto lg:mx-0 leading-relaxed">
-            Una plataforma integral donde combinamos <strong>Estrategia, Mentalidad y Tecnología</strong>. Creada por expertos, pensada para mamás que quieran iniciar su negocio digital.
+            Una membresía para mujeres que quieren aprender, en vivo y en comunidad, a descubrir distintas formas de monetización digital, desarrollar la mentalidad correcta y encontrar el camino que mejor se adapta a su realidad, sus metas y la vida que desean construir.
           </p>
           <div className="pt-6 flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
-            <a href="#planes" className="px-10 py-4 bg-[#905361] text-white rounded-full font-bold text-lg shadow-xl hover:bg-[#5E2B35] hover:scale-105 transition transform duration-300">
-              Ver Planes
+            <a href="#planes" className="px-10 py-4 bg-[#905361] text-white rounded-full font-bold text-lg shadow-xl hover:bg-[#5E2B35] hover:scale-105 transition transform duration-300 text-center">
+              Quiero unirme hoy
             </a>
             
             {!user && (
-                <Link to="/login" className="px-10 py-4 bg-white text-[#1B3854] border border-gray-200 rounded-full font-bold shadow hover:shadow-md transition">
-                Ya tengo cuenta
+                <Link to="/login" className="px-10 py-4 bg-white text-[#1B3854] border border-gray-200 rounded-full font-bold shadow hover:shadow-md transition text-center">
+                Ya tengo una cuenta
                 </Link>
             )}
           </div>
@@ -258,12 +258,141 @@ const HomePage = () => {
         </motion.div>
       </header>
 
-      {/* --- SECCIÓN: CURRICULUM / QUE APRENDERÁS --- */}
+      {/* --- SECCIÓN 1: ¿QUÉ ES ESTA MEMBRESÍA? --- */}
       <section className="py-24 bg-white relative">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <motion.div 
+            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
+            className="flex flex-col lg:flex-row items-center gap-16"
+          >
+            <div className="lg:w-1/2 relative">
+              <div className="absolute -top-10 -left-10 w-32 h-32 bg-[#FDE5E5] rounded-full opacity-50 blur-2xl"></div>
+              <div className="bg-[#1B3854] p-10 md:p-12 rounded-[3rem] text-white shadow-2xl relative z-10">
+                <Users className="text-[#FDE5E5] mb-6" size={48} />
+                <h3 className="text-2xl font-bold mb-4 leading-relaxed">
+                  "Aquí no creemos que todas deban empezar igual."
+                </h3>
+                <p className="text-blue-100 font-light">
+                  Te ayudamos a descubrir qué forma de monetización se adapta mejor a ti, a tus recursos, a tu personalidad, a tu tiempo y a las metas que quieres alcanzar.
+                </p>
+              </div>
+            </div>
+            
+            <div className="lg:w-1/2 space-y-6">
+              <h4 className="text-[#905361] font-bold tracking-widest uppercase text-sm mb-2">Descubre el Método</h4>
+              <h2 className="text-4xl lg:text-5xl font-black text-[#1B3854] mb-6 leading-tight">
+                ¿Qué es Arquitecta de tu Propio Éxito?
+              </h2>
+              <p className="text-gray-600 text-lg leading-relaxed">
+                Arquitecta de tu Propio Éxito no es solo una membresía de contenido. Es un <strong>espacio de acompañamiento</strong> donde aprenderás a construir tu propio camino en el negocio digital.
+              </p>
+              <p className="text-gray-600 text-lg leading-relaxed">
+                Aprenderás con clases en vivo, guía práctica, comunidad y una mentalidad alineada para dejar de sentirte confundida y comenzar a <strong>avanzar con intención</strong>.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* --- SECCIÓN 2: ¿PARA QUIÉN ES? --- */}
+      <section className="py-24 bg-[#1B3854] relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
+        <div className="max-w-[1200px] mx-auto px-6 relative z-10">
+          <div className="text-center mb-16">
+            <Target className="text-[#FDE5E5] mx-auto mb-6" size={48} />
+            <h2 className="text-4xl lg:text-5xl font-black text-white">Esta membresía es para ti si...</h2>
+          </div>
+
+          <motion.div 
+            className="grid md:grid-cols-2 gap-6"
+            initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer}
+          >
+            {[
+              "Quieres generar ingresos digitales pero no sabes cuál camino tomar.",
+              "Te sientes saturada de tanta información y necesitas dirección real.",
+              "Quieres aprender en comunidad y no sola.",
+              "Deseas monetizar desde casa sin desconectarte de lo que más amas.",
+              "Necesitas fortalecer tu mentalidad mientras construyes algo propio.",
+              "Quieres una mentora que te ayude a encontrar tu punto de partida."
+            ].map((text, index) => (
+              <motion.div 
+                key={index} variants={fadeInUp}
+                className="flex items-start gap-4 p-6 bg-white/10 backdrop-blur-md rounded-3xl border border-white/10 hover:bg-white/20 transition-colors"
+              >
+                <CheckCircle2 className="text-[#FDE5E5] shrink-0 mt-1" size={28} />
+                <p className="text-white text-lg font-light leading-relaxed">{text}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* --- SECCIÓN 3: QUÉ INCLUYE LA MEMBRESÍA --- */}
+      <section className="py-24 bg-[#F7F2EF] relative">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <div className="text-center mb-16">
+            <span className="text-[#905361] font-bold tracking-widest uppercase text-sm mb-3 block">Todo lo que necesitas</span>
+            <h2 className="text-4xl lg:text-5xl font-black text-[#1B3854]">¿Qué incluye la membresía?</h2>
+          </div>
+
+          <motion.div 
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+            initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer}
+          >
+            {/* 1. Mentorías en vivo */}
+            <motion.div variants={fadeInUp} className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
+              <div className="w-14 h-14 bg-[#FDE5E5] text-[#905361] rounded-2xl flex items-center justify-center mb-6">
+                <Video size={28} />
+              </div>
+              <h3 className="text-xl font-bold text-[#1B3854] mb-3">Mentorías en vivo semanal</h3>
+              <p className="text-gray-600 leading-relaxed">Acompañamiento directo para resolver tus dudas, ajustar tus estrategias y trazar tu plan de acción en tiempo real.</p>
+            </motion.div>
+
+            {/* 2. Módulos pre grabados */}
+            <motion.div variants={fadeInUp} className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
+              <div className="w-14 h-14 bg-[#1B3854] text-white rounded-2xl flex items-center justify-center mb-6">
+                <PlayCircle size={28} />
+              </div>
+              <h3 className="text-xl font-bold text-[#1B3854] mb-3">Módulos pre grabados</h3>
+              <p className="text-gray-600 leading-relaxed">Aprende a tu propio ritmo con lecciones paso a paso sobre distintas formas de monetización y habilidades digitales.</p>
+            </motion.div>
+
+            {/* 3. Contenido nuevo */}
+            <motion.div variants={fadeInUp} className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
+              <div className="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                <CalendarPlus size={28} />
+              </div>
+              <h3 className="text-xl font-bold text-[#1B3854] mb-3">Contenido nuevo cada mes</h3>
+              <p className="text-gray-600 leading-relaxed">Actualizaciones constantes para que siempre estés al día con las mejores y más actuales estrategias del mercado.</p>
+            </motion.div>
+
+            {/* 4. Comunidad */}
+            <motion.div variants={fadeInUp} className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 hover:shadow-lg transition-shadow lg:col-span-1 md:col-start-1 lg:col-start-auto">
+              <div className="w-14 h-14 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center mb-6">
+                <HeartHandshake size={28} />
+              </div>
+              <h3 className="text-xl font-bold text-[#1B3854] mb-3">Comunidad privada de Arquitectas</h3>
+              <p className="text-gray-600 leading-relaxed">Rodéate de mujeres con tu misma visión. Apoyo, motivación y networking disponible 24/7 en nuestro grupo privado.</p>
+            </motion.div>
+
+            {/* 5. Recursos listos */}
+            <motion.div variants={fadeInUp} className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 hover:shadow-lg transition-shadow lg:col-span-1 md:col-start-2 lg:col-start-auto">
+              <div className="w-14 h-14 bg-[#905361] text-white rounded-2xl flex items-center justify-center mb-6">
+                <Rocket size={28} />
+              </div>
+              <h3 className="text-xl font-bold text-[#1B3854] mb-3">Recursos para monetizar</h3>
+              <p className="text-gray-600 leading-relaxed">Plantillas, guías y herramientas prácticas diseñadas para que comiences a generar ingresos desde el día 1.</p>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* --- SECCIÓN: CURRICULUM / QUE APRENDERÁS --- */}
+      <section className="py-32 bg-white relative">
         <div className="max-w-[1400px] mx-auto px-6">
             <div className="text-center mb-16 max-w-3xl mx-auto">
                 <h4 className="text-[#905361] font-bold tracking-widest uppercase text-sm mb-3">Programa Académico</h4>
-                <h2 className="text-4xl font-bold text-[#1B3854] mb-4">Arquitecta de tu Propio Éxito</h2>
+                <h2 className="text-4xl font-bold text-[#1B3854] mb-4">El Mapa de Construcción</h2>
                 <p className="text-gray-600 text-lg">
                     Un viaje paso a paso desde los cimientos hasta el rascacielos. 8 Fases diseñadas para construir un negocio digital.
                 </p>
@@ -301,7 +430,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* --- TEAM SECTION (Centrado a 2 columnas) --- */}
+      {/* --- TEAM SECTION --- */}
       <section className="py-32 bg-[#F7F2EF] relative">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="text-center mb-20 max-w-3xl mx-auto">
@@ -314,7 +443,6 @@ const HomePage = () => {
           </div>
 
           <motion.div 
-            // CAMBIO AQUÍ: md:grid-cols-2 max-w-5xl mx-auto
             className="grid md:grid-cols-2 max-w-5xl mx-auto gap-10"
             initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}
           >
