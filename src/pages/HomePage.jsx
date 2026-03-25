@@ -120,8 +120,8 @@ const HomePage = () => {
   // --- CONFIGURACIÓN DE STRIPE ---
   const PLAN_IDS = {
     MONTHLY: "price_1SnZK0DP5qCZDXVtTwJzTKDX", 
-    QUARTERLY: "price_1SnZKwDP5qCZDXVtEhJsyc46",
-    YEARLY: "price_1Qxxxxxxxxxxxxxx"
+    QUARTERLY: "price_1SnZKwDP5qCZDXVtEhJsyc46"
+    // YEARLY eliminado
   };
 
   const handleSubscribe = async (priceId) => {
@@ -232,9 +232,6 @@ const HomePage = () => {
           </h1>
           <p className="text-xl text-gray-600 max-w-lg mx-auto lg:mx-0 leading-relaxed">
             Una membresía para mujeres que quieren aprender, en vivo y en comunidad, a descubrir distintas formas de monetización digital, desarrollar la mentalidad correcta y encontrar el camino que mejor se adapta a su realidad, sus metas y la vida que desean construir.
-          </p>
-          <p className="text-lg text-gray-600 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-            Conviértete en la arquitecta de tu propio éxito con una membresía de cursos de negocio digital para mamás, creada para ayudarte a generar ingresos con estrategia, mentalidad y tecnología.
           </p>
           <div className="pt-6 flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
             <a href="#planes" className="px-10 py-4 bg-[#905361] text-white rounded-full font-bold text-lg shadow-xl hover:bg-[#5E2B35] hover:scale-105 transition transform duration-300 text-center">
@@ -522,61 +519,44 @@ const HomePage = () => {
 
       {/* --- PRECIOS --- */}
       <section id="planes" className="py-32 bg-[#F7F2EF]">
-        <div className="max-w-6xl mx-auto px-6">
+        <div className="max-w-4xl mx-auto px-6">
             <div className="text-center mb-20">
                 <h2 className="text-4xl font-bold text-[#1B3854] mb-4">Invierte en tu Futuro</h2>
                 <p className="text-gray-500 text-lg">Elige el plan que mejor se adapte a tu ritmo.</p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 items-center">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
                 {/* PLAN MENSUAL */}
                 <motion.div 
                     initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-                    className="p-8 bg-white rounded-[2rem] border border-gray-100 shadow-xl hover:shadow-2xl transition-all flex flex-col h-[500px]"
+                    className="p-10 bg-white rounded-[2rem] border border-gray-100 shadow-xl hover:shadow-2xl transition-all flex flex-col h-full"
                 >
-                    <h3 className="text-xl font-bold text-[#1B3854] mb-2">Mensual</h3>
-                    <div className="mb-6"><span className="text-4xl font-bold text-[#1B3854]">$50</span><span className="text-gray-400 text-sm">/mes</span></div>
+                    <h3 className="text-2xl font-bold text-[#1B3854] mb-2">Mensual</h3>
+                    <div className="mb-6"><span className="text-5xl font-bold text-[#1B3854]">$50</span><span className="text-gray-400 text-sm">/mes</span></div>
                     <ul className="space-y-4 mb-8 flex-1">
                         {["Acceso a cursos básicos", "Comunidad de alumnas", "Recursos descargables"].map((f, i) => (
-                            <li key={i} className="flex gap-3 text-sm text-gray-600"><Check size={18} className="text-green-500"/> {f}</li>
+                            <li key={i} className="flex gap-3 text-sm text-gray-600"><Check size={18} className="text-green-500 shrink-0"/> {f}</li>
                         ))}
                     </ul>
-                    <button onClick={() => handleSubscribe(PLAN_IDS.MONTHLY)} disabled={loading} className="w-full py-4 rounded-xl font-bold bg-[#FDE5E5] text-[#905361] hover:bg-[#905361] hover:text-white transition-all">
+                    <button onClick={() => handleSubscribe(PLAN_IDS.MONTHLY)} disabled={loading} className="w-full py-4 rounded-xl font-bold bg-[#FDE5E5] text-[#905361] hover:bg-[#905361] hover:text-white transition-all text-lg">
                         {loading ? <Loader2 className="animate-spin mx-auto"/> : "Elegir Mensual"}
-                    </button>
-                </motion.div>
-
-                {/* PLAN ANUAL */}
-                <motion.div 
-                    initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                    className="relative p-10 bg-white rounded-[2rem] border-2 border-[#905361] shadow-2xl scale-110 z-10 flex flex-col h-[550px]"
-                >
-                    <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-[#905361] text-white px-6 py-2 rounded-full text-sm font-bold tracking-widest uppercase shadow-md">Más Popular</div>
-                    <h3 className="text-2xl font-bold text-[#1B3854] mb-2">Anual</h3>
-                    <div className="mb-6"><span className="text-5xl font-bold text-[#1B3854]">$500</span><span className="text-gray-400 text-sm">/año</span></div>
-                    <ul className="space-y-4 mb-8 flex-1">
-                        {["Todo lo del plan mensual", "Ahorras $100 USD", "Mentoría grupal mensual", "Certificados oficiales", "Acceso prioritario a eventos"].map((f, i) => (
-                            <li key={i} className="flex gap-3 text-sm text-gray-600"><Check size={18} className="text-green-500"/> {f}</li>
-                        ))}
-                    </ul>
-                    <button onClick={() => handleSubscribe(PLAN_IDS.YEARLY)} disabled={loading} className="w-full py-4 rounded-xl font-bold bg-[#1B3854] text-white hover:bg-[#2a4d6e] shadow-lg transition-all text-lg">
-                        {loading ? <Loader2 className="animate-spin mx-auto"/> : "Elegir Anual"}
                     </button>
                 </motion.div>
 
                 {/* PLAN TRIMESTRAL */}
                 <motion.div 
-                    initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-                    className="p-8 bg-white rounded-[2rem] border border-gray-100 shadow-xl hover:shadow-2xl transition-all flex flex-col h-[500px]"
+                    initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+                    className="relative p-10 bg-white rounded-[2rem] border-2 border-[#905361] shadow-2xl scale-105 z-10 flex flex-col h-full"
                 >
-                    <h3 className="text-xl font-bold text-[#1B3854] mb-2">Trimestral</h3>
-                    <div className="mb-6"><span className="text-4xl font-bold text-[#1B3854]">$120</span><span className="text-gray-400 text-sm">/trimestre</span></div>
+                    <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-[#905361] text-white px-6 py-2 rounded-full text-sm font-bold tracking-widest uppercase shadow-md">Más Popular</div>
+                    <h3 className="text-2xl font-bold text-[#1B3854] mb-2">Trimestral</h3>
+                    <div className="mb-6"><span className="text-5xl font-bold text-[#1B3854]">$120</span><span className="text-gray-400 text-sm">/trimestre</span></div>
                     <ul className="space-y-4 mb-8 flex-1">
                         {["Todo lo del plan mensual", "Ahorras $30 USD", "Acceso a talleres especiales", "Soporte prioritario"].map((f, i) => (
-                            <li key={i} className="flex gap-3 text-sm text-gray-600"><Check size={18} className="text-green-500"/> {f}</li>
+                            <li key={i} className="flex gap-3 text-sm text-gray-600"><Check size={18} className="text-green-500 shrink-0"/> {f}</li>
                         ))}
                     </ul>
-                    <button onClick={() => handleSubscribe(PLAN_IDS.QUARTERLY)} disabled={loading} className="w-full py-4 rounded-xl font-bold bg-[#FDE5E5] text-[#905361] hover:bg-[#905361] hover:text-white transition-all">
+                    <button onClick={() => handleSubscribe(PLAN_IDS.QUARTERLY)} disabled={loading} className="w-full py-4 rounded-xl font-bold bg-[#1B3854] text-white hover:bg-[#2a4d6e] shadow-lg transition-all text-lg">
                         {loading ? <Loader2 className="animate-spin mx-auto"/> : "Elegir Trimestral"}
                     </button>
                 </motion.div>
