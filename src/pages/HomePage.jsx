@@ -12,7 +12,7 @@ import {
 
 import darlisImg from "../assets/DarlisFoto.png"
 import alexImg from "../assets/Alex foto.png"
-import equipoHeroImg from "../assets/Fotogrupal.png"
+import equipoHeroImg from "../assets/FotoDarlisHero.jpeg"
 import Seo from "../components/Seo";
 import { seoConfigs } from "../seo";
 
@@ -121,7 +121,6 @@ const HomePage = () => {
   const PLAN_IDS = {
     MONTHLY: "price_1SnZK0DP5qCZDXVtTwJzTKDX", 
     QUARTERLY: "price_1SnZKwDP5qCZDXVtEhJsyc46"
-    // YEARLY eliminado
   };
 
   const handleSubscribe = async (priceId) => {
@@ -252,8 +251,10 @@ const HomePage = () => {
         >
           <div className="absolute top-0 right-10 w-[500px] h-[500px] bg-[#FDE5E5] rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
           <div className="absolute -bottom-10 left-10 w-[400px] h-[400px] bg-[#905361] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-          <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl transform rotate-2 hover:rotate-0 transition duration-500 border-4 border-white">
-             <img src={equipoHeroImg} alt="Comunidad MomsDigitales" className="w-full h-auto object-cover"/>
+          
+          {/* CUADRO DE IMAGEN AJUSTADO PARA SER MÁS ALARGADO */}
+          <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl transform rotate-2 hover:rotate-0 transition duration-500 border-4 border-white aspect-[4/5] max-w-md mx-auto">
+             <img src={equipoHeroImg} alt="Comunidad MomsDigitales" className="w-full h-full object-cover"/>
           </div>
         </motion.div>
       </header>
