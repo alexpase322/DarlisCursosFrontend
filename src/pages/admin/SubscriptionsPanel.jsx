@@ -174,8 +174,22 @@ const SubscriptionsPanel = () => {
                       <td className="px-4 py-3 text-gray-500">
                         {u.lastPayment ? (
                           <div>
-                            <p>{fmtDate(u.lastPayment.paidAt)}</p>
-                            <p className="text-xs text-gray-400">{fmtUSD(u.lastPayment.amountUSD)} · {u.lastPayment.status}</p>
+                            <p className={u.lastPayment.status === "failed" ? "text-red-600 font-bold" : ""}>
+                              {fmtDate(u.lastPayment.paidAt)}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                              {fmtUSD(u.lastPayment.amountUSD)} · <span className={u.lastPayment.status === "failed" ? "text-red-600 font-bold" : ""}>{u.lastPayment.status}</span>
+                            </p>
+                            {u.lastPayment.status === "failed" && u.lastPayment.failureReason && (
+                              <p className="text-[11px] text-red-500 truncate max-w-[200px]" title={u.lastPayment.failureReason}>
+                                {u.lastPayment.failureReason}
+                              </p>
+                            )}
+                            {u.failedCount > 0 && u.lastPayment.status !== "failed" && (
+                              <p className="text-[11px] text-amber-600">
+                                {u.failedCount} intento{u.failedCount > 1 ? "s" : ""} fallido{u.failedCount > 1 ? "s" : ""} previo{u.failedCount > 1 ? "s" : ""}
+                              </p>
+                            )}
                           </div>
                         ) : "—"}
                       </td>
