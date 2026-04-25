@@ -3,7 +3,8 @@ import { useAuth } from "../context/AuthContext";
 import axios from "../api/axios";
 import { toast } from "react-hot-toast";
 // Iconos modernos
-import { User, Camera, Save, FileText, Mail, Loader2 } from "lucide-react";
+import { User, Camera, Save, FileText, Mail, Loader2, CreditCard } from "lucide-react";
+import PartnerBadge from "../components/PartnerBadge";
 
 function ProfilePage() {
   const { user } = useAuth();
@@ -15,6 +16,25 @@ function ProfilePage() {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [openingPortal, setOpeningPortal] = useState(false);
+
+  const handleOpenBillingPortal = async () => {
+    if (openingPortal) return;
+    setOpeningPortal(true);
+    try {
+      const { data } = await axios.post("/payment/portal", {});
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error("No se pudo abrir el portal de pagos.");
+        setOpeningPortal(false);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "No se pudo abrir el portal de pagos.");
+      setOpeningPortal(false);
+    }
+  };
 
   useEffect(() => {
     if (user) {
@@ -105,6 +125,11 @@ function ProfilePage() {
             <p className="text-blue-200 text-sm uppercase tracking-widest font-medium">
                 {user?.role === 'admin' ? 'Administradora' : 'Estudiante'}
             </p>
+            {user?.partnerLevel >= 2 && (
+              <div className="mt-3">
+                <PartnerBadge level={user.partnerLevel} />
+              </div>
+            )}
         </div>
 
         {/* COLUMNA DERECHA: FORMULARIO */}
@@ -157,12 +182,22 @@ function ProfilePage() {
                     </div>
                 </div>
 
-                {/* Botón Guardar */}
-                <div className="pt-4 flex justify-end">
-                    <button 
-                        type="submit" 
+                {/* Botón Guardar + Portal de Pagos */}
+                <div className="pt-4 flex flex-col sm:flex-row sm:justify-between gap-3">
+                    <button
+                        type="button"
+                        onClick={handleOpenBillingPortal}
+                        disabled={openingPortal}
+                        className="bg-white border border-[#1B3854]/20 text-[#1B3854] px-6 py-3 rounded-xl hover:bg-[#1B3854]/5 font-bold transition flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                        title="Gestiona tu suscripción, método de pago y descarga facturas en Stripe"
+                    >
+                        {openingPortal ? <Loader2 className="animate-spin" size={20} /> : <CreditCard size={20} />}
+                        {openingPortal ? "Abriendo..." : "Gestionar mi suscripción"}
+                    </button>
+                    <button
+                        type="submit"
                         disabled={loading}
-                        className="bg-[#905361] text-white px-8 py-3 rounded-xl hover:bg-[#5E2B35] font-bold transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                        className="bg-[#905361] text-white px-8 py-3 rounded-xl hover:bg-[#5E2B35] font-bold transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                         {loading ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
                         {loading ? "Guardando..." : "Guardar Cambios"}
