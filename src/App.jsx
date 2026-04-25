@@ -36,6 +36,7 @@ import AffiliatesCRM from './pages/admin/AffiliatesCRM';
 import AffiliateDetail from './pages/admin/AffiliateDetail';
 import CommissionsPage from './pages/admin/CommissionsPage';
 import PartnerApplicationsPage from './pages/admin/PartnerApplicationsPage';
+import SubscriptionsPanel from './pages/admin/SubscriptionsPanel';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
@@ -88,6 +89,7 @@ function App() {
                     <Route path="/admin/afiliadas/:id" element={<AffiliateDetail />} />
                     <Route path="/admin/comisiones" element={<CommissionsPage />} />
                     <Route path="/admin/solicitudes-partner" element={<PartnerApplicationsPage />} />
+                    <Route path="/admin/suscripciones" element={<SubscriptionsPanel />} />
                 </Route>
               </Route>
 
