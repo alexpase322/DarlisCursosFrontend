@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"; 
 // AÑADIDO: Importamos icono X para cerrar en móvil
-import { LayoutDashboard, MessageCircle, BookOpen, User, Users, ShieldCheck, X } from "lucide-react";
+import { LayoutDashboard, MessageCircle, BookOpen, User, Users, ShieldCheck, X, Sparkles, Heart } from "lucide-react";
 
 // AÑADIDO: Recibimos isOpen y closeSidebar
 const Sidebar = ({ isOpen, closeSidebar }) => {
@@ -14,6 +14,13 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
     { name: "Chat", path: "/chat", icon: <MessageCircle size={20} /> },
     { name: "Mi Perfil", path: "/perfil", icon: <User size={20} /> },
   ];
+
+  const partnerLevel = user?.partnerLevel || 1;
+  if (user?.role === "admin" || partnerLevel >= 2) {
+    menuItems.push({ name: "Panel Afiliada", path: "/afiliada", icon: <Sparkles size={20} /> });
+  } else if (partnerLevel === 1) {
+    menuItems.push({ name: "Quiero ser Partner", path: "/afiliada/aplicar", icon: <Heart size={20} /> });
+  }
 
   if (user?.role === "admin") {
     menuItems.unshift({ name: "Panel Admin", path: "/admin", icon: <ShieldCheck size={20} /> });

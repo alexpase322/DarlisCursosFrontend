@@ -29,6 +29,13 @@ import PilaresContenido from './pages/PilaresContenido';
 import MemoriaEmocional from './pages/MemoriaEmocional';
 import AmazonResenas from './pages/AmazonResenas';
 import AmazonInfluencerGuide from './pages/AmazonInfluencerGuide';
+import AffiliateDashboard from './pages/affiliate/AffiliateDashboard';
+import PartnerApply from './pages/affiliate/PartnerApply';
+import PartnerRoute from './components/PartnerRoute';
+import AffiliatesCRM from './pages/admin/AffiliatesCRM';
+import AffiliateDetail from './pages/admin/AffiliateDetail';
+import CommissionsPage from './pages/admin/CommissionsPage';
+import PartnerApplicationsPage from './pages/admin/PartnerApplicationsPage';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
@@ -62,7 +69,13 @@ function App() {
                  <Route path="/muro" element={<WallPage />} />
                  <Route path="/chat" element={<ChatPage />} />
                  <Route path="/course/:id" element={<CourseViewer />} />
-                 
+
+                 {/* Rutas de afiliada */}
+                 <Route path="/afiliada/aplicar" element={<PartnerApply />} />
+                 <Route element={<PartnerRoute />}>
+                    <Route path="/afiliada" element={<AffiliateDashboard />} />
+                 </Route>
+
                  {/* Rutas Admin anidadas */}
                  <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
                     <Route path="/admin" element={<AdminDashboard />} />
@@ -71,6 +84,10 @@ function App() {
                     <Route path="/admin/course/:id" element={<CourseManager />} />
                     <Route path="/admin/invite" element={<InviteUser />} />
                     <Route path="/admin/users" element={<AdminUsersPage />} />
+                    <Route path="/admin/afiliadas" element={<AffiliatesCRM />} />
+                    <Route path="/admin/afiliadas/:id" element={<AffiliateDetail />} />
+                    <Route path="/admin/comisiones" element={<CommissionsPage />} />
+                    <Route path="/admin/solicitudes-partner" element={<PartnerApplicationsPage />} />
                 </Route>
               </Route>
 

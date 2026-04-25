@@ -3,7 +3,7 @@ import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 // Importamos los iconos de Lucide
-import { Users, Mail, Plus, Trash2, Settings, X } from "lucide-react";
+import { Users, Mail, Plus, Trash2, Settings, X, Sparkles, ClipboardList, DollarSign, RefreshCw } from "lucide-react";
 
 function AdminDashboard() {
   const [courses, setCourses] = useState([]);
@@ -13,6 +13,29 @@ function AdminDashboard() {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [sendingInvite, setSendingInvite] = useState(false);
+
+  // Sincronización de pagos de Stripe
+  const [syncing, setSyncing] = useState(false);
+
+  const handleSyncStripe = async () => {
+    if (syncing) return;
+    if (!window.confirm("Esto consultará Stripe e importará los pagos y trials de los usuarios registrados. ¿Continuar?")) return;
+    setSyncing(true);
+    const tId = toast.loading("Sincronizando con Stripe...");
+    try {
+      const res = await axios.post("/admin/stripe/sync-payments", {});
+      const c = res.data?.counters || {};
+      toast.success(
+        `Sync OK · nuevos: ${c.inserted ?? 0} · trials: ${c.trialsRecorded ?? 0} · existentes: ${c.alreadyExisted ?? 0}`,
+        { id: tId, duration: 6000 }
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Error al sincronizar Stripe", { id: tId });
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   // Cargar cursos
   useEffect(() => {
@@ -92,7 +115,7 @@ function AdminDashboard() {
           </Link>
 
           {/* Botón Invitar */}
-          <button 
+          <button
             onClick={() => setShowInviteModal(true)}
             className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-[#1B3854] rounded-xl hover:bg-[#FDE5E5] hover:border-[#FDE5E5] transition-all font-medium shadow-sm whitespace-nowrap"
           >
@@ -100,15 +123,51 @@ function AdminDashboard() {
             <span className="inline">Invitar</span>
           </button>
 
+          {/* Botón Sincronizar Stripe */}
+          <button
+            onClick={handleSyncStripe}
+            disabled={syncing}
+            title="Importa pagos y trials de Stripe para los usuarios ya registrados"
+            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-[#1B3854] rounded-xl hover:bg-[#FDE5E5] hover:border-[#FDE5E5] transition-all font-medium shadow-sm whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            <RefreshCw size={18} className={syncing ? "animate-spin" : ""} />
+            <span className="inline">{syncing ? "Sincronizando..." : "Actualizar suscripciones"}</span>
+          </button>
+
           {/* Botón Crear Curso (Destacado) */}
-          <Link 
-            to="/admin/create-course" 
+          <Link
+            to="/admin/create-course"
             className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-[#905361] text-white rounded-xl hover:bg-[#5E2B35] transition-all font-bold shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
           >
             <Plus size={20} />
             Crear Curso
           </Link>
         </div>
+      </div>
+
+      {/* CRM Afiliadas — accesos rápidos */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <Link to="/admin/afiliadas" className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-[#905361]/10 text-[#905361]"><Sparkles size={22} /></div>
+          <div>
+            <p className="font-bold text-[#1B3854]">Afiliadas</p>
+            <p className="text-xs text-gray-500">Ver listado y detalle</p>
+          </div>
+        </Link>
+        <Link to="/admin/solicitudes-partner" className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-amber-100 text-amber-600"><ClipboardList size={22} /></div>
+          <div>
+            <p className="font-bold text-[#1B3854]">Solicitudes Partner</p>
+            <p className="text-xs text-gray-500">Aprobar / rechazar N1→N2</p>
+          </div>
+        </Link>
+        <Link to="/admin/comisiones" className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-green-100 text-green-600"><DollarSign size={22} /></div>
+          <div>
+            <p className="font-bold text-[#1B3854]">Comisiones</p>
+            <p className="text-xs text-gray-500">Marcar pagadas (single / lote)</p>
+          </div>
+        </Link>
       </div>
 
       {/* SECCIÓN: Cursos */}

@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import axios from '../api/axios'; 
+import { useState, useEffect } from 'react';
+import axios from '../api/axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast'; 
-// Iconos modernos
-import { Camera, User, Lock, CheckCircle, Loader2, Upload } from "lucide-react";
+import { toast } from 'react-hot-toast';
+import { Camera, User, Lock, CheckCircle, Loader2, Heart } from "lucide-react";
 
 const SetupAccount = () => {
   const { token } = useParams();
@@ -12,11 +11,29 @@ const SetupAccount = () => {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
+    referredBy: '',
   });
 
-  const [file, setFile] = useState(null); 
+  const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [affiliates, setAffiliates] = useState([]);
+  const [loadingAffiliates, setLoadingAffiliates] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    axios.get('/auth/affiliates-public')
+      .then(({ data }) => {
+        if (mounted) setAffiliates(data || []);
+      })
+      .catch((err) => {
+        console.error('No se pudo cargar afiliadas', err);
+      })
+      .finally(() => {
+        if (mounted) setLoadingAffiliates(false);
+      });
+    return () => { mounted = false; };
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -37,23 +54,22 @@ const SetupAccount = () => {
 
     try {
       const data = new FormData();
-      data.append('username', formData.username); 
+      data.append('username', formData.username);
       data.append('password', formData.password);
-      
+      if (formData.referredBy) {
+        data.append('referredBy', formData.referredBy);
+      }
       if (file) {
-        data.append('image', file); 
+        data.append('image', file);
       }
 
       await axios.post(`/auth/complete-profile/${token}`, data, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       toast.dismiss(loadingToast);
       toast.success("¡Bienvenida al equipo!");
-      
-      navigate('/login'); 
+      navigate('/login');
 
     } catch (error) {
       console.error(error);
@@ -67,21 +83,19 @@ const SetupAccount = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F7F2EF] p-4 relative overflow-hidden">
-      
-      {/* Decoración de fondo */}
+
       <div className="absolute top-0 right-0 w-96 h-96 bg-[#905361] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#1B3854] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
 
       <div className="bg-white p-8 md:p-10 rounded-3xl shadow-2xl w-full max-w-md relative z-10 border border-white/50 backdrop-blur-sm">
-        
+
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-[#1B3854]">¡Hola! 👋</h2>
           <p className="text-gray-500 mt-2">Termina de configurar tu perfil para empezar.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          
-          {/* Carga de Avatar Estilizada */}
+
           <div className="flex flex-col items-center group">
             <div className="relative w-32 h-32">
               <div className={`w-full h-full rounded-full overflow-hidden border-4 shadow-md flex items-center justify-center transition-colors ${preview ? 'border-[#905361]' : 'border-white bg-gray-100'}`}>
@@ -91,13 +105,13 @@ const SetupAccount = () => {
                   <User className="w-16 h-16 text-gray-300" />
                 )}
               </div>
-              
+
               <label className="absolute bottom-0 right-0 bg-[#1B3854] p-2.5 rounded-full text-white cursor-pointer hover:bg-[#905361] shadow-lg transition-all transform hover:scale-110 border-2 border-white">
                 <Camera size={18} />
-                <input 
-                  type="file" 
-                  className="hidden" 
-                  accept="image/*" 
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
                   onChange={handleFileChange}
                 />
               </label>
@@ -105,7 +119,6 @@ const SetupAccount = () => {
             <span className="text-xs font-bold text-gray-400 mt-3 uppercase tracking-wide">Foto de Perfil</span>
           </div>
 
-          {/* Inputs con Iconos */}
           <div className="space-y-4">
             <div>
                 <label className="block text-sm font-bold text-[#1B3854] mb-1 ml-1">Nombre Completo</label>
@@ -137,6 +150,30 @@ const SetupAccount = () => {
                         onChange={handleChange}
                     />
                 </div>
+            </div>
+
+            <div>
+                <label className="block text-sm font-bold text-[#1B3854] mb-1 ml-1">¿Qué alumna te invitó? <span className="font-normal text-gray-400">(opcional)</span></label>
+                <div className="relative">
+                    <Heart className="absolute left-3 top-3.5 text-gray-400" size={18} />
+                    <select
+                        name="referredBy"
+                        className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#905361]/50 focus:border-[#905361] transition-all appearance-none"
+                        value={formData.referredBy}
+                        onChange={handleChange}
+                        disabled={loadingAffiliates}
+                    >
+                        <option value="">— Ninguna / no recuerdo —</option>
+                        {affiliates.map((a) => (
+                            <option key={a._id} value={a._id}>
+                                {a.username}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                {loadingAffiliates && (
+                    <p className="text-xs text-gray-400 mt-1 ml-1">Cargando lista de afiliadas…</p>
+                )}
             </div>
           </div>
 

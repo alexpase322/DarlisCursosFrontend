@@ -119,8 +119,9 @@ const HomePage = () => {
 
   // --- CONFIGURACIÓN DE STRIPE ---
   const PLAN_IDS = {
-    MONTHLY: "price_1SnZK0DP5qCZDXVtTwJzTKDX", 
-    QUARTERLY: "price_1SnZKwDP5qCZDXVtEhJsyc46"
+    MONTHLY: "price_1SnZK0DP5qCZDXVtTwJzTKDX",
+    QUARTERLY: "price_1SnZKwDP5qCZDXVtEhJsyc46",
+    YEARLY: "price_1TPrzlDP5qCZDXVtc0N9bgOF"
   };
 
   const handleSubscribe = async (priceId) => {
@@ -520,15 +521,15 @@ const HomePage = () => {
 
       {/* --- PRECIOS --- */}
       <section id="planes" className="py-32 bg-[#F7F2EF]">
-        <div className="max-w-4xl mx-auto px-6">
+        <div className="max-w-6xl mx-auto px-6">
             <div className="text-center mb-20">
                 <h2 className="text-4xl font-bold text-[#1B3854] mb-4">Invierte en tu Futuro</h2>
                 <p className="text-gray-500 text-lg">Elige el plan que mejor se adapte a tu ritmo.</p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
                 {/* PLAN MENSUAL */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
                     className="p-10 bg-white rounded-[2rem] border border-gray-100 shadow-xl hover:shadow-2xl transition-all flex flex-col h-full"
                 >
@@ -545,11 +546,10 @@ const HomePage = () => {
                 </motion.div>
 
                 {/* PLAN TRIMESTRAL */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                    className="relative p-10 bg-white rounded-[2rem] border-2 border-[#905361] shadow-2xl scale-105 z-10 flex flex-col h-full"
+                    className="p-10 bg-white rounded-[2rem] border border-gray-100 shadow-xl hover:shadow-2xl transition-all flex flex-col h-full"
                 >
-                    <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-[#905361] text-white px-6 py-2 rounded-full text-sm font-bold tracking-widest uppercase shadow-md">Más Popular</div>
                     <h3 className="text-2xl font-bold text-[#1B3854] mb-2">Trimestral</h3>
                     <div className="mb-6"><span className="text-5xl font-bold text-[#1B3854]">$120</span><span className="text-gray-400 text-sm">/trimestre</span></div>
                     <ul className="space-y-4 mb-8 flex-1">
@@ -557,11 +557,121 @@ const HomePage = () => {
                             <li key={i} className="flex gap-3 text-sm text-gray-600"><Check size={18} className="text-green-500 shrink-0"/> {f}</li>
                         ))}
                     </ul>
-                    <button onClick={() => handleSubscribe(PLAN_IDS.QUARTERLY)} disabled={loading} className="w-full py-4 rounded-xl font-bold bg-[#1B3854] text-white hover:bg-[#2a4d6e] shadow-lg transition-all text-lg">
+                    <button onClick={() => handleSubscribe(PLAN_IDS.QUARTERLY)} disabled={loading} className="w-full py-4 rounded-xl font-bold bg-[#FDE5E5] text-[#905361] hover:bg-[#905361] hover:text-white transition-all text-lg">
                         {loading ? <Loader2 className="animate-spin mx-auto"/> : "Elegir Trimestral"}
                     </button>
                 </motion.div>
+
+                {/* PLAN ANUAL — Más Popular */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                    className="relative p-10 bg-white rounded-[2rem] border-2 border-[#905361] shadow-2xl lg:scale-105 z-10 flex flex-col h-full"
+                >
+                    <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-[#905361] text-white px-6 py-2 rounded-full text-sm font-bold tracking-widest uppercase shadow-md">Más Popular</div>
+                    <h3 className="text-2xl font-bold text-[#1B3854] mb-2">Anual</h3>
+                    <div className="mb-2"><span className="text-5xl font-bold text-[#1B3854]">$397</span><span className="text-gray-400 text-sm">/año</span></div>
+                    <p className="text-xs text-[#905361] font-bold mb-6">Ahorras $203 USD frente al mensual</p>
+                    <ul className="space-y-4 mb-8 flex-1">
+                        {[
+                          "Todo lo del plan trimestral",
+                          "Acceso completo todo el año",
+                          "Bonus exclusivos anuales",
+                          "Mejor comisión para tu referidora (50%)"
+                        ].map((f, i) => (
+                            <li key={i} className="flex gap-3 text-sm text-gray-600"><Check size={18} className="text-green-500 shrink-0"/> {f}</li>
+                        ))}
+                    </ul>
+                    <button onClick={() => handleSubscribe(PLAN_IDS.YEARLY)} disabled={loading} className="w-full py-4 rounded-xl font-bold bg-[#1B3854] text-white hover:bg-[#2a4d6e] shadow-lg transition-all text-lg">
+                        {loading ? <Loader2 className="animate-spin mx-auto"/> : "Elegir Anual"}
+                    </button>
+                </motion.div>
             </div>
+        </div>
+      </section>
+
+      {/* --- AFILIADAS --- */}
+      <section id="afiliadas" className="py-32 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <span className="text-[#905361] font-bold tracking-widest uppercase text-sm">Plan de Afiliadas</span>
+            <h2 className="text-4xl font-bold text-[#1B3854] mt-2 mb-4">Recomienda y gana ingresos recurrentes</h2>
+            <p className="text-gray-500 text-lg max-w-2xl mx-auto">
+              Cada alumna que recomiendes y se inscriba a la membresía te genera comisión cada vez que pague — mes tras mes, mientras siga activa.
+            </p>
+          </div>
+
+          {/* Tarifas de comisión */}
+          <div className="grid md:grid-cols-3 gap-6 mb-16">
+            {[
+              { plan: "Mensual", price: "$50", pct: "40%", win: "$20 cada mes" },
+              { plan: "Trimestral", price: "$120", pct: "40%", win: "$48 cada trimestre" },
+              { plan: "Anual", price: "$397", pct: "50%", win: "$198.50 cada año" }
+            ].map((c, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
+                className="p-8 bg-[#F7F2EF] rounded-3xl border border-gray-100 text-center"
+              >
+                <p className="text-sm uppercase tracking-widest text-gray-500 font-bold">{c.plan}</p>
+                <p className="text-3xl font-bold text-[#1B3854] mt-2">{c.price}</p>
+                <p className="text-[#905361] text-sm mt-1">→ comisión {c.pct}</p>
+                <p className="mt-4 text-2xl font-bold text-[#1B3854]">{c.win}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Frase destacada */}
+          <div className="bg-[#1B3854] text-white rounded-[2rem] p-10 md:p-14 mb-16 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-[#905361] rounded-full mix-blend-screen filter blur-3xl opacity-20"></div>
+            <div className="relative z-10">
+              <Sparkles className="text-[#FDE5E5] mb-4" size={32} />
+              <h3 className="text-2xl md:text-3xl font-bold mb-3">Lo que hace especial esta comisión</h3>
+              <p className="text-gray-300 text-lg leading-relaxed max-w-3xl">
+                Tú refieres una vez y sigues ganando. Mientras la alumna que invitaste mantenga su membresía activa,
+                cada cobro que ella haga genera ingresos recurrentes para ti. No es un pago único — es un flujo.
+              </p>
+            </div>
+          </div>
+
+          {/* 4 niveles */}
+          <h3 className="text-2xl font-bold text-[#1B3854] text-center mb-2">Niveles de Partner</h3>
+          <p className="text-gray-500 text-center mb-10">Avanza dentro de la academia y desbloquea más beneficios.</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+            {[
+              { name: "Alumna", color: "#94a3b8", blurb: "En formación, aún sin vender." },
+              { name: "Partner activada", color: "#905361", blurb: "Recibe link, kit y comisión." },
+              { name: "Seller autorizada", color: "#1B3854", blurb: "Capacitación comercial + CRM." },
+              { name: "Closer interna", color: "#D4AF37", blurb: "High-ticket. Solo por invitación." }
+            ].map((lv, i) => (
+              <div key={i} className="p-6 bg-[#F7F2EF] rounded-2xl border border-gray-100">
+                <span className="inline-block px-3 py-1 rounded-full text-white text-xs font-bold mb-3" style={{ backgroundColor: lv.color }}>
+                  Nivel {i + 1}
+                </span>
+                <p className="font-bold text-[#1B3854] mb-1">{lv.name}</p>
+                <p className="text-xs text-gray-500">{lv.blurb}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <div className="text-center">
+            {user ? (
+              <Link
+                to="/afiliada/aplicar"
+                className="inline-block bg-[#905361] text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-[#5E2B35] shadow-lg transition-all"
+              >
+                Solicitar pasar a Partner
+              </Link>
+            ) : (
+              <a
+                href="#planes"
+                className="inline-block bg-[#905361] text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-[#5E2B35] shadow-lg transition-all"
+              >
+                Suscríbete primero para ser Partner
+              </a>
+            )}
+            <p className="text-xs text-gray-400 mt-3">Necesitas tener tu suscripción al día para aplicar.</p>
+          </div>
         </div>
       </section>
 
