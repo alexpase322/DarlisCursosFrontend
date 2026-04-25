@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "../../api/axios";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Search, RefreshCw, Loader2, CreditCard } from "lucide-react";
+import { ArrowLeft, Search, RefreshCw, Loader2, CreditCard, Plus, X } from "lucide-react";
 
 const STATUS_STYLES = {
   active:    { label: "Activa",    cls: "bg-green-100 text-green-700" },
@@ -31,6 +31,7 @@ const SubscriptionsPanel = () => {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("");
   const [plan, setPlan] = useState("");
+  const [manualFor, setManualFor] = useState(null);
   const limit = 25;
 
   const fetchData = async () => {
@@ -148,12 +149,14 @@ const SubscriptionsPanel = () => {
                   <th className="text-left px-4 py-3">Último pago</th>
                   <th className="text-right px-4 py-3">Total pagado</th>
                   <th className="text-right px-4 py-3">#</th>
+                  <th className="text-right px-4 py-3">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {items.map((u) => {
                   const sub = u.subscription;
                   const subStatus = sub?.status || "none";
+                  const noSub = !sub || subStatus === "none" || subStatus === "canceled";
                   return (
                     <tr key={u._id} className="border-b last:border-b-0 hover:bg-gray-50/50">
                       <td className="px-4 py-3">
@@ -178,6 +181,19 @@ const SubscriptionsPanel = () => {
                       </td>
                       <td className="px-4 py-3 text-right font-bold text-[#1B3854]">{fmtUSD(u.totalPaidUSD)}</td>
                       <td className="px-4 py-3 text-right text-gray-500">{u.paymentsCount}</td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          onClick={() => setManualFor(u)}
+                          className={`text-xs font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1 ml-auto ${
+                            noSub
+                              ? "bg-[#905361] text-white hover:bg-[#5E2B35]"
+                              : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                          }`}
+                          title="Registrar pago manual (transferencia, beacons, etc.)"
+                        >
+                          <Plus size={12} /> Pago manual
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}
@@ -205,6 +221,149 @@ const SubscriptionsPanel = () => {
           </div>
         )}
       </div>
+
+      {manualFor && (
+        <ManualPaymentModal
+          user={manualFor}
+          onClose={() => setManualFor(null)}
+          onSaved={() => { setManualFor(null); fetchData(); }}
+        />
+      )}
+    </div>
+  );
+};
+
+const PLAN_DEFAULTS = { monthly: 50, quarterly: 120, yearly: 397 };
+
+const ManualPaymentModal = ({ user, onClose, onSaved }) => {
+  const today = new Date().toISOString().slice(0, 10);
+  const [plan, setPlan] = useState(user.lastPayment?.plan || "monthly");
+  const [amountUSD, setAmountUSD] = useState(PLAN_DEFAULTS[user.lastPayment?.plan || "monthly"]);
+  const [paidAt, setPaidAt] = useState(today);
+  const [method, setMethod] = useState("transfer");
+  const [note, setNote] = useState("");
+  const [updateSubscription, setUpdateSubscription] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  const onPlanChange = (p) => {
+    setPlan(p);
+    setAmountUSD(PLAN_DEFAULTS[p]);
+  };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (saving) return;
+    setSaving(true);
+    const tId = toast.loading("Registrando pago...");
+    try {
+      await axios.post(`/admin/subscriptions/${user._id}/manual-payment`, {
+        plan, amountUSD: Number(amountUSD), paidAt, method, note, updateSubscription
+      });
+      toast.success("Pago registrado", { id: tId });
+      onSaved();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Error al registrar pago", { id: tId });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={onClose}>
+      <form
+        onClick={(e) => e.stopPropagation()}
+        onSubmit={submit}
+        className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6"
+      >
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h2 className="text-lg font-bold text-[#1B3854]">Registrar pago manual</h2>
+            <p className="text-xs text-gray-500">{user.username} · {user.email}</p>
+          </div>
+          <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-700">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="space-y-3 text-sm">
+          <div>
+            <label className="block text-xs font-bold text-gray-600 mb-1">Plan</label>
+            <select
+              value={plan}
+              onChange={(e) => onPlanChange(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg"
+            >
+              <option value="monthly">Mensual</option>
+              <option value="quarterly">Trimestral</option>
+              <option value="yearly">Anual</option>
+            </select>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold text-gray-600 mb-1">Monto USD</label>
+              <input
+                type="number" step="0.01" min="0"
+                value={amountUSD}
+                onChange={(e) => setAmountUSD(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-600 mb-1">Fecha de pago</label>
+              <input
+                type="date"
+                value={paidAt}
+                onChange={(e) => setPaidAt(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg"
+                required
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-gray-600 mb-1">Método</label>
+            <select
+              value={method}
+              onChange={(e) => setMethod(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg"
+            >
+              <option value="transfer">Transferencia</option>
+              <option value="beacons">Beacons</option>
+              <option value="cash">Efectivo</option>
+              <option value="other">Otro</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-gray-600 mb-1">Nota (opcional)</label>
+            <input
+              type="text"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Referencia, comprobante, etc."
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg"
+            />
+          </div>
+          <label className="flex items-center gap-2 text-xs text-gray-600">
+            <input
+              type="checkbox"
+              checked={updateSubscription}
+              onChange={(e) => setUpdateSubscription(e.target.checked)}
+            />
+            Activar suscripción del usuario hasta el próximo cobro
+          </label>
+        </div>
+
+        <div className="flex gap-2 mt-6">
+          <button
+            type="button" onClick={onClose}
+            className="flex-1 px-4 py-2 border border-gray-200 rounded-lg text-sm font-bold text-gray-600"
+          >Cancelar</button>
+          <button
+            type="submit" disabled={saving}
+            className="flex-1 px-4 py-2 bg-[#905361] text-white rounded-lg text-sm font-bold disabled:opacity-60"
+          >{saving ? "Guardando..." : "Registrar pago"}</button>
+        </div>
+      </form>
     </div>
   );
 };
