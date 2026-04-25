@@ -3,7 +3,7 @@ import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 // Importamos los iconos de Lucide
-import { Users, Mail, Plus, Trash2, Settings, X, Sparkles, ClipboardList, DollarSign, RefreshCw, CreditCard } from "lucide-react";
+import { Users, Mail, Plus, Trash2, Settings, X, Sparkles, ClipboardList, DollarSign, RefreshCw, CreditCard, TrendingUp } from "lucide-react";
 
 function AdminDashboard() {
   const [courses, setCourses] = useState([]);
@@ -146,7 +146,7 @@ function AdminDashboard() {
       </div>
 
       {/* CRM Afiliadas — accesos rápidos */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         <Link to="/admin/afiliadas" className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition flex items-center gap-3">
           <div className="p-3 rounded-xl bg-[#905361]/10 text-[#905361]"><Sparkles size={22} /></div>
           <div>
@@ -173,6 +173,13 @@ function AdminDashboard() {
           <div>
             <p className="font-bold text-[#1B3854]">Suscripciones</p>
             <p className="text-xs text-gray-500">Estado de cada alumna</p>
+          </div>
+        </Link>
+        <Link to="/admin/ingresos" className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-emerald-100 text-emerald-600"><TrendingUp size={22} /></div>
+          <div>
+            <p className="font-bold text-[#1B3854]">Ingresos</p>
+            <p className="text-xs text-gray-500">Bruto / neto por mes</p>
           </div>
         </Link>
       </div>
