@@ -27,16 +27,26 @@ const InstallPwaButton = ({ className = "" }) => {
   };
 
   const handleClick = async () => {
+    const mode = detectMode();
     if (canInstall) {
-      const outcome = await promptInstall();
-      if (outcome === "dismissed") {
-        // Usuario lo cerró, no hacemos nada.
+      // En desktop, mostramos antes la guía con el tip del checkbox de
+      // "Crear acceso directo en escritorio" — Chrome lo trae oculto en
+      // un menú desplegable durante la instalación y la mayoría no lo ve.
+      if (mode === "desktop") {
+        setHelpMode("desktop-prompt");
+        setShowHelp(true);
+        return;
       }
+      await promptInstall();
       return;
     }
-    // Sin prompt nativo: abrimos guía manual.
-    setHelpMode(detectMode());
+    setHelpMode(mode);
     setShowHelp(true);
+  };
+
+  const triggerInstall = async () => {
+    setShowHelp(false);
+    if (canInstall) await promptInstall();
   };
 
   return (
@@ -72,6 +82,7 @@ const InstallPwaButton = ({ className = "" }) => {
                 {helpMode === "ios" && "Instala en tu iPhone"}
                 {helpMode === "android" && "Instala en tu Android"}
                 {helpMode === "desktop" && "Instala en tu computadora"}
+                {helpMode === "desktop-prompt" && "Antes de instalar"}
               </h3>
             </div>
 
@@ -131,11 +142,32 @@ const InstallPwaButton = ({ className = "" }) => {
               </ol>
             )}
 
+            {helpMode === "desktop-prompt" && (
+              <>
+                <p className="text-sm text-gray-700 mb-3">
+                  Cuando se abra el cuadro de Chrome para instalar, asegúrate de marcar:
+                </p>
+                <ul className="space-y-2 text-sm text-gray-700 mb-4">
+                  <li className="flex items-start gap-2 bg-[#FDE5E5]/60 rounded-lg p-3">
+                    <span className="text-[#905361] font-bold">☑</span>
+                    <span><strong>Crear acceso directo en el escritorio</strong></span>
+                  </li>
+                  <li className="flex items-start gap-2 bg-[#FDE5E5]/60 rounded-lg p-3">
+                    <span className="text-[#905361] font-bold">☑</span>
+                    <span><strong>Anclar a la barra de tareas</strong> (opcional)</span>
+                  </li>
+                </ul>
+                <p className="text-xs text-gray-500 mb-4">
+                  Si no ves los checkboxes, despliega la flecha pequeña que aparece en el cuadro de instalación.
+                </p>
+              </>
+            )}
+
             <button
-              onClick={() => setShowHelp(false)}
-              className="mt-5 w-full py-2.5 bg-[#905361] text-white font-bold rounded-xl hover:bg-[#5E2B35] transition"
+              onClick={helpMode === "desktop-prompt" ? triggerInstall : () => setShowHelp(false)}
+              className="mt-2 w-full py-2.5 bg-[#905361] text-white font-bold rounded-xl hover:bg-[#5E2B35] transition"
             >
-              Entendido
+              {helpMode === "desktop-prompt" ? "Continuar e instalar" : "Entendido"}
             </button>
           </div>
         </div>

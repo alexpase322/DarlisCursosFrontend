@@ -65,11 +65,29 @@ async function ensureOut() {
 }
 
 async function generateAny(source, size, filename) {
-    // "any": el icono completo, sin padding extra. Padding mínimo si la fuente
-    // es más chica que el tamaño objetivo.
-    await sharp(source)
-        .resize(size, size, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
+    // "any": el icono centrado en cuadrado sobre el fondo de la marca cremoso
+    // (Windows/macOS no aceptan bien transparencias para iconos del escritorio).
+    // Lanczos3 + sharpen suave para que se vea nítido aún subiendo de 256 a 512.
+    const inner = Math.round(size * 0.86);
+    const offset = Math.round((size - inner) / 2);
+    const inset = await sharp(source)
+        .resize(inner, inner, {
+            fit: 'contain',
+            background: { r: 0, g: 0, b: 0, alpha: 0 },
+            kernel: sharp.kernel.lanczos3
+        })
+        .sharpen({ sigma: 0.6 })
         .png()
+        .toBuffer();
+
+    await sharp({
+        create: {
+            width: size, height: size, channels: 4,
+            background: { ...BG_LIGHT, alpha: 1 }
+        }
+    })
+        .composite([{ input: inset, top: offset, left: offset }])
+        .png({ compressionLevel: 9 })
         .toFile(path.join(OUT_DIR, filename));
     console.log(`  ✓ ${filename}`);
 }
@@ -80,7 +98,12 @@ async function generateMaskable(source, size, filename) {
     const inner = Math.round(size * 0.8);
     const offset = Math.round((size - inner) / 2);
     const inset = await sharp(source)
-        .resize(inner, inner, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+        .resize(inner, inner, {
+            fit: 'contain',
+            background: { r: 0, g: 0, b: 0, alpha: 0 },
+            kernel: sharp.kernel.lanczos3
+        })
+        .sharpen({ sigma: 0.6 })
         .png()
         .toBuffer();
 
