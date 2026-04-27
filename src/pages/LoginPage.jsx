@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 // Iconos modernos
 import { Mail, Lock, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
+import InstallPwaButton from "../components/InstallPwaButton";
 
 function LoginPage() {
   const { login, isAuthenticated, errors } = useAuth(); // Asumiendo que errors viene del context, si no, lo manejamos local
@@ -124,15 +125,23 @@ function LoginPage() {
         <div className="mt-8 text-center">
             <p className="text-sm text-gray-500">
                 ¿Aún no tienes cuenta?{' '}
-                <a 
-                    href="https://wa.me/573177644289?text=Hola,%20me%20gustaría%20solicitar%20acceso%20a%20la%20plataforma." 
-                    target="_blank" 
+                <a
+                    href="https://wa.me/573177644289?text=Hola,%20me%20gustaría%20solicitar%20acceso%20a%20la%20plataforma."
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-[#905361] font-bold cursor-pointer hover:underline"
                 >
                     Contacta al administrador
                 </a>
             </p>
+        </div>
+
+        {/* Instalar como app */}
+        <div className="mt-6">
+          <InstallPwaButton />
+          <p className="text-[11px] text-gray-400 text-center mt-2">
+            Disponible para móvil y tablet · Funciona sin estar logueada
+          </p>
         </div>
 
       </div>
