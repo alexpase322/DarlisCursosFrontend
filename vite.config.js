@@ -57,6 +57,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff2}'],
+        // Permite precachear assets de hasta 12 MiB (las fotos hero pesan ~9 MB).
+        maximumFileSizeToCacheInBytes: 12 * 1024 * 1024,
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api/, /^\/auth/, /^\/payment/, /^\/admin/, /^\/affiliate/],
         runtimeCaching: [
