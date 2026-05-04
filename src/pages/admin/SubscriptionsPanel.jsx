@@ -32,6 +32,7 @@ const SubscriptionsPanel = () => {
   const [status, setStatus] = useState("");
   const [plan, setPlan] = useState("");
   const [manualFor, setManualFor] = useState(null);
+  const [reconciling, setReconciling] = useState(false);
   const limit = 25;
 
   const fetchData = async () => {
@@ -80,6 +81,26 @@ const SubscriptionsPanel = () => {
     }
   };
 
+  const handleReconcile = async () => {
+    if (reconciling) return;
+    if (!window.confirm("Rellenar suscripciones faltantes desde Stripe (solo usuarios sin sub, ignora pagos manuales)?")) return;
+    setReconciling(true);
+    const tId = toast.loading("Reconciliando...");
+    try {
+      const { data } = await axios.post("/admin/subscriptions/backfill-from-payments", {});
+      const s = data?.stats || {};
+      toast.success(
+        `Listo · revisados: ${s.scanned ?? 0} · actualizados: ${s.updated ?? 0} · sin pago: ${s.noPayment ?? 0}`,
+        { id: tId, duration: 6000 }
+      );
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Error al reconciliar", { id: tId });
+    } finally {
+      setReconciling(false);
+    }
+  };
+
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
   return (
@@ -92,6 +113,15 @@ const SubscriptionsPanel = () => {
           <h1 className="text-2xl md:text-3xl font-bold text-[#1B3854]">Suscripciones de alumnas</h1>
           <p className="text-gray-500 text-sm">Estado de membresía y pagos por usuaria.</p>
         </div>
+        <button
+          onClick={handleReconcile}
+          disabled={reconciling}
+          title="Rellena la sub solo en alumnas que aparezcan sin sub pero tengan un pago de Stripe registrado. No toca pagos manuales."
+          className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-[#1B3854] rounded-xl hover:bg-[#FDE5E5] hover:border-[#FDE5E5] transition font-medium disabled:opacity-60"
+        >
+          <RefreshCw size={18} className={reconciling ? "animate-spin" : ""} />
+          {reconciling ? "Reconciliando..." : "Reconciliar faltantes"}
+        </button>
         <button
           onClick={handleSync}
           disabled={syncing}
