@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from '../../api/axios';
-import { Loader2 } from 'lucide-react';
+import { Loader2, RefreshCw } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 const fmtUSD = (n) => `$${Number(n || 0).toFixed(2)}`;
@@ -17,6 +17,26 @@ const CommissionsPage = () => {
   const [selected, setSelected] = useState(new Set());
   const [bulkLoading, setBulkLoading] = useState(false);
   const [note, setNote] = useState('');
+  const [recalcing, setRecalcing] = useState(false);
+
+  const handleRecalculate = async () => {
+    if (recalcing) return;
+    setRecalcing(true);
+    const tId = toast.loading('Recalculando comisiones...');
+    try {
+      const { data } = await axios.post('/admin/commissions/recalculate', {});
+      const s = data?.stats || {};
+      toast.success(
+        `Listo · creadas: ${s.totalCreated ?? 0} · saltadas: ${s.totalSkipped ?? 0} · usuarias: ${s.processedUsers ?? 0}`,
+        { id: tId, duration: 6000 }
+      );
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Error al recalcular', { id: tId });
+    } finally {
+      setRecalcing(false);
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -73,8 +93,21 @@ const CommissionsPage = () => {
 
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold text-[#1B3854] mb-1">Comisiones</h1>
-      <p className="text-gray-500 mb-6">Total registros: {total}</p>
+      <div className="flex items-start justify-between gap-3 mb-6 flex-wrap">
+        <div>
+          <h1 className="text-3xl font-bold text-[#1B3854] mb-1">Comisiones</h1>
+          <p className="text-gray-500">Total registros: {total}</p>
+        </div>
+        <button
+          onClick={handleRecalculate}
+          disabled={recalcing}
+          title="Recorre todas las referidas y crea comisiones faltantes desde sus pagos de Stripe. Idempotente: no duplica."
+          className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-[#1B3854] rounded-xl hover:bg-[#FDE5E5] hover:border-[#FDE5E5] transition font-medium disabled:opacity-60"
+        >
+          <RefreshCw size={18} className={recalcing ? 'animate-spin' : ''} />
+          {recalcing ? 'Recalculando...' : 'Recalcular comisiones'}
+        </button>
+      </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {['available', 'paid', 'pending', 'voided'].map(s => {
