@@ -13,7 +13,7 @@ cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST || []);
 
 // ---------- Runtime caching ----------
-const apiPrefixes = ['/auth', '/users', '/courses', '/posts', '/chat', '/notifications', '/payment', '/affiliate', '/admin', '/quizzes', '/leaderboard', '/push'];
+const apiPrefixes = ['/auth', '/users', '/courses', '/posts', '/chat', '/notifications', '/payment', '/affiliate', '/admin', '/quizzes', '/leaderboard', '/push', '/engagement'];
 const isApi = ({ url }) => apiPrefixes.some(p => url.pathname.startsWith(p));
 
 registerRoute(

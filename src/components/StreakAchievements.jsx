@@ -29,7 +29,16 @@ const StreakAchievements = () => {
     if (loading) return <div className="bg-white rounded-2xl p-6 border border-gray-100 h-40 animate-pulse" />;
     if (!data) return null;
 
-    const filtered = filter === 'all' ? data.achievements : data.achievements.filter(a => a.tier === filter);
+    // Defensivo: el endpoint puede venir en versión vieja (sin summary/topAchievement).
+    const achievements = Array.isArray(data.achievements) ? data.achievements : [];
+    const summary = data.summary || {
+        unlockedCount: achievements.filter(a => a.unlocked).length,
+        totalCount: achievements.length
+    };
+    const topAchievement = data.topAchievement || null;
+    const topAchievementTier = data.topAchievementTier || null;
+
+    const filtered = filter === 'all' ? achievements : achievements.filter(a => a.tier === filter);
     const unlockedFiltered = filtered.filter(a => a.unlocked);
     const lockedFiltered = filtered.filter(a => !a.unlocked);
 
@@ -40,25 +49,25 @@ const StreakAchievements = () => {
                 <AvatarFrame
                     src={user?.avatar}
                     alt={user?.username}
-                    tier={data.topAchievementTier}
+                    tier={topAchievementTier}
                     size="xl"
-                    showBadge
-                    icon={data.topAchievement?.icon}
+                    showBadge={!!topAchievementTier}
+                    icon={topAchievement?.icon}
                 />
                 <div className="flex-1">
                     <p className="text-3xl font-bold text-[#1B3854] flex items-center gap-2">
                         <Flame size={24} className="text-orange-500" /> {data.currentStreak} {data.currentStreak === 1 ? "día" : "días"}
                     </p>
                     <p className="text-xs text-gray-500">Racha actual · récord {data.longestStreak}</p>
-                    {data.topAchievement && (
+                    {topAchievement && (
                         <p className="text-xs mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FDE5E5] text-[#905361] font-bold">
-                            {data.topAchievement.icon} {data.topAchievement.title}
+                            {topAchievement.icon} {topAchievement.title}
                         </p>
                     )}
                 </div>
                 <div className="text-right">
                     <Trophy size={20} className="text-amber-500 inline" />
-                    <p className="text-sm font-bold text-[#1B3854]">{data.summary.unlockedCount}/{data.summary.totalCount}</p>
+                    <p className="text-sm font-bold text-[#1B3854]">{summary.unlockedCount}/{summary.totalCount}</p>
                     <p className="text-[10px] text-gray-400 uppercase tracking-wider">logros</p>
                 </div>
             </div>
