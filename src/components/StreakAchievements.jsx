@@ -77,6 +77,7 @@ const StreakAchievements = () => {
                 {['all', 'bronze', 'silver', 'gold', 'diamond'].map(t => (
                     <button
                         key={t}
+                        type="button"
                         onClick={() => setFilter(t)}
                         className={`text-xs font-bold px-3 py-1.5 rounded-full border transition ${
                             filter === t
