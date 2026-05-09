@@ -1,4 +1,33 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /afiliada/
+Disallow: /chat
+Disallow: /perfil
+Disallow: /muro
+Disallow: /dashboard
+Disallow: /payment/
+Disallow: /setup-account/
+
+# Buscadores específicos
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /afiliada/
+Disallow: /payment/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+
+# IA (control de scraping)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
 
 Sitemap: https://arquitectadetupropioexito.com/sitemap.xml

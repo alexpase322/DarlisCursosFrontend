@@ -1,27 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/0.9">
   <url>
     <loc>https://arquitectadetupropioexito.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://arquitectadetupropioexito.com/social-preview.svg</image:loc>
+      <image:title>Arquitecta de tu Propio Éxito — Cursos de negocio digital para mamás</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://arquitectadetupropioexito.com/agencia</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://arquitectadetupropioexito.com/metodo-adn</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://arquitectadetupropioexito.com/guia-ingreso</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://arquitectadetupropioexito.com/pilares-contenido</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://arquitectadetupropioexito.com/memoria-emocional</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://arquitectadetupropioexito.com/amazon-resenas</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://arquitectadetupropioexito.com/amazon-influencer</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://arquitectadetupropioexito.com/login</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
 </urlset>

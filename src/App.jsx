@@ -41,6 +41,7 @@ import RevenuePanel from './pages/admin/RevenuePanel';
 import QuizPage from './pages/student/QuizPage';
 import QuizEditor from './pages/admin/QuizEditor';
 import Leaderboard from './pages/affiliate/Leaderboard';
+import KpiDashboard from './pages/admin/KpiDashboard';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
@@ -98,6 +99,7 @@ function App() {
                     <Route path="/admin/solicitudes-partner" element={<PartnerApplicationsPage />} />
                     <Route path="/admin/suscripciones" element={<SubscriptionsPanel />} />
                     <Route path="/admin/ingresos" element={<RevenuePanel />} />
+                    <Route path="/admin/kpis" element={<KpiDashboard />} />
                 </Route>
               </Route>
 

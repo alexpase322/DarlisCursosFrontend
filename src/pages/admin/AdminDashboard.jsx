@@ -3,7 +3,7 @@ import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 // Importamos los iconos de Lucide
-import { Users, Mail, Plus, Trash2, Settings, X, Sparkles, ClipboardList, DollarSign, RefreshCw, CreditCard, TrendingUp } from "lucide-react";
+import { Users, Mail, Plus, Trash2, Settings, X, Sparkles, ClipboardList, DollarSign, RefreshCw, CreditCard, TrendingUp, BarChart3 } from "lucide-react";
 import PushNotificationsButton from "../../components/PushNotificationsButton";
 
 function AdminDashboard() {
@@ -148,6 +148,24 @@ function AdminDashboard() {
           </Link>
         </div>
       </div>
+
+      {/* KPIs destacado */}
+      <Link
+        to="/admin/kpis"
+        className="block mb-6 bg-gradient-to-r from-[#1B3854] to-[#0d1f30] text-white rounded-2xl p-5 hover:shadow-xl transition-all group"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-white/10 rounded-xl"><BarChart3 size={28} /></div>
+            <div>
+              <p className="text-xs text-white/70 uppercase tracking-wider font-bold">Vista ejecutiva</p>
+              <p className="font-bold text-lg">Dashboard de KPIs</p>
+              <p className="text-sm text-white/70">MRR, churn, ARPU, gráfica de pagos diarios y mucho más</p>
+            </div>
+          </div>
+          <span className="text-2xl group-hover:translate-x-1 transition">→</span>
+        </div>
+      </Link>
 
       {/* CRM Afiliadas — accesos rápidos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">

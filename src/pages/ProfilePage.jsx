@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 // Iconos modernos
 import { User, Camera, Save, FileText, Mail, Loader2, CreditCard } from "lucide-react";
 import PushNotificationsButton from "../components/PushNotificationsButton";
+import StreakAchievements from "../components/StreakAchievements";
 import PartnerBadge from "../components/PartnerBadge";
 
 function ProfilePage() {
@@ -181,6 +182,11 @@ function ProfilePage() {
                             placeholder="Comparte algo inspirador..."
                         ></textarea>
                     </div>
+                </div>
+
+                {/* Logros y racha */}
+                <div className="pt-4 border-t border-gray-100">
+                    <StreakAchievements />
                 </div>
 
                 {/* Notificaciones push */}

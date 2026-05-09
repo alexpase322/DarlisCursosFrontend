@@ -130,5 +130,67 @@ const Seo = ({
   return null;
 };
 
+// ---------- JSON-LD reutilizable ----------
+export const orgSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Arquitecta de tu Propio Éxito",
+  "url": SITE_URL,
+  "logo": `${SITE_URL}/icons/icon-512.png`,
+  "description": "Membresía y cursos de negocio digital para mamás. Estrategia, mentalidad y tecnología para crear ingresos sin descuidar a tu familia.",
+  "sameAs": [
+    "https://www.instagram.com/arquitectadetupropioexito",
+    "https://www.tiktok.com/@arquitectadetupropioexito"
+  ]
+};
+
+export const productSchema = ({ price, name = "Membresía Arquitecta", description = "Acceso a cursos, comunidad y mentoría." }) => ({
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": name,
+  "description": description,
+  "brand": { "@type": "Brand", "name": "Arquitecta de tu Propio Éxito" },
+  "offers": {
+    "@type": "Offer",
+    "price": String(price),
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "url": SITE_URL
+  }
+});
+
+export const courseSchema = ({ name, description }) => ({
+  "@context": "https://schema.org",
+  "@type": "Course",
+  "name": name,
+  "description": description,
+  "provider": {
+    "@type": "Organization",
+    "name": "Arquitecta de tu Propio Éxito",
+    "sameAs": SITE_URL
+  }
+});
+
+export const faqSchema = (faqs) => ({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.q,
+    "acceptedAnswer": { "@type": "Answer", "text": f.a }
+  }))
+});
+
+export const breadcrumbSchema = (items) => ({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": items.map((it, i) => ({
+    "@type": "ListItem",
+    "position": i + 1,
+    "name": it.name,
+    "item": new URL(it.path, SITE_URL).toString()
+  }))
+});
+
 export default Seo;
 export { SITE_URL };

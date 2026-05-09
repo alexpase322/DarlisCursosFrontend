@@ -13,8 +13,12 @@ import {
 import darlisImg from "../assets/DarlisFoto.png"
 import alexImg from "../assets/Alex foto.png"
 import equipoHeroImg from "../assets/FotoDarlisHero.jpeg"
-import Seo from "../components/Seo";
+import Seo, { faqSchema, productSchema } from "../components/Seo";
 import { seoConfigs } from "../seo";
+import FloatingCTA from "../components/FloatingCTA";
+import AnimatedCounter from "../components/AnimatedCounter";
+import MarqueeStats from "../components/MarqueeStats";
+import ScrollReveal from "../components/ScrollReveal";
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -186,6 +190,7 @@ const HomePage = () => {
   return (
     <>
       <Seo {...seoConfigs.home} />
+      <FloatingCTA />
     <div className="min-h-screen bg-[#F7F2EF] font-sans overflow-x-hidden">
       
       {/* --- NAVBAR --- */}
@@ -259,6 +264,45 @@ const HomePage = () => {
           </div>
         </motion.div>
       </header>
+
+      {/* MARQUEE de stats / mensajes que se desliza */}
+      <MarqueeStats items={[
+        { icon: "👩‍💻", text: "Comunidad activa de mamás emprendedoras" },
+        { icon: "🎓", text: "Cursos en vivo y biblioteca a tu ritmo" },
+        { icon: "💛", text: "Sin abandonar a tu familia" },
+        { icon: "📈", text: "Resultados reales y verificables" },
+        { icon: "🚀", text: "Mentorías mensuales con Darlis" },
+        { icon: "✨", text: "Comunidad privada de Arquitectas" }
+      ]} />
+
+      {/* Stats con counters animados */}
+      <section className="py-20 bg-gradient-to-br from-[#F7F2EF] to-white">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <ScrollReveal>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-[#1B3854]">Lo que hemos construido juntas</h2>
+              <p className="text-gray-500 mt-2">Números reales, comunidad real.</p>
+            </div>
+          </ScrollReveal>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              { value: 500, suffix: "+", label: "Mamás formadas", color: "#905361" },
+              { value: 12,  suffix: "",  label: "Cursos disponibles", color: "#1B3854" },
+              { value: 95,  suffix: "%", label: "Recomendarían", color: "#16a34a" },
+              { value: 24,  suffix: "/7", label: "Comunidad activa", color: "#D4AF37" }
+            ].map((s, i) => (
+              <ScrollReveal key={i} delay={i * 0.1} direction="scale">
+                <div className="bg-white rounded-2xl p-6 text-center shadow-md hover:shadow-xl transition-shadow border border-gray-100">
+                  <p className="text-4xl md:text-5xl font-extrabold mb-2" style={{ color: s.color }}>
+                    <AnimatedCounter value={s.value} suffix={s.suffix} />
+                  </p>
+                  <p className="text-sm text-gray-600 font-medium">{s.label}</p>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* --- SECCIÓN 1: ¿QUÉ ES ESTA MEMBRESÍA? --- */}
       <section className="py-24 bg-white relative">

@@ -55,9 +55,18 @@ function WallPage() {
   const handleLike = async (postId) => {
     try {
       const res = await axios.put(`/posts/${postId}/like`);
-      setPosts(posts.map(post => 
+      setPosts(posts.map(post =>
         post._id === postId ? { ...post, likes: res.data } : post
       ));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleReact = async (postId, type) => {
+    try {
+      const { data } = await axios.put(`/posts/${postId}/react/${type}`);
+      setPosts(posts.map(p => p._id === postId ? { ...p, reactions: data.reactions } : p));
     } catch (error) {
       console.error(error);
     }
@@ -192,18 +201,19 @@ function WallPage() {
 
             {/* Footer de Acciones */}
             <div className="px-5 py-4">
-                <div className="flex items-center gap-6">
-                    <button 
+                <ReactionsBar post={post} userId={user._id} onReact={(type) => handleReact(post._id, type)} />
+                <div className="flex items-center gap-6 mt-3">
+                    <button
                         onClick={() => handleLike(post._id)}
                         className={`flex items-center gap-2 text-sm font-semibold transition-all hover:scale-105 active:scale-95 ${
-                            post.likes.includes(user._id) 
-                            ? 'text-[#905361]' 
+                            post.likes.includes(user._id)
+                            ? 'text-[#905361]'
                             : 'text-gray-400 hover:text-[#905361]'
                         }`}
                     >
-                        <Heart 
-                            size={20} 
-                            className={post.likes.includes(user._id) ? "fill-current" : ""} 
+                        <Heart
+                            size={20}
+                            className={post.likes.includes(user._id) ? "fill-current" : ""}
                         />
                         <span>{post.likes.length || ""}</span>
                     </button>
@@ -265,5 +275,74 @@ function WallPage() {
     </div>
   );
 }
+
+// Barra de reacciones tipo Slack — emojis grandes con contador.
+const REACTIONS = [
+  { type: 'heart',    emoji: '❤️', label: 'Me encanta' },
+  { type: 'fire',     emoji: '🔥', label: 'Brutal' },
+  { type: 'muscle',   emoji: '💪', label: 'Fuerza' },
+  { type: 'clap',     emoji: '👏', label: 'Aplauso' },
+  { type: 'sparkles', emoji: '✨', label: 'Mágico' },
+];
+
+const ReactionsBar = ({ post, userId, onReact }) => {
+  const reactions = post.reactions || [];
+  const myReaction = reactions.find(r => String(r.user) === String(userId))?.type;
+  const counts = reactions.reduce((acc, r) => { acc[r.type] = (acc[r.type] || 0) + 1; return acc; }, {});
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {REACTIONS.map(r => {
+        const active = myReaction === r.type;
+        const count = counts[r.type] || 0;
+        if (count === 0 && !active) return null;
+        return (
+          <button
+            key={r.type}
+            onClick={() => onReact(r.type)}
+            title={r.label}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-sm border transition active:scale-95 ${
+              active
+                ? 'bg-[#FDE5E5] border-[#905361] text-[#905361] font-bold'
+                : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <span>{r.emoji}</span>
+            {count > 0 && <span className="text-xs">{count}</span>}
+          </button>
+        );
+      })}
+      <ReactionPicker myReaction={myReaction} onReact={onReact} />
+    </div>
+  );
+};
+
+const ReactionPicker = ({ myReaction, onReact }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="px-2.5 py-1 rounded-full text-sm border border-dashed border-gray-300 text-gray-400 hover:border-[#905361] hover:text-[#905361] transition"
+        title="Añadir reacción"
+      >
+        + 😊
+      </button>
+      {open && (
+        <div className="absolute z-10 left-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg p-2 flex gap-1">
+          {REACTIONS.map(r => (
+            <button
+              key={r.type}
+              onClick={() => { onReact(r.type); setOpen(false); }}
+              className={`text-2xl hover:scale-125 transition p-1 rounded ${myReaction === r.type ? 'bg-[#FDE5E5]' : ''}`}
+              title={r.label}
+            >
+              {r.emoji}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default WallPage;
