@@ -138,6 +138,24 @@ function AdminDashboard() {
           {/* Push notifications */}
           <PushNotificationsButton className="flex-1 md:flex-none whitespace-nowrap" />
 
+          {/* Recalcular logros */}
+          <button
+            onClick={async () => {
+              if (!window.confirm("Recalcular logros para todas las alumnas? (idempotente)")) return;
+              const tId = toast.loading("Recalculando logros...");
+              try {
+                const { data } = await axios.post("/admin/achievements/recalculate-all", {});
+                toast.success(`Listo · ${data.totalUnlocked} logros nuevos en ${data.processed} alumnas`, { id: tId });
+              } catch (e) {
+                toast.error("Error al recalcular", { id: tId });
+              }
+            }}
+            title="Escanea todas las alumnas y desbloquea logros que les correspondan según su data actual"
+            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-[#1B3854] rounded-xl hover:bg-[#FDE5E5] hover:border-[#FDE5E5] transition-all font-medium shadow-sm whitespace-nowrap"
+          >
+            🏆 <span className="inline">Logros</span>
+          </button>
+
           {/* Botón Crear Curso (Destacado) */}
           <Link
             to="/admin/create-course"

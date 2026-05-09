@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { toast } from "react-hot-toast";
 // Importamos iconos modernos
 import { Image, Send, Heart, MessageCircle, Trash2, X, MoreHorizontal } from "lucide-react";
+import AvatarFrame from "../components/AvatarFrame";
 
 function WallPage() {
   const { user } = useAuth();
@@ -163,13 +164,26 @@ function WallPage() {
             {/* Header del Post */}
             <div className="p-5 flex justify-between items-start">
                 <div className="flex gap-3 items-center">
-                    <img src={post.author?.avatar} alt="Avatar" className="w-10 h-10 rounded-full object-cover border border-gray-200" />
+                    <AvatarFrame
+                        src={post.author?.avatar}
+                        alt={post.author?.username}
+                        tier={post.author?.topAchievementTier}
+                        size="md"
+                        showBadge={!!post.author?.topAchievementTier}
+                    />
                     <div>
-                        <h4 className="font-bold text-[#1B3854] text-sm">{post.author?.username}</h4>
+                        <h4 className="font-bold text-[#1B3854] text-sm flex items-center gap-1.5">
+                            {post.author?.username}
+                            {post.author?.topAchievementTier === 'diamond' && <span title="Top Arquitecta">💎</span>}
+                            {post.author?.topAchievementTier === 'gold' && <span title="Logro oro">👑</span>}
+                        </h4>
                         <div className="flex items-center gap-2 text-xs text-gray-400">
                             <span>{new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                             {post.author?.role === 'admin' && (
                                 <span className="bg-[#1B3854] text-white px-1.5 py-0.5 rounded text-[10px] font-bold">ADMIN</span>
+                            )}
+                            {post.author?.partnerLevel >= 2 && post.author?.role !== 'admin' && (
+                                <span className="bg-[#FDE5E5] text-[#905361] px-1.5 py-0.5 rounded text-[10px] font-bold">PARTNER</span>
                             )}
                         </div>
                     </div>
@@ -238,7 +252,13 @@ function WallPage() {
                             ) : (
                                 post.comments.map((comment, idx) => (
                                     <div key={idx} className="flex gap-3">
-                                        <img src={comment.user?.avatar} className="w-8 h-8 rounded-full object-cover mt-1 flex-shrink-0" />
+                                        <div className="mt-1 flex-shrink-0">
+                                            <AvatarFrame
+                                                src={comment.user?.avatar}
+                                                tier={comment.user?.topAchievementTier}
+                                                size="sm"
+                                            />
+                                        </div>
                                         <div className="bg-[#F7F2EF] px-4 py-2 rounded-2xl rounded-tl-none text-sm text-gray-700 w-full">
                                             <span className="font-bold text-[#1B3854] text-xs block mb-0.5">{comment.user?.username}</span>
                                             {comment.text}

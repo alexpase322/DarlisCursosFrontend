@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast";
 import { User, Camera, Save, FileText, Mail, Loader2, CreditCard } from "lucide-react";
 import PushNotificationsButton from "../components/PushNotificationsButton";
 import StreakAchievements from "../components/StreakAchievements";
+import AvatarFrame from "../components/AvatarFrame";
 import PartnerBadge from "../components/PartnerBadge";
 
 function ProfilePage() {
@@ -108,16 +109,16 @@ function ProfilePage() {
             <div className="absolute top-0 left-0 w-full h-full bg-[#905361] opacity-10 rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2"></div>
             
             <div className="relative group">
-                <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl relative bg-gray-200">
-                    <img 
-                        src={preview || "https://via.placeholder.com/150"} 
-                        alt="Profile" 
-                        className="w-full h-full object-cover" 
-                    />
-                </div>
-                
+                <AvatarFrame
+                    src={preview || "https://via.placeholder.com/150"}
+                    alt="Profile"
+                    tier={user?.topAchievementTier}
+                    size={160}
+                    showBadge
+                />
+
                 {/* Botón flotante de cámara */}
-                <label className="absolute bottom-2 right-2 bg-[#905361] p-3 rounded-full text-white cursor-pointer hover:bg-[#FDE5E5] hover:text-[#905361] transition-all shadow-lg transform hover:scale-110 border-2 border-[#1B3854]">
+                <label className="absolute bottom-2 right-2 bg-[#905361] p-3 rounded-full text-white cursor-pointer hover:bg-[#FDE5E5] hover:text-[#905361] transition-all shadow-lg transform hover:scale-110 border-2 border-[#1B3854] z-10">
                     <Camera size={20} />
                     <input type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
                 </label>

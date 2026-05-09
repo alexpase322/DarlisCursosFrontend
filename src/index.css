@@ -1,1 +1,7 @@
 @import "tailwindcss";
+
+/* Contra-rotación del avatar dentro del marco diamond (mantiene la cara estable) */
+@keyframes avatarCounterRotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(-360deg); }
+}
