@@ -2,8 +2,17 @@ import { useState, useEffect } from "react";
 import axios from "../../api/axios";
 import { toast } from "react-hot-toast";
 // Importamos iconos modernos
-import { Search, Trash2, Shield, ShieldAlert, User, MoreVertical, Mail } from "lucide-react";
+import { Search, Trash2, Shield, ShieldAlert, User, MoreVertical, Mail, Flame, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
+import AvatarFrame from "../../components/AvatarFrame";
+
+const TIER_LABEL = {
+  bronze:  { name: 'Bronce',   cls: 'bg-amber-50 text-amber-700 border-amber-200' },
+  silver:  { name: 'Plata',    cls: 'bg-gray-100 text-gray-600 border-gray-200' },
+  gold:    { name: 'Oro',      cls: 'bg-amber-100 text-amber-700 border-amber-300' },
+  diamond: { name: 'Diamante', cls: 'bg-gradient-to-r from-cyan-100 to-purple-100 text-cyan-700 border-cyan-200' }
+};
+const PARTNER_NAME = { 1: 'Alumna', 2: 'Partner', 3: 'Seller', 4: 'Closer' };
 
 const AdminUsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -95,7 +104,10 @@ const AdminUsersPage = () => {
                 <thead className="bg-gray-50/50">
                     <tr>
                     <th className="px-8 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Usuario</th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Rol Actual</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Rol</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Nivel logro</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Partner</th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Racha</th>
                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Estado</th>
                     <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Acciones</th>
                     </tr>
@@ -103,31 +115,30 @@ const AdminUsersPage = () => {
                 <tbody className="bg-white divide-y divide-gray-50">
                     {users.length === 0 ? (
                         <tr>
-                            <td colSpan="4" className="px-6 py-10 text-center text-gray-400">
+                            <td colSpan="7" className="px-6 py-10 text-center text-gray-400">
                                 No se encontraron usuarios con ese criterio.
                             </td>
                         </tr>
                     ) : (
-                        users.map((user) => (
+                        users.map((user) => {
+                          const tierMeta = user.topAchievementTier ? TIER_LABEL[user.topAchievementTier] : null;
+                          return (
                         <tr key={user._id} className="hover:bg-[#FDE5E5]/20 transition-colors group">
-                            
-                            {/* Columna Usuario */}
+
+                            {/* Columna Usuario con marco */}
                             <td className="px-8 py-4 whitespace-nowrap">
                                 <div className="flex items-center gap-4">
-                                    <div className="relative">
-                                        <img 
-                                            src={user.avatar || "https://via.placeholder.com/40"} 
-                                            className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" 
-                                            alt="" 
-                                        />
-                                        {user.role === 'admin' && (
-                                            <div className="absolute -bottom-1 -right-1 bg-[#1B3854] text-white p-0.5 rounded-full border border-white">
-                                                <Shield size={10} />
-                                            </div>
-                                        )}
-                                    </div>
+                                    <AvatarFrame
+                                        src={user.avatar || "https://via.placeholder.com/40"}
+                                        tier={user.topAchievementTier}
+                                        size="md"
+                                        showBadge={!!user.topAchievementTier}
+                                    />
                                     <div>
-                                        <div className="font-bold text-[#1B3854]">{user.username}</div>
+                                        <div className="font-bold text-[#1B3854] flex items-center gap-1">
+                                            {user.username}
+                                            {user.role === 'admin' && <Shield size={12} className="text-[#1B3854]" />}
+                                        </div>
                                         <div className="text-sm text-gray-500 flex items-center gap-1">
                                             <Mail size={12} /> {user.email}
                                         </div>
@@ -138,20 +149,59 @@ const AdminUsersPage = () => {
                             {/* Columna Rol */}
                             <td className="px-6 py-4 whitespace-nowrap">
                                 <span className={`px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${
-                                    user.role === 'admin' 
-                                    ? 'bg-[#1B3854] text-white' 
+                                    user.role === 'admin'
+                                    ? 'bg-[#1B3854] text-white'
                                     : 'bg-gray-100 text-gray-600'
                                 }`}>
-                                    {user.role === 'admin' ? 'ADMINISTRADOR' : 'ESTUDIANTE'}
+                                    {user.role === 'admin' ? 'ADMIN' : 'ESTUDIANTE'}
                                 </span>
                             </td>
 
-                            {/* Columna Estado (Decorativa por ahora, asumiendo activo) */}
+                            {/* Columna Nivel logro (tier) */}
                             <td className="px-6 py-4 whitespace-nowrap">
-                                <span className="flex items-center gap-2 text-sm text-green-600 font-medium">
-                                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                                    Activo
+                                {tierMeta ? (
+                                    <span className={`px-2.5 py-1 inline-flex items-center gap-1 text-xs font-bold rounded-full border ${tierMeta.cls}`}>
+                                        <Trophy size={11} /> {tierMeta.name}
+                                    </span>
+                                ) : (
+                                    <span className="text-xs text-gray-300">—</span>
+                                )}
+                            </td>
+
+                            {/* Columna Partner level */}
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                {user.partnerLevel >= 2 ? (
+                                    <span className="px-2.5 py-1 inline-flex text-xs font-bold rounded-full bg-[#FDE5E5] text-[#905361]">
+                                        N{user.partnerLevel} · {PARTNER_NAME[user.partnerLevel]}
+                                    </span>
+                                ) : (
+                                    <span className="text-xs text-gray-400">{PARTNER_NAME[user.partnerLevel || 1]}</span>
+                                )}
+                            </td>
+
+                            {/* Columna Racha */}
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <span className="inline-flex items-center gap-1 text-xs font-bold text-orange-600">
+                                    <Flame size={12} /> {user.currentStreak || 0}
+                                    {user.longestStreak > (user.currentStreak || 0) && (
+                                        <span className="text-gray-400 ml-1">/ {user.longestStreak}</span>
+                                    )}
                                 </span>
+                            </td>
+
+                            {/* Columna Estado */}
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                {user.status === 'active' ? (
+                                    <span className="flex items-center gap-2 text-sm text-green-600 font-medium">
+                                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                        Activo
+                                    </span>
+                                ) : (
+                                    <span className="flex items-center gap-2 text-sm text-amber-600 font-medium">
+                                        <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
+                                        Pendiente
+                                    </span>
+                                )}
                             </td>
 
                             {/* Columna Acciones */}
@@ -182,7 +232,8 @@ const AdminUsersPage = () => {
                                 </div>
                             </td>
                         </tr>
-                        ))
+                        );
+                        })
                     )}
                 </tbody>
                 </table>
