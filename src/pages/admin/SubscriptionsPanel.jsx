@@ -83,16 +83,21 @@ const SubscriptionsPanel = () => {
 
   const handleReconcile = async () => {
     if (reconciling) return;
-    if (!window.confirm("Rellenar suscripciones faltantes desde Stripe (solo usuarios sin sub, ignora pagos manuales)?")) return;
+    if (!window.confirm("Reconciliar contra Stripe? Esto actualiza pagos exitosos/fallidos/refunds y refresca suscripciones (incluidas resuscripciones tras cancelar). No toca pagos manuales.")) return;
     setReconciling(true);
-    const tId = toast.loading("Reconciliando...");
+    const tId = toast.loading("Reconciliando con Stripe...");
     try {
       const { data } = await axios.post("/admin/subscriptions/backfill-from-payments", {});
       const s = data?.stats || {};
-      toast.success(
-        `Listo · revisados: ${s.scanned ?? 0} · actualizados: ${s.updated ?? 0} · sin pago: ${s.noPayment ?? 0}`,
-        { id: tId, duration: 6000 }
-      );
+      const parts = [
+        `${s.scanned || 0} alumnas`,
+        `${s.paymentsInserted || 0} pagos nuevos`,
+        `${s.paymentsUpdated || 0} actualizados`,
+        `${s.subscriptionsUpdated || 0} subs refrescadas`
+      ];
+      if (s.statusFlippedToPaid) parts.push(`${s.statusFlippedToPaid} fallidos→pagados`);
+      if (s.statusFlippedToRefunded) parts.push(`${s.statusFlippedToRefunded} refunds`);
+      toast.success(parts.join(" · "), { id: tId, duration: 9000 });
       fetchData();
     } catch (err) {
       toast.error(err.response?.data?.message || "Error al reconciliar", { id: tId });
