@@ -94,6 +94,51 @@ const StreakAchievements = () => {
                 </div>
             )}
 
+            {/* Progreso de tiers — necesitas 3 logros de un tier para alcanzarlo */}
+            {Array.isArray(data.tierProgress) && data.tierProgress.length > 0 && (
+                <div className="mb-5 bg-gray-50 rounded-xl p-4">
+                    <p className="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-3">
+                        Progreso de niveles · necesitas {data.tierThreshold || 3} logros de cada tier
+                    </p>
+                    <div className="space-y-2.5">
+                        {data.tierProgress.map(tp => {
+                            const meta = TIER_LABEL[tp.tier];
+                            const pct = Math.min(100, (tp.unlocked / tp.required) * 100);
+                            const barColor = {
+                                bronze:  'from-amber-700 to-amber-500',
+                                silver:  'from-gray-400 to-gray-300',
+                                gold:    'from-amber-400 to-yellow-300',
+                                diamond: 'from-cyan-400 via-purple-400 to-pink-400'
+                            }[tp.tier];
+                            return (
+                                <div key={tp.tier}>
+                                    <div className="flex items-center justify-between text-xs mb-1">
+                                        <span className={`font-bold flex items-center gap-1 ${meta?.color}`}>
+                                            {tp.achieved && '✓'} {meta?.name}
+                                            {tp.isCurrent && (
+                                                <span className="ml-1 px-1.5 py-0.5 rounded bg-[#1B3854] text-white text-[9px]">
+                                                    ACTUAL
+                                                </span>
+                                            )}
+                                        </span>
+                                        <span className="text-gray-500 font-medium">
+                                            {tp.unlocked}/{tp.required}
+                                            <span className="text-gray-300 ml-1">de {tp.available}</span>
+                                        </span>
+                                    </div>
+                                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                        <div
+                                            className={`h-full bg-gradient-to-r ${barColor} transition-all duration-500`}
+                                            style={{ width: `${pct}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
             {/* Filtros por tier (ocultos si la respuesta vieja no trae tiers) */}
             {!noTierData && (
                 <div className="flex flex-wrap gap-2 mb-5">

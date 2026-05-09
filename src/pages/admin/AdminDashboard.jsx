@@ -141,19 +141,26 @@ function AdminDashboard() {
           {/* Recalcular logros */}
           <button
             onClick={async () => {
-              if (!window.confirm("Recalcular logros para todas las alumnas? (idempotente)")) return;
-              const tId = toast.loading("Recalculando logros...");
+              if (!window.confirm("Recalcular logros y niveles de TODAS las alumnas? (idempotente)")) return;
+              const tId = toast.loading("Recalculando logros y niveles...");
               try {
                 const { data } = await axios.post("/admin/achievements/recalculate-all", {});
-                toast.success(`Listo · ${data.totalUnlocked} logros nuevos en ${data.processed} alumnas`, { id: tId });
+                const parts = [
+                  `${data.processed} alumnas`,
+                  `${data.totalUnlocked} logros nuevos`,
+                  `${data.tierChanged} niveles actualizados`
+                ];
+                if (data.tierUpgraded) parts.push(`${data.tierUpgraded} subieron`);
+                if (data.tierCleared) parts.push(`${data.tierCleared} sin marco aún`);
+                toast.success(parts.join(" · "), { id: tId, duration: 8000 });
               } catch (e) {
-                toast.error("Error al recalcular", { id: tId });
+                toast.error(e.response?.data?.message || "Error al recalcular", { id: tId });
               }
             }}
-            title="Escanea todas las alumnas y desbloquea logros que les correspondan según su data actual"
+            title="Recalcula logros desbloqueables + nivel (tier) según los logros que cada alumna tiene. Aplica la regla de 3 logros por tier."
             className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-[#1B3854] rounded-xl hover:bg-[#FDE5E5] hover:border-[#FDE5E5] transition-all font-medium shadow-sm whitespace-nowrap"
           >
-            🏆 <span className="inline">Logros</span>
+            🏆 <span className="inline">Logros y niveles</span>
           </button>
 
           {/* Botón Crear Curso (Destacado) */}
