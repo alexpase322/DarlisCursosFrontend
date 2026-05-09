@@ -154,6 +154,14 @@ function CourseManager() {
                     </div>
                     <h1 className="text-3xl font-bold text-[#1B3854] mb-2">{course.title}</h1>
                     <p className="text-gray-500 leading-relaxed max-w-2xl">{course.description}</p>
+                    <div className="mt-3">
+                        <Link
+                            to={`/admin/course/${course._id}/quiz`}
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-[#905361] text-white rounded-xl text-sm font-bold hover:bg-[#5E2B35] transition"
+                        >
+                            🏆 Editar examen del curso
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>

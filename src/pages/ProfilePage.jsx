@@ -4,6 +4,7 @@ import axios from "../api/axios";
 import { toast } from "react-hot-toast";
 // Iconos modernos
 import { User, Camera, Save, FileText, Mail, Loader2, CreditCard } from "lucide-react";
+import PushNotificationsButton from "../components/PushNotificationsButton";
 import PartnerBadge from "../components/PartnerBadge";
 
 function ProfilePage() {
@@ -180,6 +181,12 @@ function ProfilePage() {
                             placeholder="Comparte algo inspirador..."
                         ></textarea>
                     </div>
+                </div>
+
+                {/* Notificaciones push */}
+                <div className="pt-4 border-t border-gray-100">
+                    <p className="text-sm text-gray-600 mb-2">Recibe avisos de comisiones, mensajes y novedades.</p>
+                    <PushNotificationsButton />
                 </div>
 
                 {/* Botón Guardar + Portal de Pagos */}

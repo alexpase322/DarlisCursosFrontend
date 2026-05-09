@@ -38,6 +38,9 @@ import CommissionsPage from './pages/admin/CommissionsPage';
 import PartnerApplicationsPage from './pages/admin/PartnerApplicationsPage';
 import SubscriptionsPanel from './pages/admin/SubscriptionsPanel';
 import RevenuePanel from './pages/admin/RevenuePanel';
+import QuizPage from './pages/student/QuizPage';
+import QuizEditor from './pages/admin/QuizEditor';
+import Leaderboard from './pages/affiliate/Leaderboard';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
@@ -71,11 +74,13 @@ function App() {
                  <Route path="/muro" element={<WallPage />} />
                  <Route path="/chat" element={<ChatPage />} />
                  <Route path="/course/:id" element={<CourseViewer />} />
+                 <Route path="/course/:id/quiz" element={<QuizPage />} />
 
                  {/* Rutas de afiliada */}
                  <Route path="/afiliada/aplicar" element={<PartnerApply />} />
                  <Route element={<PartnerRoute />}>
                     <Route path="/afiliada" element={<AffiliateDashboard />} />
+                    <Route path="/afiliada/leaderboard" element={<Leaderboard />} />
                  </Route>
 
                  {/* Rutas Admin anidadas */}
@@ -84,6 +89,7 @@ function App() {
                     <Route path="/admin/create-course" element={<CreateCoursePage />} /> 
                     <Route path="/admin/crear-usuario" element={<RegisterPage />} />
                     <Route path="/admin/course/:id" element={<CourseManager />} />
+                    <Route path="/admin/course/:id/quiz" element={<QuizEditor />} />
                     <Route path="/admin/invite" element={<InviteUser />} />
                     <Route path="/admin/users" element={<AdminUsersPage />} />
                     <Route path="/admin/afiliadas" element={<AffiliatesCRM />} />

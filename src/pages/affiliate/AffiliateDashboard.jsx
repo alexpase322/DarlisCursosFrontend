@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from '../../api/axios';
 import { toast } from 'react-hot-toast';
-import { Loader2, DollarSign, Users, CheckCircle2, Clock, Wallet, TrendingUp, CalendarClock } from 'lucide-react';
+import { Loader2, DollarSign, Users, CheckCircle2, Clock, Wallet, TrendingUp, CalendarClock, Trophy } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import PartnerBadge from '../../components/PartnerBadge';
 import { useAuth } from '../../context/AuthContext';
 
@@ -106,12 +107,26 @@ const AffiliateDashboard = () => {
         )}
       </section>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         <StatCard icon={Users}        label="Referidas activas" value={stats.activeReferred || 0} accent="#905361" />
         <StatCard icon={Users}        label="Total referidas"   value={stats.totalReferred || 0} />
         <StatCard icon={Clock}        label="Pendiente cobro"   value={fmtUSD(stats.pendingUSD)} accent="#D4AF37" />
         <StatCard icon={CheckCircle2} label="Ya cobrado"        value={fmtUSD(stats.paidUSD)}    accent="#16a34a" />
       </div>
+
+      <Link
+        to="/afiliada/leaderboard"
+        className="mb-8 flex items-center justify-between bg-gradient-to-r from-amber-50 to-[#FDE5E5]/60 border border-amber-200 rounded-2xl p-4 hover:shadow-md transition group"
+      >
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-amber-400 rounded-xl text-white"><Trophy size={20} /></div>
+          <div>
+            <p className="font-bold text-[#1B3854]">Top afiliadas del mes</p>
+            <p className="text-xs text-gray-500">Mira el ranking y tu posición</p>
+          </div>
+        </div>
+        <span className="text-[#905361] font-bold text-sm group-hover:translate-x-1 transition">→</span>
+      </Link>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-2">
         <div className="border-b border-gray-100 flex">

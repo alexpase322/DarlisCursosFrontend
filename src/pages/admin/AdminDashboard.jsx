@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 // Importamos los iconos de Lucide
 import { Users, Mail, Plus, Trash2, Settings, X, Sparkles, ClipboardList, DollarSign, RefreshCw, CreditCard, TrendingUp } from "lucide-react";
+import PushNotificationsButton from "../../components/PushNotificationsButton";
 
 function AdminDashboard() {
   const [courses, setCourses] = useState([]);
@@ -133,6 +134,9 @@ function AdminDashboard() {
             <RefreshCw size={18} className={syncing ? "animate-spin" : ""} />
             <span className="inline">{syncing ? "Sincronizando..." : "Actualizar suscripciones"}</span>
           </button>
+
+          {/* Push notifications */}
+          <PushNotificationsButton className="flex-1 md:flex-none whitespace-nowrap" />
 
           {/* Botón Crear Curso (Destacado) */}
           <Link

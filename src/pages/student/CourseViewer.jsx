@@ -1,16 +1,22 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "../../api/axios";
-import { 
-    PlayCircle, 
-    ArrowLeft, 
-    BookOpen, 
-    Menu, 
+import { useAuth } from "../../context/AuthContext";
+import {
+    PlayCircle,
+    ArrowLeft,
+    BookOpen,
+    Menu,
     MonitorPlay,
-    Download,       // <--- NUEVO
-    FileText,       // <--- NUEVO
-    ExternalLink    // <--- NUEVO
+    Download,
+    FileText,
+    ExternalLink,
+    CheckCircle2,
+    Circle,
+    Award,
+    Loader2
 } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 function CourseViewer() {
   const { id } = useParams();
@@ -20,6 +26,10 @@ function CourseViewer() {
   const [loading, setLoading] = useState(true);
   const [currentLesson, setCurrentLesson] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [progress, setProgress] = useState({ percent: 0, lessonsTotal: 0, lessonsCompleted: 0, hasQuiz: false, completed: false, quizPassed: false });
+  const [completedIds, setCompletedIds] = useState(new Set());
+  const [marking, setMarking] = useState(false);
+  const { user } = useAuth();
 
   // --- CORRECCIÓN CRÍTICA DE YOUTUBE ---
   const getEmbedUrl = (url) => {
@@ -49,6 +59,15 @@ function CourseViewer() {
         if (res.data.modules?.[0]?.lessons?.[0]) {
             setCurrentLesson(res.data.modules[0].lessons[0]);
         }
+        // Set de lecciones completadas por el usuario actual
+        const myId = String(user?._id || '');
+        const done = new Set();
+        for (const m of res.data.modules || []) {
+            for (const l of m.lessons || []) {
+                if ((l.completedBy || []).some(uid => String(uid) === myId)) done.add(l._id);
+            }
+        }
+        setCompletedIds(done);
       } catch (error) {
         console.error("Error al cargar curso");
         navigate("/dashboard");
@@ -57,7 +76,38 @@ function CourseViewer() {
       }
     };
     fetchCourse();
+    fetchProgress();
   }, [id]);
+
+  const fetchProgress = async () => {
+    try {
+      const { data } = await axios.get(`/courses/${id}/progress`);
+      setProgress(data);
+    } catch (e) { /* noop */ }
+  };
+
+  const toggleLessonComplete = async (lesson) => {
+    if (marking) return;
+    setMarking(true);
+    const isDone = completedIds.has(lesson._id);
+    try {
+      if (isDone) {
+        await axios.delete(`/courses/${id}/lessons/${lesson._id}/complete`);
+        const next = new Set(completedIds); next.delete(lesson._id);
+        setCompletedIds(next);
+      } else {
+        await axios.post(`/courses/${id}/lessons/${lesson._id}/complete`);
+        const next = new Set(completedIds); next.add(lesson._id);
+        setCompletedIds(next);
+        toast.success("Lección marcada");
+      }
+      fetchProgress();
+    } catch (e) {
+      toast.error("Error al actualizar progreso");
+    } finally {
+      setMarking(false);
+    }
+  };
 
   if (loading) return (
     <div className="flex justify-center items-center h-[calc(100vh-80px)] bg-[#1B3854]">
@@ -108,7 +158,47 @@ function CourseViewer() {
                                 <span className="text-[#905361] font-bold bg-[#FDE5E5] px-2 py-0.5 rounded text-xs">Reproduciendo</span>
                             </div>
 
-                            <h1 className="text-2xl md:text-3xl font-bold text-[#1B3854] mb-6">{currentLesson.title}</h1>
+                            <h1 className="text-2xl md:text-3xl font-bold text-[#1B3854] mb-3">{currentLesson.title}</h1>
+
+                            {/* Barra de progreso del curso */}
+                            <div className="mb-6 bg-white border border-gray-100 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-4">
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between mb-2">
+                                  <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Tu progreso</span>
+                                  <span className="text-sm font-bold text-[#1B3854]">{progress.lessonsCompleted}/{progress.lessonsTotal} · {progress.percent}%</span>
+                                </div>
+                                <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                                  <div className="h-full bg-gradient-to-r from-[#905361] to-[#5E2B35] transition-all" style={{ width: `${progress.percent}%` }} />
+                                </div>
+                              </div>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => toggleLessonComplete(currentLesson)}
+                                  disabled={marking}
+                                  className={`text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-2 transition disabled:opacity-60 ${
+                                    completedIds.has(currentLesson._id)
+                                      ? "bg-emerald-50 border border-emerald-200 text-emerald-700"
+                                      : "bg-white border border-[#905361]/30 text-[#905361] hover:bg-[#FDE5E5]"
+                                  }`}
+                                >
+                                  {marking ? <Loader2 size={14} className="animate-spin" /> :
+                                    completedIds.has(currentLesson._id) ? <CheckCircle2 size={14} /> : <Circle size={14} />}
+                                  {completedIds.has(currentLesson._id) ? "Completada" : "Marcar como vista"}
+                                </button>
+                                {progress.hasQuiz && (
+                                  <Link
+                                    to={`/course/${id}/quiz`}
+                                    className={`text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-2 transition ${
+                                      progress.quizPassed
+                                        ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                                        : "bg-[#905361] text-white hover:bg-[#5E2B35]"
+                                    }`}
+                                  >
+                                    <Award size={14} /> {progress.quizPassed ? "Repetir examen" : "Hacer examen"}
+                                  </Link>
+                                )}
+                              </div>
+                            </div>
                             
                             {/* --- GRID: DESCRIPCIÓN Y RECURSOS --- */}
                             <div className="grid md:grid-cols-3 gap-8">
@@ -203,7 +293,11 @@ function CourseViewer() {
                                             className={`w-full text-left px-4 py-3.5 text-sm flex items-start gap-3 transition-all border-l-4 ${isActive ? "bg-[#FDE5E5] border-[#905361]" : "border-transparent hover:bg-white text-gray-500"}`}
                                         >
                                             <div className="mt-0.5 flex-shrink-0">
-                                                {isActive ? <PlayCircle size={16} className="text-[#905361] fill-[#905361]/20" /> : <div className="w-4 h-4 rounded-full border-2 border-gray-300" />}
+                                                {completedIds.has(lesson._id)
+                                                  ? <CheckCircle2 size={16} className="text-emerald-600" />
+                                                  : isActive
+                                                    ? <PlayCircle size={16} className="text-[#905361] fill-[#905361]/20" />
+                                                    : <div className="w-4 h-4 rounded-full border-2 border-gray-300" />}
                                             </div>
                                             <div className="flex-1">
                                                 <span className={`block font-medium text-sm leading-snug ${isActive ? "text-[#905361]" : "text-gray-600"}`}>{lesson.title}</span>

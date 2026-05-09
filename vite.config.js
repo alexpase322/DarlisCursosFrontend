@@ -9,8 +9,12 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.js',
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt', 'isotipo.ico'],
+      injectRegister: 'auto',
       devOptions: {
         // Habilita SW también en `npm run dev` para poder probar la instalación.
         enabled: true,
@@ -55,36 +59,9 @@ export default defineConfig({
           }
         ]
       },
-      workbox: {
+      injectManifest: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff2}'],
-        // Permite precachear assets de hasta 12 MiB (las fotos hero pesan ~9 MB).
-        maximumFileSizeToCacheInBytes: 12 * 1024 * 1024,
-        navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/api/, /^\/auth/, /^\/payment/, /^\/admin/, /^\/affiliate/],
-        runtimeCaching: [
-          {
-            // Imágenes Cloudinary y otras CDNs externas
-            urlPattern: /^https:\/\/res\.cloudinary\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'cloudinary-images',
-              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 },
-              cacheableResponse: { statuses: [0, 200] }
-            }
-          },
-          {
-            // Llamadas al backend → red primero, fallback a caché si offline
-            urlPattern: ({ url }) => ['/auth', '/users', '/courses', '/posts', '/chat', '/notifications', '/payment', '/affiliate', '/admin']
-              .some(p => url.pathname.startsWith(p)),
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-cache',
-              networkTimeoutSeconds: 5,
-              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 5 },
-              cacheableResponse: { statuses: [0, 200] }
-            }
-          }
-        ]
+        maximumFileSizeToCacheInBytes: 12 * 1024 * 1024
       }
     })
   ],

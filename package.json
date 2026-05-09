@@ -22,7 +22,12 @@
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.10.1",
     "socket.io-client": "^4.8.1",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "workbox-cacheable-response": "^7.4.1",
+    "workbox-expiration": "^7.4.1",
+    "workbox-precaching": "^7.4.1",
+    "workbox-routing": "^7.4.1",
+    "workbox-strategies": "^7.4.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
