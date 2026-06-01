@@ -43,6 +43,8 @@ import QuizEditor from './pages/admin/QuizEditor';
 import Leaderboard from './pages/affiliate/Leaderboard';
 import KpiDashboard from './pages/admin/KpiDashboard';
 import PaymentsPage from './pages/admin/PaymentsPage';
+import Webinar from './pages/Webinar';
+import WebinarLeadsPage from './pages/admin/WebinarLeadsPage';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
@@ -66,6 +68,7 @@ function App() {
             <Route path="/memoria-emocional" element={<MemoriaEmocional />} />
             <Route path="/amazon-resenas" element={<AmazonResenas />} />
             <Route path="/amazon-influencer" element={<AmazonInfluencerGuide />} />
+            <Route path="/webinar" element={<Webinar />} />
             {/* Rutas Privadas (CON Layout) */}
             <Route element={<ProtectedRoute />}>
               
@@ -102,6 +105,7 @@ function App() {
                     <Route path="/admin/ingresos" element={<RevenuePanel />} />
                     <Route path="/admin/kpis" element={<KpiDashboard />} />
                     <Route path="/admin/pagos" element={<PaymentsPage />} />
+                    <Route path="/admin/webinar-leads" element={<WebinarLeadsPage />} />
                 </Route>
               </Route>
 

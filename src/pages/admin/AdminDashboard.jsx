@@ -193,7 +193,7 @@ function AdminDashboard() {
       </Link>
 
       {/* CRM Afiliadas — accesos rápidos */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4 mb-8">
         <Link to="/admin/afiliadas" className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition flex items-center gap-3">
           <div className="p-3 rounded-xl bg-[#905361]/10 text-[#905361]"><Sparkles size={22} /></div>
           <div>
@@ -234,6 +234,13 @@ function AdminDashboard() {
           <div>
             <p className="font-bold text-[#1B3854]">Detalle de pagos</p>
             <p className="text-xs text-gray-500">Auditar pago por pago</p>
+          </div>
+        </Link>
+        <Link to="/admin/webinar-leads" className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-purple-100 text-purple-600">🎬</div>
+          <div>
+            <p className="font-bold text-[#1B3854]">Webinar leads</p>
+            <p className="text-xs text-gray-500">Quién se registró</p>
           </div>
         </Link>
       </div>
