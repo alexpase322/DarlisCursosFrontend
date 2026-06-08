@@ -305,10 +305,14 @@ const ManualPaymentModal = ({ user, onClose, onSaved }) => {
     setSaving(true);
     const tId = toast.loading("Registrando pago...");
     try {
-      await axios.post(`/admin/subscriptions/${user._id}/manual-payment`, {
+      const { data } = await axios.post(`/admin/subscriptions/${user._id}/manual-payment`, {
         plan, amountUSD: Number(amountUSD), paidAt, method, note, updateSubscription
       });
-      toast.success("Pago registrado", { id: tId });
+      if (data?.commission) {
+        toast.success(`Pago registrado · comisión generada: $${data.commission.amountUSD.toFixed(2)}`, { id: tId, duration: 6000 });
+      } else {
+        toast.success("Pago registrado", { id: tId });
+      }
       onSaved();
     } catch (err) {
       toast.error(err.response?.data?.message || "Error al registrar pago", { id: tId });
