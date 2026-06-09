@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import axios from "../../api/axios";
 import { toast } from "react-hot-toast";
 // Importamos iconos modernos
-import { Search, Trash2, Shield, ShieldAlert, User, MoreVertical, Mail, Flame, Trophy } from "lucide-react";
+import { Search, Trash2, Shield, ShieldAlert, User, MoreVertical, Mail, Flame, Trophy, UserCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import AvatarFrame from "../../components/AvatarFrame";
+import ReassignReferrerModal from "../../components/ReassignReferrerModal";
 
 const TIER_LABEL = {
   bronze:  { name: 'Bronce',   cls: 'bg-amber-50 text-amber-700 border-amber-200' },
@@ -18,6 +19,7 @@ const AdminUsersPage = () => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [reassignFor, setReassignFor] = useState(null);
 
   useEffect(() => {
     fetchUsers();
@@ -209,17 +211,28 @@ const AdminUsersPage = () => {
                                 <div className="flex items-center justify-end gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
                                     
                                     {/* Botón Cambiar Rol */}
-                                    <button 
-                                        onClick={() => handleRoleChange(user._id, user.role)} 
+                                    <button
+                                        onClick={() => handleRoleChange(user._id, user.role)}
                                         className={`p-2 rounded-lg transition-colors border ${
-                                            user.role === 'admin' 
-                                            ? 'text-orange-500 border-orange-100 hover:bg-orange-50' 
+                                            user.role === 'admin'
+                                            ? 'text-orange-500 border-orange-100 hover:bg-orange-50'
                                             : 'text-[#1B3854] border-gray-200 hover:bg-gray-50'
                                         }`}
                                         title={user.role === 'admin' ? "Degradar a Usuario" : "Promover a Admin"}
                                     >
                                         {user.role === 'admin' ? <ShieldAlert size={18} /> : <Shield size={18} />}
                                     </button>
+
+                                    {/* Botón Reasignar referidora */}
+                                    {user.role !== 'admin' && (
+                                        <button
+                                            onClick={() => setReassignFor({ _id: user._id, username: user.username })}
+                                            className="p-2 text-[#905361] border border-[#FDE5E5] rounded-lg hover:bg-[#FDE5E5] transition-colors"
+                                            title="Reasignar referidora · recalcula comisiones"
+                                        >
+                                            <UserCheck size={18} />
+                                        </button>
+                                    )}
 
                                     {/* Botón Eliminar */}
                                     <button 
@@ -240,6 +253,15 @@ const AdminUsersPage = () => {
             </div>
         )}
       </div>
+
+      {reassignFor && (
+        <ReassignReferrerModal
+          userId={reassignFor._id}
+          userName={reassignFor.username}
+          onClose={() => setReassignFor(null)}
+          onSaved={fetchUsers}
+        />
+      )}
     </div>
   );
 };
