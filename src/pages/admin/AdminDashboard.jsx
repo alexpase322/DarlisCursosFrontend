@@ -243,6 +243,13 @@ function AdminDashboard() {
             <p className="text-xs text-gray-500">Quién se registró</p>
           </div>
         </Link>
+        <Link to="/admin/promos" className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-orange-100 text-orange-600">🎁</div>
+          <div>
+            <p className="font-bold text-[#1B3854]">Promociones</p>
+            <p className="text-xs text-gray-500">Activar / desactivar</p>
+          </div>
+        </Link>
       </div>
 
       {/* SECCIÓN: Cursos */}

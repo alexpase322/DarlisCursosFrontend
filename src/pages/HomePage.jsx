@@ -33,6 +33,14 @@ const HomePage = () => {
     message: ""
   });
 
+  // Promo activa (trimestral con mes extra)
+  const [activePromo, setActivePromo] = useState(null);
+  useEffect(() => {
+    axios.get("/promos/active").then(({ data }) => {
+      if (data?.quarterly?.enabled) setActivePromo(data.quarterly);
+    }).catch(() => {});
+  }, []);
+
   // --- DATOS DEL PROGRAMA ---
   const CURRICULUM = [
     {
@@ -592,17 +600,42 @@ const HomePage = () => {
                 {/* PLAN TRIMESTRAL */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                    className="p-10 bg-white rounded-[2rem] border border-gray-100 shadow-xl hover:shadow-2xl transition-all flex flex-col h-full"
+                    className={`relative p-10 bg-white rounded-[2rem] border-2 shadow-xl hover:shadow-2xl transition-all flex flex-col h-full ${
+                        activePromo ? 'border-[#905361] ring-4 ring-[#FDE5E5]' : 'border-gray-100'
+                    }`}
                 >
+                    {activePromo && (
+                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#905361] to-[#5E2B35] text-white px-5 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-1 whitespace-nowrap">
+                            🎁 +{activePromo.extraMonths} MES{activePromo.extraMonths > 1 ? 'ES' : ''} GRATIS
+                        </div>
+                    )}
                     <h3 className="text-2xl font-bold text-[#1B3854] mb-2">Trimestral</h3>
-                    <div className="mb-6"><span className="text-5xl font-bold text-[#1B3854]">$120</span><span className="text-gray-400 text-sm">/trimestre</span></div>
+                    <div className="mb-3">
+                        <span className="text-5xl font-bold text-[#1B3854]">$120</span>
+                        <span className="text-gray-400 text-sm">/trimestre</span>
+                    </div>
+                    {activePromo && (
+                        <p className="text-xs text-[#905361] font-bold mb-4 bg-[#FDE5E5] px-3 py-2 rounded-lg">
+                            ⚡ {activePromo.label}
+                        </p>
+                    )}
                     <ul className="space-y-4 mb-8 flex-1">
-                        {["Todo lo del plan mensual", "Ahorras $30 USD", "Acceso a talleres especiales", "Soporte prioritario"].map((f, i) => (
+                        {[
+                            "Todo lo del plan mensual",
+                            "Ahorras $30 USD",
+                            ...(activePromo ? [`Recibe ${activePromo.extraMonths} mes${activePromo.extraMonths > 1 ? 'es' : ''} GRATIS adicional${activePromo.extraMonths > 1 ? 'es' : ''}`] : []),
+                            "Acceso a talleres especiales",
+                            "Soporte prioritario"
+                        ].map((f, i) => (
                             <li key={i} className="flex gap-3 text-sm text-gray-600"><Check size={18} className="text-green-500 shrink-0"/> {f}</li>
                         ))}
                     </ul>
-                    <button onClick={() => handleSubscribe(PLAN_IDS.QUARTERLY)} disabled={loading} className="w-full py-4 rounded-xl font-bold bg-[#FDE5E5] text-[#905361] hover:bg-[#905361] hover:text-white transition-all text-lg">
-                        {loading ? <Loader2 className="animate-spin mx-auto"/> : "Elegir Trimestral"}
+                    <button onClick={() => handleSubscribe(PLAN_IDS.QUARTERLY)} disabled={loading} className={`w-full py-4 rounded-xl font-bold transition-all text-lg ${
+                        activePromo
+                            ? 'bg-[#905361] text-white hover:bg-[#5E2B35]'
+                            : 'bg-[#FDE5E5] text-[#905361] hover:bg-[#905361] hover:text-white'
+                    }`}>
+                        {loading ? <Loader2 className="animate-spin mx-auto"/> : (activePromo ? "Aprovechar promo" : "Elegir Trimestral")}
                     </button>
                 </motion.div>
 

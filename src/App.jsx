@@ -45,6 +45,7 @@ import KpiDashboard from './pages/admin/KpiDashboard';
 import PaymentsPage from './pages/admin/PaymentsPage';
 import Webinar from './pages/Webinar';
 import WebinarLeadsPage from './pages/admin/WebinarLeadsPage';
+import PromosPage from './pages/admin/PromosPage';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
@@ -106,6 +107,7 @@ function App() {
                     <Route path="/admin/kpis" element={<KpiDashboard />} />
                     <Route path="/admin/pagos" element={<PaymentsPage />} />
                     <Route path="/admin/webinar-leads" element={<WebinarLeadsPage />} />
+                    <Route path="/admin/promos" element={<PromosPage />} />
                 </Route>
               </Route>
 
