@@ -97,6 +97,8 @@ const SubscriptionsPanel = () => {
       ];
       if (s.statusFlippedToPaid) parts.push(`${s.statusFlippedToPaid} fallidos→pagados`);
       if (s.statusFlippedToRefunded) parts.push(`${s.statusFlippedToRefunded} refunds`);
+      if (s.manualPastDue) parts.push(`${s.manualPastDue} manuales→atrasadas`);
+      if (s.manualCanceled) parts.push(`${s.manualCanceled} manuales→canceladas`);
       toast.success(parts.join(" · "), { id: tId, duration: 9000 });
       fetchData();
     } catch (err) {
@@ -192,8 +194,9 @@ const SubscriptionsPanel = () => {
                   const sub = u.subscription;
                   const subStatus = sub?.status || "none";
                   const noSub = !sub || subStatus === "none" || subStatus === "canceled";
+                  const meta = u.subscriptionMeta || {};
                   return (
-                    <tr key={u._id} className="border-b last:border-b-0 hover:bg-gray-50/50">
+                    <tr key={u._id} className={`border-b last:border-b-0 hover:bg-gray-50/50 ${meta.isOverdue && subStatus !== 'canceled' ? 'bg-amber-50/40' : ''}`}>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <img src={u.avatar} alt="" className="w-9 h-9 rounded-full object-cover" />
@@ -203,9 +206,23 @@ const SubscriptionsPanel = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 capitalize">{sub?.plan || u.lastPayment?.plan || "—"}</td>
-                      <td className="px-4 py-3"><StatusPill status={subStatus} /></td>
-                      <td className="px-4 py-3 text-gray-500">{fmtDate(sub?.currentPeriodEnd)}</td>
+                      <td className="px-4 py-3 capitalize">
+                        {sub?.plan || u.lastPayment?.plan || "—"}
+                        {meta.isManual && (
+                          <span className="block text-[9px] font-bold uppercase text-purple-600 mt-0.5">Manual</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <StatusPill status={subStatus} />
+                        {meta.isOverdue && subStatus !== 'canceled' && (
+                          <p className="text-[10px] text-red-600 font-bold mt-0.5">
+                            ⚠ vencida hace {meta.daysOverdue}d
+                          </p>
+                        )}
+                      </td>
+                      <td className={`px-4 py-3 text-gray-500 ${meta.isOverdue && subStatus !== 'canceled' ? 'text-red-600 font-bold' : ''}`}>
+                        {fmtDate(sub?.currentPeriodEnd)}
+                      </td>
                       <td className="px-4 py-3 text-gray-500">
                         {u.lastPayment ? (
                           <div>
