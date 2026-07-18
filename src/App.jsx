@@ -46,6 +46,8 @@ import PaymentsPage from './pages/admin/PaymentsPage';
 import Webinar from './pages/Webinar';
 import WebinarLeadsPage from './pages/admin/WebinarLeadsPage';
 import PromosPage from './pages/admin/PromosPage';
+import TestimonialsPage from './pages/TestimonialsPage';
+import TestimonialsAdmin from './pages/admin/TestimonialsAdmin';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
@@ -78,6 +80,7 @@ function App() {
                  <Route path="/dashboard" element={<StudentDashboard />} />
                  <Route path="/perfil" element={<ProfilePage />} />
                  <Route path="/muro" element={<WallPage />} />
+                 <Route path="/testimonios" element={<TestimonialsPage />} />
                  <Route path="/chat" element={<ChatPage />} />
                  <Route path="/course/:id" element={<CourseViewer />} />
                  <Route path="/course/:id/quiz" element={<QuizPage />} />
@@ -108,6 +111,7 @@ function App() {
                     <Route path="/admin/pagos" element={<PaymentsPage />} />
                     <Route path="/admin/webinar-leads" element={<WebinarLeadsPage />} />
                     <Route path="/admin/promos" element={<PromosPage />} />
+                    <Route path="/admin/testimonios" element={<TestimonialsAdmin />} />
                 </Route>
               </Route>
 

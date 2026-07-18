@@ -250,6 +250,13 @@ function AdminDashboard() {
             <p className="text-xs text-gray-500">Activar / desactivar</p>
           </div>
         </Link>
+        <Link to="/admin/testimonios" className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-[#FDE5E5] text-[#905361]">💬</div>
+          <div>
+            <p className="font-bold text-[#1B3854]">Testimonios</p>
+            <p className="text-xs text-gray-500">Moderar y destacar</p>
+          </div>
+        </Link>
       </div>
 
       {/* SECCIÓN: Cursos */}
