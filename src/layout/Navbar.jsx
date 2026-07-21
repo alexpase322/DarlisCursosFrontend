@@ -6,7 +6,12 @@ import io from "socket.io-client";
 // AÑADIDO: Importamos icono Menu
 import { LogOut, Bell, Menu, Check, MessageCircle, Heart, Info } from "lucide-react";
 
-const socket = io(import.meta.env.VITE_BACKEND_URL || "http://localhost:5000");
+const socket = io(import.meta.env.VITE_BACKEND_URL || "http://localhost:5000", {
+  auth: { token: localStorage.getItem("token") },
+});
+socket.on("connect_error", () => {
+  socket.auth = { token: localStorage.getItem("token") };
+});
 
 // AÑADIDO: Recibimos toggleSidebar como prop
 const Navbar = ({ toggleSidebar }) => {

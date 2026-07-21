@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 const SITE_URL = "https://arquitectadetupropioexito.com";
-const DEFAULT_IMAGE = `${SITE_URL}/social-preview.svg`;
+const DEFAULT_IMAGE = `${SITE_URL}/social-preview.png`;
 
 const upsertMeta = (selector, attributes) => {
   let element = document.head.querySelector(selector);

@@ -18,8 +18,15 @@ import {
     ArrowLeft // <--- Nuevo icono para móvil
 } from "lucide-react";
 
-// Conexión fuera del componente
-const socket = io(import.meta.env.VITE_BACKEND_URL || "http://localhost:5000");
+// Conexión fuera del componente — autenticada con el JWT del usuario.
+const socket = io(import.meta.env.VITE_BACKEND_URL || "http://localhost:5000", {
+  auth: { token: localStorage.getItem("token") },
+  autoConnect: true
+});
+// Refresca el token en el handshake por si cambió (re-login) antes de reconectar.
+socket.on("connect_error", () => {
+  socket.auth = { token: localStorage.getItem("token") };
+});
 
 function ChatPage() {
   const { user } = useAuth();

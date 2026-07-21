@@ -1,6 +1,6 @@
 import { SITE_URL } from "./components/Seo";
 
-const defaultImage = `${SITE_URL}/social-preview.svg`;
+const defaultImage = `${SITE_URL}/social-preview.png`;
 
 export const seoConfigs = {
   home: {
