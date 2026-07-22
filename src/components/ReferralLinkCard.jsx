@@ -106,12 +106,10 @@ const ReferralLinkCard = () => {
                 <p className="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-3">
                     Lo que ganas por cada venta
                 </p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                     {[
-                        { key: "monthly",   label: "Mensual" },
-                        { key: "quarterly", label: "Trimestral" },
-                        { key: "yearly",    label: "Anual" },
-                        { key: "lifetime",  label: "Pago único" }
+                        { key: "monthly",  label: "Mensual" },
+                        { key: "lifetime", label: "Pago único" }
                     ].map(({ key, label }) => {
                         const e = data.earnings?.[key];
                         if (!e) return null;
