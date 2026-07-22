@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from '../../api/axios';
 import { Link } from 'react-router-dom';
-import { Loader2, Search } from 'lucide-react';
+import { Loader2, Search, Link2 } from 'lucide-react';
 import PartnerBadge from '../../components/PartnerBadge';
 import { toast } from 'react-hot-toast';
 
@@ -46,6 +46,22 @@ const AffiliatesCRM = () => {
         <div>
           <h1 className="text-3xl font-bold text-[#1B3854]">Afiliadas</h1>
           <p className="text-gray-500 mt-1">{total} afiliadas registradas</p>
+          <button
+            type="button"
+            onClick={async () => {
+              if (!window.confirm("Generar el link de afiliada para todas las Partners que aún no lo tengan?")) return;
+              const tId = toast.loading("Generando links...");
+              try {
+                const { data } = await axios.post("/admin/affiliates/generate-links", {});
+                toast.success(`Listo · ${data.created} links nuevos de ${data.scanned} revisadas`, { id: tId, duration: 6000 });
+              } catch (e) {
+                toast.error(e.response?.data?.message || "Error al generar links", { id: tId });
+              }
+            }}
+            className="mt-3 inline-flex items-center gap-2 px-3 py-2 text-xs font-bold bg-white border border-gray-200 text-[#905361] rounded-lg hover:bg-[#FDE5E5] transition"
+          >
+            <Link2 size={14} /> Generar links de afiliada
+          </button>
         </div>
         <form onSubmit={onSearch} className="flex gap-2 w-full md:w-auto">
           <div className="relative flex-1 md:w-72">

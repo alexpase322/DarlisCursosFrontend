@@ -48,6 +48,7 @@ import WebinarLeadsPage from './pages/admin/WebinarLeadsPage';
 import PromosPage from './pages/admin/PromosPage';
 import TestimonialsPage from './pages/TestimonialsPage';
 import TestimonialsAdmin from './pages/admin/TestimonialsAdmin';
+import ReferralRedirect from './pages/ReferralRedirect';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
@@ -72,6 +73,8 @@ function App() {
             <Route path="/amazon-resenas" element={<AmazonResenas />} />
             <Route path="/amazon-influencer" element={<AmazonInfluencerGuide />} />
             <Route path="/webinar" element={<Webinar />} />
+            {/* Link de afiliada: /r/<codigo> */}
+            <Route path="/r/:code" element={<ReferralRedirect />} />
             {/* Rutas Privadas (CON Layout) */}
             <Route element={<ProtectedRoute />}>
               

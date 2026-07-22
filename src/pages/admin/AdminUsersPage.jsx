@@ -38,14 +38,40 @@ const AdminUsersPage = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("¿Seguro que quieres eliminar a este usuario de la base de datos?")) return;
+    const target = users.find(u => u._id === id);
+    const nombre = target?.username || "esta usuaria";
+    const confirmMsg =
+      `¿Eliminar a ${nombre}?\n\n` +
+      `Esto además:\n` +
+      `• Cancela su suscripción en Stripe (deja de cobrarle)\n` +
+      `• Anula las comisiones asociadas a ella\n` +
+      `• Desvincula a sus referidas\n` +
+      `• Borra sus publicaciones, testimonios y notificaciones\n\n` +
+      `Su historial de pagos se conserva. Esta acción no se puede deshacer.`;
+
+    if (!window.confirm(confirmMsg)) return;
+
+    const tId = toast.loading("Eliminando y limpiando datos...");
     try {
-      await axios.delete(`/users/${id}`);
-      toast.success("Usuario eliminado");
+      const { data } = await axios.delete(`/users/${id}`);
+      const s = data?.stats || {};
+      const partes = [];
+      if (s.stripeCanceled) partes.push("sub. Stripe cancelada");
+      else if (s.stripeSkipped) partes.push(`sub. ${s.stripeSkipped} (sin Stripe)`);
+      const comisiones = (s.commissionsVoidedAsReferred || 0) + (s.commissionsVoidedAsAffiliate || 0);
+      if (comisiones) partes.push(`${comisiones} comisiones anuladas`);
+      if (s.referralsOrphaned) partes.push(`${s.referralsOrphaned} referidas desvinculadas`);
+
+      toast.success(
+        partes.length ? `Eliminada · ${partes.join(" · ")}` : "Usuaria eliminada",
+        { id: tId, duration: 7000 }
+      );
+      if (s.stripeError) toast.error(`Stripe: ${s.stripeError}`, { duration: 8000 });
+
       // Optimista: actualizamos estado local sin recargar todo
       setUsers(users.filter(u => u._id !== id));
     } catch (error) {
-      toast.error("Error al eliminar");
+      toast.error(error.response?.data?.message || "Error al eliminar", { id: tId });
     }
   };
 

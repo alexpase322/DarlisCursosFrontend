@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 import { Loader2, DollarSign, Users, CheckCircle2, Clock, Wallet, TrendingUp, CalendarClock, Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PartnerBadge from '../../components/PartnerBadge';
+import ReferralLinkCard from '../../components/ReferralLinkCard';
 import { useAuth } from '../../context/AuthContext';
 
 const StatCard = ({ icon: Icon, label, value, accent = '#1B3854' }) => (
@@ -67,6 +68,9 @@ const AffiliateDashboard = () => {
         </div>
         <PartnerBadge level={summary?.partnerLevel || user?.partnerLevel} size="lg" />
       </header>
+
+      {/* Tu link único de afiliada */}
+      <ReferralLinkCard />
 
       {/* Este mes — proyección y ganancia */}
       <section className="bg-gradient-to-br from-[#1B3854] to-[#2a4d6e] text-white rounded-2xl p-6 mb-6 shadow-md">

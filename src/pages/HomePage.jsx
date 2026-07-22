@@ -19,6 +19,7 @@ import FloatingCTA from "../components/FloatingCTA";
 import AnimatedCounter from "../components/AnimatedCounter";
 import MarqueeStats from "../components/MarqueeStats";
 import ScrollReveal from "../components/ScrollReveal";
+import { getReferral, captureReferralFromUrl } from "../utils/referral";
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -40,6 +41,9 @@ const HomePage = () => {
       if (data?.quarterly?.enabled) setActivePromo(data.quarterly);
     }).catch(() => {});
   }, []);
+
+  // Captura la atribución de afiliada si llegan con ?ref=<codigo>
+  useEffect(() => { captureReferralFromUrl(); }, []);
 
   // --- DATOS DEL PROGRAMA ---
   const CURRICULUM = [
@@ -133,15 +137,27 @@ const HomePage = () => {
   const PLAN_IDS = {
     MONTHLY: "price_1SnZK0DP5qCZDXVtTwJzTKDX",
     QUARTERLY: "price_1SnZKwDP5qCZDXVtEhJsyc46",
-    YEARLY: "price_1TPrzlDP5qCZDXVtc0N9bgOF"
+    YEARLY: "price_1TPrzlDP5qCZDXVtc0N9bgOF",
+    // Pago único $247 (acceso de por vida + activación como Partner).
+    // ← Pega aquí el Price ID del producto de pago único que crees en Stripe.
+    LIFETIME: import.meta.env.VITE_STRIPE_PRICE_LIFETIME || ""
   };
 
   const handleSubscribe = async (priceId) => {
+    if (!priceId) {
+      toast.error("Este plan aún no está disponible. Escríbenos por WhatsApp.");
+      return;
+    }
     setLoading(true);
     try {
-      const payload = user ? { priceId, email: user.email } : { priceId };
+      const payload = { priceId };
+      if (user) payload.email = user.email;
+      // Atribución de afiliada (si llegó por un link /r/<codigo> o ?ref=)
+      const ref = getReferral();
+      if (ref) payload.referralCode = ref;
+
       const { data } = await axios.post("/payment/create-checkout-session", payload);
-      window.location.href = data.url; 
+      window.location.href = data.url;
     } catch (error) {
       console.error(error);
       toast.error("Error al conectar con la pasarela de pago");
@@ -663,6 +679,74 @@ const HomePage = () => {
                     </button>
                 </motion.div>
             </div>
+
+            {/* --- PLAN DE PAGO ÚNICO: ACCESO DE POR VIDA + PARTNER --- */}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="mt-12 relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#1B3854] via-[#24507a] to-[#905361] p-1 shadow-2xl"
+            >
+                <div className="relative rounded-[1.9rem] bg-[#1B3854] px-8 py-10 md:px-14 md:py-12 text-white overflow-hidden">
+                    {/* Halos decorativos */}
+                    <div className="absolute -top-16 -right-16 w-72 h-72 bg-[#905361] opacity-30 rounded-full blur-3xl" />
+                    <div className="absolute -bottom-20 -left-10 w-72 h-72 bg-[#FDE5E5] opacity-10 rounded-full blur-3xl" />
+
+                    <div className="relative flex flex-col lg:flex-row items-center gap-10">
+                        {/* Copy */}
+                        <div className="flex-1 text-center lg:text-left">
+                            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/40 text-[#F0D98C] font-bold text-xs tracking-widest uppercase mb-4">
+                                👑 Pago único · Sin mensualidades
+                            </span>
+                            <h3 className="text-3xl md:text-4xl font-extrabold mb-3 leading-tight">
+                                Acceso de por vida <span className="text-[#FDE5E5]">+ conviértete en Partner</span>
+                            </h3>
+                            <p className="text-white/80 text-base md:text-lg mb-6 max-w-xl mx-auto lg:mx-0">
+                                Pagas una sola vez y el acceso es tuyo para siempre. Además quedas activada
+                                como afiliada desde el día uno, con tu propio link para empezar a generar ingresos.
+                            </p>
+
+                            <ul className="space-y-3 mb-8 text-left max-w-md mx-auto lg:mx-0">
+                                {[
+                                    "Acceso permanente a todos los cursos, presentes y futuros",
+                                    "Activación inmediata como Partner (afiliada)",
+                                    "Tu link de afiliada personal desde el primer día",
+                                    "Ganas $197 USD por cada persona que traigas con este plan",
+                                    "Comunidad privada y mentorías incluidas de por vida"
+                                ].map((f, i) => (
+                                    <li key={i} className="flex gap-3 text-sm md:text-base text-white/90">
+                                        <Check size={20} className="text-[#F0D98C] shrink-0 mt-0.5" /> {f}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Precio + CTA */}
+                        <div className="w-full lg:w-auto lg:min-w-[300px] bg-white/10 backdrop-blur border border-white/20 rounded-3xl p-8 text-center">
+                            <p className="text-xs uppercase tracking-widest text-white/60 font-bold mb-2">Inversión única</p>
+                            <div className="mb-1">
+                                <span className="text-6xl font-extrabold">$247</span>
+                                <span className="text-white/60 text-lg"> USD</span>
+                            </div>
+                            <p className="text-sm text-white/70 mb-6">Una sola vez. Nunca más.</p>
+
+                            <button
+                                onClick={() => handleSubscribe(PLAN_IDS.LIFETIME)}
+                                disabled={loading}
+                                className="w-full py-4 rounded-xl font-bold bg-gradient-to-r from-[#D4AF37] to-[#c19b2e] text-[#1B3854] hover:from-[#e0bc44] hover:to-[#d0aa3a] shadow-xl transition-all text-lg disabled:opacity-70"
+                            >
+                                {loading ? <Loader2 className="animate-spin mx-auto" /> : "Quiero mi acceso de por vida"}
+                            </button>
+
+                            <div className="mt-5 pt-5 border-t border-white/15">
+                                <p className="text-xs text-white/70 leading-relaxed">
+                                    Con <span className="font-bold text-[#F0D98C]">2 personas</span> que refieras
+                                    con este plan, ya recuperaste tu inversión.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </motion.div>
         </div>
       </section>
 
