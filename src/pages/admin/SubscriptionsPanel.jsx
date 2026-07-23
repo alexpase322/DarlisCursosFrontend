@@ -299,12 +299,13 @@ const SubscriptionsPanel = () => {
   );
 };
 
-const PLAN_DEFAULTS = { monthly: 50, quarterly: 120, yearly: 397 };
+const PLAN_DEFAULTS = { monthly: 50, quarterly: 120, yearly: 397, lifetime: 247 };
 
 const ManualPaymentModal = ({ user, onClose, onSaved }) => {
   const today = new Date().toISOString().slice(0, 10);
-  const [plan, setPlan] = useState(user.lastPayment?.plan || "monthly");
-  const [amountUSD, setAmountUSD] = useState(PLAN_DEFAULTS[user.lastPayment?.plan || "monthly"]);
+  const initialPlan = user.lastPayment?.plan || "monthly";
+  const [plan, setPlan] = useState(initialPlan);
+  const [amountUSD, setAmountUSD] = useState(PLAN_DEFAULTS[initialPlan] || 50);
   const [paidAt, setPaidAt] = useState(today);
   const [method, setMethod] = useState("transfer");
   const [note, setNote] = useState("");
@@ -326,7 +327,11 @@ const ManualPaymentModal = ({ user, onClose, onSaved }) => {
         plan, amountUSD: Number(amountUSD), paidAt, method, note, updateSubscription
       });
       if (data?.commission) {
-        toast.success(`Pago registrado · comisión generada: $${data.commission.amountUSD.toFixed(2)}`, { id: tId, duration: 6000 });
+        const c = data.commission;
+        const msg = c.payoutSource === "beacons"
+          ? `Pago registrado · comisión $${c.amountUSD.toFixed(2)} marcada como pagada por Beacons`
+          : `Pago registrado · comisión generada: $${c.amountUSD.toFixed(2)}`;
+        toast.success(msg, { id: tId, duration: 6000 });
       } else {
         toast.success("Pago registrado", { id: tId });
       }
@@ -363,9 +368,10 @@ const ManualPaymentModal = ({ user, onClose, onSaved }) => {
               onChange={(e) => onPlanChange(e.target.value)}
               className="w-full px-3 py-2 border border-gray-200 rounded-lg"
             >
-              <option value="monthly">Mensual</option>
-              <option value="quarterly">Trimestral</option>
-              <option value="yearly">Anual</option>
+              <option value="monthly">Mensual ($50)</option>
+              <option value="lifetime">Pago único / de por vida ($247)</option>
+              <option value="quarterly">Trimestral ($120) · legacy</option>
+              <option value="yearly">Anual ($397) · legacy</option>
             </select>
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -402,6 +408,12 @@ const ManualPaymentModal = ({ user, onClose, onSaved }) => {
               <option value="cash">Efectivo</option>
               <option value="other">Otro</option>
             </select>
+            {method === "beacons" && (
+              <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5 mt-1.5">
+                Beacons paga la comisión a la afiliada. Se registra aquí solo para trazabilidad
+                (nace como <strong>pagada</strong>, no entra en tu "pendiente por pagar").
+              </p>
+            )}
           </div>
           <div>
             <label className="block text-xs font-bold text-gray-600 mb-1">Nota (opcional)</label>
