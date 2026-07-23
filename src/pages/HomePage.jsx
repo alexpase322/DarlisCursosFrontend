@@ -37,6 +37,12 @@ const HomePage = () => {
   // Captura la atribución de afiliada si llegan con ?ref=<codigo>
   useEffect(() => { captureReferralFromUrl(); }, []);
 
+  // Price IDs vigentes traídos del servidor en runtime (así no dependen del build).
+  const [priceConfig, setPriceConfig] = useState({});
+  useEffect(() => {
+    axios.get("/payment/config").then(({ data }) => setPriceConfig(data || {})).catch(() => {});
+  }, []);
+
   // --- DATOS DEL PROGRAMA ---
   const CURRICULUM = [
     {
@@ -126,11 +132,11 @@ const HomePage = () => {
   ];
 
   // --- CONFIGURACIÓN DE STRIPE ---
+  // Prioridad: config del servidor (runtime) → variable de build → valor fijo.
   const PLAN_IDS = {
-    MONTHLY: "price_1SnZK0DP5qCZDXVtTwJzTKDX",
+    MONTHLY: priceConfig.monthly || "price_1SnZK0DP5qCZDXVtTwJzTKDX",
     // Pago único $247 (acceso de por vida + activación como Partner).
-    // ← Pega aquí el Price ID del producto de pago único que crees en Stripe.
-    LIFETIME: import.meta.env.VITE_STRIPE_PRICE_LIFETIME || ""
+    LIFETIME: priceConfig.lifetime || import.meta.env.VITE_STRIPE_PRICE_LIFETIME || ""
   };
 
   const handleSubscribe = async (priceId) => {
