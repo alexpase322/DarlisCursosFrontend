@@ -187,7 +187,9 @@ const ReassignReferrerModal = ({ userId, userName, onClose, onSaved }) => {
                                             <p className="font-bold text-[#1B3854] text-xs truncate">{p.username}</p>
                                             <p className="text-[10px] text-gray-500 truncate">{p.email}</p>
                                         </div>
-                                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#1B3854] text-white">N{p.partnerLevel}</span>
+                                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#1B3854] text-white">
+                                            {p.role === 'admin' ? 'ADMIN' : `N${p.partnerLevel}`}
+                                        </span>
                                         {String(selectedId) === String(p._id) && <CheckCircle2 size={16} className="text-[#905361]" />}
                                     </button>
                                 ))}
