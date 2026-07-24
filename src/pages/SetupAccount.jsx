@@ -1,39 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from '../api/axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { Camera, User, Lock, CheckCircle, Loader2, Heart } from "lucide-react";
+import { Camera, User, Lock, CheckCircle, Loader2 } from "lucide-react";
 
 const SetupAccount = () => {
   const { token } = useParams();
   const navigate = useNavigate();
 
+  // La atribución de referidora ya NO se pide aquí: viene del link /r/<codigo>
+  // que la alumna usó al comprar. Si llegó por otra vía (ej. Beacons), el admin
+  // la asigna desde "Reasignar referidora" en el panel de usuarias.
   const [formData, setFormData] = useState({
     username: '',
     password: '',
-    referredBy: '',
   });
 
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [affiliates, setAffiliates] = useState([]);
-  const [loadingAffiliates, setLoadingAffiliates] = useState(true);
-
-  useEffect(() => {
-    let mounted = true;
-    axios.get('/auth/affiliates-public')
-      .then(({ data }) => {
-        if (mounted) setAffiliates(data || []);
-      })
-      .catch((err) => {
-        console.error('No se pudo cargar afiliadas', err);
-      })
-      .finally(() => {
-        if (mounted) setLoadingAffiliates(false);
-      });
-    return () => { mounted = false; };
-  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -56,9 +41,6 @@ const SetupAccount = () => {
       const data = new FormData();
       data.append('username', formData.username);
       data.append('password', formData.password);
-      if (formData.referredBy) {
-        data.append('referredBy', formData.referredBy);
-      }
       if (file) {
         data.append('image', file);
       }
@@ -152,29 +134,6 @@ const SetupAccount = () => {
                 </div>
             </div>
 
-            <div>
-                <label className="block text-sm font-bold text-[#1B3854] mb-1 ml-1">¿Qué alumna te invitó? <span className="font-normal text-gray-400">(opcional)</span></label>
-                <div className="relative">
-                    <Heart className="absolute left-3 top-3.5 text-gray-400" size={18} />
-                    <select
-                        name="referredBy"
-                        className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#905361]/50 focus:border-[#905361] transition-all appearance-none"
-                        value={formData.referredBy}
-                        onChange={handleChange}
-                        disabled={loadingAffiliates}
-                    >
-                        <option value="">— Ninguna / no recuerdo —</option>
-                        {affiliates.map((a) => (
-                            <option key={a._id} value={a._id}>
-                                {a.username}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                {loadingAffiliates && (
-                    <p className="text-xs text-gray-400 mt-1 ml-1">Cargando lista de afiliadas…</p>
-                )}
-            </div>
           </div>
 
           <button
