@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "../api/axios";
 import { toast } from "react-hot-toast";
-import { Link2, Copy, Check, Share2, MousePointerClick, Loader2 } from "lucide-react";
+import { Link2, Copy, Check, Share2, MousePointerClick, Loader2, Pencil, RefreshCw, X } from "lucide-react";
 
 const fmtUSD = (n) => `$${Number(n || 0).toFixed(2)}`;
 
@@ -10,6 +10,9 @@ const ReferralLinkCard = () => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
+    const [editing, setEditing] = useState(false);
+    const [customCode, setCustomCode] = useState("");
+    const [savingCode, setSavingCode] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -21,6 +24,35 @@ const ReferralLinkCard = () => {
             } finally { setLoading(false); }
         })();
     }, []);
+
+    // Personaliza el código con el texto que escriba la afiliada.
+    const saveCustom = async () => {
+        if (savingCode || !customCode.trim()) return;
+        setSavingCode(true);
+        try {
+            const { data: res } = await axios.put("/affiliate/me/link", { customCode });
+            setData((d) => ({ ...d, code: res.code, link: res.link }));
+            setEditing(false);
+            setCustomCode("");
+            toast.success("¡Tu link quedó personalizado!");
+        } catch (err) {
+            toast.error(err.response?.data?.message || "No se pudo actualizar");
+        } finally { setSavingCode(false); }
+    };
+
+    // Regenera el código a partir del nombre actual (sin personalizar).
+    const regenerate = async () => {
+        if (savingCode) return;
+        setSavingCode(true);
+        try {
+            const { data: res } = await axios.put("/affiliate/me/link", {});
+            setData((d) => ({ ...d, code: res.code, link: res.link }));
+            setEditing(false);
+            toast.success("Link regenerado con tu nombre");
+        } catch (err) {
+            toast.error(err.response?.data?.message || "No se pudo regenerar");
+        } finally { setSavingCode(false); }
+    };
 
     const copy = async () => {
         if (!data?.link) return;
@@ -56,14 +88,66 @@ const ReferralLinkCard = () => {
 
     return (
         <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
-            <div className="flex items-center gap-2 mb-1">
-                <Link2 size={18} className="text-[#905361]" />
-                <h2 className="font-bold text-[#1B3854]">Tu link de afiliada</h2>
+            <div className="flex items-center justify-between gap-2 mb-1">
+                <div className="flex items-center gap-2">
+                    <Link2 size={18} className="text-[#905361]" />
+                    <h2 className="font-bold text-[#1B3854]">Tu link de afiliada</h2>
+                </div>
+                <button
+                    type="button"
+                    onClick={() => { setEditing((v) => !v); setCustomCode(data.code || ""); }}
+                    className="flex items-center gap-1 text-xs font-bold text-gray-500 hover:text-[#905361] transition"
+                >
+                    {editing ? <X size={14} /> : <Pencil size={14} />}
+                    {editing ? "Cerrar" : "Personalizar"}
+                </button>
             </div>
             <p className="text-xs text-gray-500 mb-4">
                 Comparte este link. Toda persona que compre desde él queda registrada como tu referida
                 automáticamente (durante 60 días).
             </p>
+
+            {/* Panel de personalización */}
+            {editing && (
+                <div className="bg-[#F7F2EF] border border-[#FDE5E5] rounded-xl p-4 mb-4">
+                    <p className="text-xs font-bold text-gray-600 mb-2">Personaliza el final de tu link</p>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                        <div className="flex-1 flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden">
+                            <span className="pl-3 pr-1 text-xs text-gray-400 whitespace-nowrap">/r/</span>
+                            <input
+                                type="text"
+                                value={customCode}
+                                onChange={(e) => setCustomCode(e.target.value)}
+                                placeholder="tu-nombre"
+                                maxLength={40}
+                                className="flex-1 py-2 pr-3 text-sm outline-none"
+                            />
+                        </div>
+                        <button
+                            type="button"
+                            onClick={saveCustom}
+                            disabled={savingCode || !customCode.trim()}
+                            className="px-4 py-2 bg-[#905361] text-white rounded-lg text-sm font-bold hover:bg-[#5E2B35] disabled:opacity-50 flex items-center justify-center gap-1"
+                        >
+                            {savingCode ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+                            Guardar
+                        </button>
+                    </div>
+                    <div className="flex items-center gap-2 mt-3">
+                        <button
+                            type="button"
+                            onClick={regenerate}
+                            disabled={savingCode}
+                            className="flex items-center gap-1 text-xs font-bold text-[#905361] hover:underline disabled:opacity-50"
+                        >
+                            <RefreshCw size={12} /> O regenerarlo con mi nombre
+                        </button>
+                    </div>
+                    <p className="text-[10px] text-gray-400 mt-2">
+                        Solo letras, números y guiones. Se convierte a minúsculas. Si ya está en uso, elige otro.
+                    </p>
+                </div>
+            )}
 
             {/* Link + acciones */}
             <div className="flex flex-col sm:flex-row gap-2 mb-4">
