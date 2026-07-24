@@ -26,10 +26,14 @@ const CommissionsPage = () => {
     try {
       const { data } = await axios.post('/admin/commissions/recalculate', {});
       const s = data?.stats || {};
-      toast.success(
-        `Listo · creadas: ${s.totalCreated ?? 0} · saltadas: ${s.totalSkipped ?? 0} · usuarias: ${s.processedUsers ?? 0}`,
-        { id: tId, duration: 6000 }
-      );
+      const partes = [
+        `${s.processedUsers ?? 0} usuarias`,
+        `${s.totalCreated ?? 0} comisiones nuevas`
+      ];
+      if (s.orphansVoided) {
+        partes.push(`${s.orphansVoided} huérfanas anuladas ($${Number(s.orphansAmountUSD || 0).toFixed(2)})`);
+      }
+      toast.success(`Listo · ${partes.join(' · ')}`, { id: tId, duration: 8000 });
       fetchData();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Error al recalcular', { id: tId });
@@ -168,21 +172,36 @@ const CommissionsPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {items.map(c => (
-                  <tr key={c._id} className="border-b last:border-b-0 hover:bg-gray-50">
+                {items.map(c => {
+                  // Huérfana: la afiliada o la referida ya no existe (usuaria eliminada).
+                  const orphan = !c.affiliate || !c.referredUser;
+                  return (
+                  <tr key={c._id} className={`border-b last:border-b-0 hover:bg-gray-50 ${orphan ? 'bg-amber-50/50' : ''}`}>
                     <td className="px-3 py-2">
-                      {c.status === 'available' && (
+                      {c.status === 'available' && !orphan && (
                         <input type="checkbox" checked={selected.has(c._id)} onChange={() => toggle(c._id)} />
                       )}
                     </td>
                     <td className="px-3 py-2 text-gray-500">{new Date(c.createdAt).toLocaleDateString()}</td>
-                    <td className="px-3 py-2">{c.affiliate?.username || '—'}</td>
-                    <td className="px-3 py-2">{c.referredUser?.username || '—'}</td>
+                    <td className="px-3 py-2">
+                      {c.affiliate?.username || <span className="text-amber-700 italic">eliminada</span>}
+                    </td>
+                    <td className="px-3 py-2">
+                      {c.referredUser?.username || <span className="text-amber-700 italic">eliminada</span>}
+                    </td>
                     <td className="px-3 py-2 capitalize">{c.plan}</td>
                     <td className="px-3 py-2 font-bold text-[#1B3854]">{fmtUSD(c.commissionAmountUSD)}</td>
-                    <td className="px-3 py-2"><CommissionStatusPill status={c.status} /></td>
+                    <td className="px-3 py-2">
+                      <CommissionStatusPill status={c.status} />
+                      {orphan && c.status !== 'voided' && (
+                        <p className="text-[10px] text-amber-700 font-bold mt-0.5">
+                          ⚠ Huérfana · usa "Recalcular"
+                        </p>
+                      )}
+                    </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
