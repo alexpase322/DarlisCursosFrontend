@@ -49,6 +49,7 @@ import PromosPage from './pages/admin/PromosPage';
 import TestimonialsPage from './pages/TestimonialsPage';
 import TestimonialsAdmin from './pages/admin/TestimonialsAdmin';
 import ReferralRedirect from './pages/ReferralRedirect';
+import PublicProfilePage from './pages/PublicProfilePage';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
@@ -84,6 +85,7 @@ function App() {
                  <Route path="/perfil" element={<ProfilePage />} />
                  <Route path="/muro" element={<WallPage />} />
                  <Route path="/testimonios" element={<TestimonialsPage />} />
+                 <Route path="/alumna/:id" element={<PublicProfilePage />} />
                  <Route path="/chat" element={<ChatPage />} />
                  <Route path="/course/:id" element={<CourseViewer />} />
                  <Route path="/course/:id/quiz" element={<QuizPage />} />

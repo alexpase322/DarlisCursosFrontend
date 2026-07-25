@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-hot-toast";
@@ -14,6 +15,7 @@ function WallPage() {
   const [loading, setLoading] = useState(false);
   
   const [openCommentsId, setOpenCommentsId] = useState(null);
+  const [lightbox, setLightbox] = useState(null); // URL de la imagen ampliada
   const [commentText, setCommentText] = useState("");
 
   useEffect(() => {
@@ -164,19 +166,24 @@ function WallPage() {
             {/* Header del Post */}
             <div className="p-5 flex justify-between items-start">
                 <div className="flex gap-3 items-center">
-                    <AvatarFrame
-                        src={post.author?.avatar}
-                        alt={post.author?.username}
-                        tier={post.author?.topAchievementTier}
-                        size="md"
-                        showBadge={!!post.author?.topAchievementTier}
-                    />
+                    <Link to={`/alumna/${post.author?._id}`} title={`Ver perfil de ${post.author?.username}`}>
+                        <AvatarFrame
+                            src={post.author?.avatar}
+                            alt={post.author?.username}
+                            tier={post.author?.topAchievementTier}
+                            size="md"
+                            showBadge={!!post.author?.topAchievementTier}
+                        />
+                    </Link>
                     <div>
-                        <h4 className="font-bold text-[#1B3854] text-sm flex items-center gap-1.5">
+                        <Link
+                            to={`/alumna/${post.author?._id}`}
+                            className="font-bold text-[#1B3854] text-sm flex items-center gap-1.5 hover:text-[#905361] transition"
+                        >
                             {post.author?.username}
                             {post.author?.topAchievementTier === 'diamond' && <span title="Top Arquitecta">💎</span>}
                             {post.author?.topAchievementTier === 'gold' && <span title="Logro oro">👑</span>}
-                        </h4>
+                        </Link>
                         <div className="flex items-center gap-2 text-xs text-gray-400">
                             <span>{new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                             {post.author?.role === 'admin' && (
@@ -206,11 +213,22 @@ function WallPage() {
                 <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{post.content}</p>
             </div>
 
-            {/* Contenido Imagen */}
+            {/* Contenido Imagen — object-contain para NO recortar fotos verticales.
+                El fondo crema rellena el espacio sobrante y se ve intencional. */}
             {post.image && (
-                <div className="w-full bg-gray-50 border-y border-gray-50">
-                    <img src={post.image} alt="Contenido" className="w-full max-h-[500px] object-cover" />
-                </div>
+                <button
+                    type="button"
+                    onClick={() => setLightbox(post.image)}
+                    className="block w-full bg-[#F7F2EF] border-y border-gray-100 cursor-zoom-in"
+                    title="Toca para ampliar"
+                >
+                    <img
+                        src={post.image}
+                        alt="Contenido de la publicación"
+                        loading="lazy"
+                        className="w-full max-h-[520px] object-contain"
+                    />
+                </button>
             )}
 
             {/* Footer de Acciones */}
@@ -252,15 +270,20 @@ function WallPage() {
                             ) : (
                                 post.comments.map((comment, idx) => (
                                     <div key={idx} className="flex gap-3">
-                                        <div className="mt-1 flex-shrink-0">
+                                        <Link to={`/alumna/${comment.user?._id}`} className="mt-1 flex-shrink-0">
                                             <AvatarFrame
                                                 src={comment.user?.avatar}
                                                 tier={comment.user?.topAchievementTier}
                                                 size="sm"
                                             />
-                                        </div>
+                                        </Link>
                                         <div className="bg-[#F7F2EF] px-4 py-2 rounded-2xl rounded-tl-none text-sm text-gray-700 w-full">
-                                            <span className="font-bold text-[#1B3854] text-xs block mb-0.5">{comment.user?.username}</span>
+                                            <Link
+                                                to={`/alumna/${comment.user?._id}`}
+                                                className="font-bold text-[#1B3854] text-xs block mb-0.5 hover:text-[#905361] transition"
+                                            >
+                                                {comment.user?.username}
+                                            </Link>
                                             {comment.text}
                                         </div>
                                     </div>
@@ -292,6 +315,31 @@ function WallPage() {
             </div>
         ))}
       </div>
+
+      {/* Visor de imagen ampliada */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          onClick={() => setLightbox(null)}
+          role="dialog"
+          aria-label="Imagen ampliada"
+        >
+          <button
+            type="button"
+            onClick={() => setLightbox(null)}
+            className="absolute top-4 right-4 text-white/80 hover:text-white p-2 rounded-full hover:bg-white/10 transition"
+            aria-label="Cerrar"
+          >
+            <X size={26} />
+          </button>
+          <img
+            src={lightbox}
+            alt="Imagen ampliada"
+            onClick={(e) => e.stopPropagation()}
+            className="max-w-full max-h-[90vh] object-contain rounded-lg"
+          />
+        </div>
+      )}
     </div>
   );
 }
