@@ -3,7 +3,7 @@ import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 // Importamos los iconos de Lucide
-import { Users, Mail, Plus, Trash2, Settings, X, Sparkles, ClipboardList, DollarSign, RefreshCw, CreditCard, TrendingUp, BarChart3 } from "lucide-react";
+import { Users, Mail, Plus, Trash2, Settings, X, Sparkles, ClipboardList, DollarSign, RefreshCw, CreditCard, TrendingUp, BarChart3, Landmark } from "lucide-react";
 import PushNotificationsButton from "../../components/PushNotificationsButton";
 
 function AdminDashboard() {
@@ -163,40 +163,6 @@ function AdminDashboard() {
             🏆 <span className="inline">Logros y niveles</span>
           </button>
 
-          {/* Recalcular rangos de Arquitecta */}
-          <button
-            onClick={async () => {
-              const avisar = window.confirm(
-                [
-                  "Recalcular los rangos de Arquitecta según el total facturado de cada afiliada.",
-                  "",
-                  "Aceptar = avisar a quienes suban de rango (notificación + CORREO).",
-                  "Cancelar = recalcular en silencio.",
-                  "",
-                  "La primera vez usa Cancelar: si no, se enviaría un correo de golpe",
-                  "a todas las que ya superaron algún umbral."
-                ].join("\n")
-              );
-              const tId = toast.loading("Recalculando rangos...");
-              try {
-                const { data } = await axios.post(
-                  `/admin/ranks/recalculate-all${avisar ? "?notify=1" : ""}`, {}
-                );
-                toast.success(
-                  `${data.evaluadas} afiliadas · ${data.ascensos} ascensos` +
-                  (avisar ? " (avisadas)" : " (sin avisar)"),
-                  { id: tId, duration: 8000 }
-                );
-              } catch (e) {
-                toast.error(e.response?.data?.message || "Error al recalcular rangos", { id: tId });
-              }
-            }}
-            title="Asigna a cada afiliada su rango (Bronce, Plata, Oro...) segun el total historico de comisiones generadas. Usalo la primera vez para sembrar los rangos."
-            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-[#1B3854] rounded-xl hover:bg-[#FDE5E5] hover:border-[#FDE5E5] transition-all font-medium shadow-sm whitespace-nowrap"
-          >
-            🏛️ <span className="inline">Rangos de Arquitecta</span>
-          </button>
-
           {/* Botón Crear Curso (Destacado) */}
           <Link
             to="/admin/create-course"
@@ -227,12 +193,19 @@ function AdminDashboard() {
       </Link>
 
       {/* CRM Afiliadas — accesos rápidos */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Link to="/admin/afiliadas" className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition flex items-center gap-3">
           <div className="p-3 rounded-xl bg-[#905361]/10 text-[#905361]"><Sparkles size={22} /></div>
           <div>
             <p className="font-bold text-[#1B3854]">Afiliadas</p>
             <p className="text-xs text-gray-500">Ver listado y detalle</p>
+          </div>
+        </Link>
+        <Link to="/admin/rangos" className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-[#1B3854]/10 text-[#1B3854]"><Landmark size={22} /></div>
+          <div>
+            <p className="font-bold text-[#1B3854]">Rangos</p>
+            <p className="text-xs text-gray-500">Títulos por total facturado</p>
           </div>
         </Link>
         <Link to="/admin/solicitudes-partner" className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition flex items-center gap-3">

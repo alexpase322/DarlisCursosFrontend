@@ -5,10 +5,61 @@ import { Download, Share2, Check, Loader2 } from "lucide-react";
 const W = 1080;
 const H = 1350;
 
+const cargarImagen = (src, conCors = false) =>
+    new Promise((resolve, reject) => {
+        const img = new Image();
+        if (conCors) img.crossOrigin = "anonymous";
+        const timeout = setTimeout(() => reject(new Error("timeout")), 8000);
+        img.onload = () => { clearTimeout(timeout); resolve(img); };
+        img.onerror = () => { clearTimeout(timeout); reject(new Error("error de carga")); };
+        img.src = src;
+    });
+
+/**
+ * Carga la foto de perfil de forma que el canvas pueda exportarse.
+ *
+ * El camino directo (<img crossOrigin="anonymous">) falla a menudo: la página ya
+ * mostró ese mismo avatar en un <img> normal, el navegador se guardó la respuesta
+ * SIN cabeceras CORS, y al reusar esa copia cacheada el canvas queda bloqueado.
+ * Por eso se intenta primero por fetch → blob: un blob: URL nunca ensucia el
+ * canvas y además esquiva la copia cacheada.
+ */
+async function cargarAvatar(url) {
+    if (!url) return null;
+
+    // 1) fetch → blob (lo más fiable)
+    try {
+        const res = await fetch(url, { mode: "cors", cache: "no-cache" });
+        if (res.ok) {
+            const blob = await res.blob();
+            const objUrl = URL.createObjectURL(blob);
+            try {
+                return await cargarImagen(objUrl);
+            } finally {
+                URL.revokeObjectURL(objUrl);
+            }
+        }
+    } catch { /* seguimos con el plan B */ }
+
+    // 2) crossOrigin con parámetro extra: fuerza una petición nueva, distinta a
+    //    la que el navegador guardó sin CORS.
+    try {
+        const sep = url.includes("?") ? "&" : "?";
+        return await cargarImagen(url + sep + "canvas=1", true);
+    } catch { /* seguimos con el plan C */ }
+
+    // 3) crossOrigin a secas, por si el avatar es de un origen que sí colabora
+    try {
+        return await cargarImagen(url, true);
+    } catch { /* iniciales */ }
+
+    return null;
+}
+
 // Dibuja la tarjeta del rango en un canvas y devuelve el blob PNG.
 // Se hace en canvas (y no con html2canvas) para que la imagen salga siempre
 // idéntica, sin depender de las fuentes o el zoom del navegador de cada alumna.
-async function renderBadge({ rank, username, avatarUrl }) {
+async function renderBadge({ rank, username, avatarUrl, sinFoto = false }) {
     const canvas = document.createElement("canvas");
     canvas.width = W;
     canvas.height = H;
@@ -72,24 +123,17 @@ async function renderBadge({ rank, username, avatarUrl }) {
     ctx.lineWidth = 8;
     ctx.stroke();
 
-    // Foto de la alumna dentro del medallón. Si Cloudinary no permite CORS,
-    // el canvas quedaría "tainted" y no se podría exportar: en ese caso
-    // caemos a las iniciales, que siempre funcionan.
+    // Foto de la alumna dentro del medallón. Si ninguna de las vías de carga
+    // funciona, caemos a las iniciales, que siempre se pueden dibujar.
     let fotoOk = false;
-    if (avatarUrl) {
+    const img = sinFoto ? null : await cargarAvatar(avatarUrl);
+    if (img) {
         try {
-            const img = await new Promise((resolve, reject) => {
-                const i = new Image();
-                i.crossOrigin = "anonymous";
-                i.onload = () => resolve(i);
-                i.onerror = reject;
-                i.src = avatarUrl;
-                setTimeout(reject, 6000);
-            });
             ctx.save();
             ctx.beginPath();
             ctx.arc(cx, cy, R - 10, 0, Math.PI * 2);
             ctx.clip();
+            // Recorte cuadrado centrado: evita que una foto vertical salga estirada.
             const lado = Math.min(img.width, img.height);
             ctx.drawImage(
                 img,
@@ -98,7 +142,12 @@ async function renderBadge({ rank, username, avatarUrl }) {
             );
             ctx.restore();
             fotoOk = true;
-        } catch { /* seguimos con iniciales */ }
+        } catch (e) {
+            // drawImage no falla, pero toBlob sí lo haría con el canvas manchado:
+            // mejor enterarnos aquí y dibujar las iniciales.
+            console.warn("[tarjeta] no se pudo usar la foto:", e.message);
+            ctx.restore();
+        }
     }
 
     if (!fotoOk) {
@@ -167,7 +216,20 @@ async function renderBadge({ rank, username, avatarUrl }) {
     ctx.fillText("arquitectadetupropioexito.com", W / 2, 1225);
     ctx.globalAlpha = 1;
 
-    return new Promise(resolve => canvas.toBlob(resolve, "image/png", 0.95));
+    // toBlob lanza SecurityError si el canvas quedó "manchado" por una imagen
+    // sin CORS. No debería pasar (todas las vías de carga son seguras), pero si
+    // pasara preferimos una tarjeta con iniciales antes que ninguna tarjeta.
+    try {
+        return await new Promise((resolve, reject) => {
+            try {
+                canvas.toBlob(b => (b ? resolve(b) : reject(new Error("toBlob vacío"))), "image/png", 0.95);
+            } catch (e) { reject(e); }
+        });
+    } catch (e) {
+        if (sinFoto) throw e;
+        console.warn("[tarjeta] reintentando sin foto:", e.message);
+        return renderBadge({ rank, username, avatarUrl, sinFoto: true });
+    }
 }
 
 function RankBadge({ rank, username, avatarUrl }) {

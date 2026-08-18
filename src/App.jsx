@@ -38,6 +38,7 @@ import AffiliateDetail from './pages/admin/AffiliateDetail';
 import CommissionsPage from './pages/admin/CommissionsPage';
 import PartnerApplicationsPage from './pages/admin/PartnerApplicationsPage';
 import SubscriptionsPanel from './pages/admin/SubscriptionsPanel';
+import RanksPanel from './pages/admin/RanksPanel';
 import RevenuePanel from './pages/admin/RevenuePanel';
 import QuizPage from './pages/student/QuizPage';
 import QuizEditor from './pages/admin/QuizEditor';
@@ -109,6 +110,7 @@ function App() {
                     <Route path="/admin/invite" element={<InviteUser />} />
                     <Route path="/admin/users" element={<AdminUsersPage />} />
                     <Route path="/admin/afiliadas" element={<AffiliatesCRM />} />
+                    <Route path="/admin/rangos" element={<RanksPanel />} />
                     <Route path="/admin/afiliadas/:id" element={<AffiliateDetail />} />
                     <Route path="/admin/comisiones" element={<CommissionsPage />} />
                     <Route path="/admin/solicitudes-partner" element={<PartnerApplicationsPage />} />
