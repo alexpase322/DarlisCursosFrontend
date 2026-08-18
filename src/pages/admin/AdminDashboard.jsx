@@ -163,6 +163,40 @@ function AdminDashboard() {
             🏆 <span className="inline">Logros y niveles</span>
           </button>
 
+          {/* Recalcular rangos de Arquitecta */}
+          <button
+            onClick={async () => {
+              const avisar = window.confirm(
+                [
+                  "Recalcular los rangos de Arquitecta según el total facturado de cada afiliada.",
+                  "",
+                  "Aceptar = avisar a quienes suban de rango (notificación + CORREO).",
+                  "Cancelar = recalcular en silencio.",
+                  "",
+                  "La primera vez usa Cancelar: si no, se enviaría un correo de golpe",
+                  "a todas las que ya superaron algún umbral."
+                ].join("\n")
+              );
+              const tId = toast.loading("Recalculando rangos...");
+              try {
+                const { data } = await axios.post(
+                  `/admin/ranks/recalculate-all${avisar ? "?notify=1" : ""}`, {}
+                );
+                toast.success(
+                  `${data.evaluadas} afiliadas · ${data.ascensos} ascensos` +
+                  (avisar ? " (avisadas)" : " (sin avisar)"),
+                  { id: tId, duration: 8000 }
+                );
+              } catch (e) {
+                toast.error(e.response?.data?.message || "Error al recalcular rangos", { id: tId });
+              }
+            }}
+            title="Asigna a cada afiliada su rango (Bronce, Plata, Oro...) segun el total historico de comisiones generadas. Usalo la primera vez para sembrar los rangos."
+            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-[#1B3854] rounded-xl hover:bg-[#FDE5E5] hover:border-[#FDE5E5] transition-all font-medium shadow-sm whitespace-nowrap"
+          >
+            🏛️ <span className="inline">Rangos de Arquitecta</span>
+          </button>
+
           {/* Botón Crear Curso (Destacado) */}
           <Link
             to="/admin/create-course"

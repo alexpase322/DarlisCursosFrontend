@@ -5,6 +5,7 @@ import { Loader2, DollarSign, Users, CheckCircle2, Clock, Wallet, TrendingUp, Ca
 import { Link } from 'react-router-dom';
 import PartnerBadge from '../../components/PartnerBadge';
 import ReferralLinkCard from '../../components/ReferralLinkCard';
+import RankPanel from '../../components/RankPanel';
 import { useAuth } from '../../context/AuthContext';
 
 const StatCard = ({ icon: Icon, label, value, accent = '#1B3854' }) => (
@@ -68,6 +69,11 @@ const AffiliateDashboard = () => {
         </div>
         <PartnerBadge level={summary?.partnerLevel || user?.partnerLevel} size="lg" />
       </header>
+
+      {/* Rango de Arquitecta: título por total facturado + tarjeta compartible */}
+      <div className="mb-6">
+        <RankPanel />
+      </div>
 
       {/* Tu link único de afiliada */}
       <ReferralLinkCard />

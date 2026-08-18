@@ -95,6 +95,26 @@ const PublicProfilePage = () => {
                     )}
                 </div>
 
+                {/* Rango de Arquitecta. Se muestra el título, nunca el monto
+                    facturado: eso es privado de cada afiliada. */}
+                {profile.rank && (
+                    <div
+                        className="inline-flex items-center gap-2.5 mt-3 pl-2 pr-4 py-1.5 rounded-full border border-white/25"
+                        style={{ background: `linear-gradient(135deg, ${profile.rank.gradient[0]}, ${profile.rank.gradient[1]})` }}
+                        title={profile.rank.lema}
+                    >
+                        <span
+                            className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold"
+                            style={{ background: profile.rank.accent, color: profile.rank.gradient[0] }}
+                        >
+                            {profile.rank.level}
+                        </span>
+                        <span className="text-sm font-bold" style={{ color: profile.rank.accent }}>
+                            {profile.rank.title}
+                        </span>
+                    </div>
+                )}
+
                 {profile.bio && (
                     <p className="text-white/80 text-sm mt-4 max-w-md mx-auto leading-relaxed whitespace-pre-wrap">
                         {profile.bio}

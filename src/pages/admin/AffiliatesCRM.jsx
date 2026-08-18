@@ -99,6 +99,7 @@ const AffiliatesCRM = () => {
                 <tr className="text-left text-xs uppercase text-gray-500 bg-gray-50 border-b">
                   <th className="px-4 py-3">Afiliada</th>
                   <th className="px-4 py-3">Nivel</th>
+                  <th className="px-4 py-3">Rango</th>
                   <th className="px-4 py-3">Referidas activas</th>
                   <th className="px-4 py-3">Pendiente</th>
                   <th className="px-4 py-3">Pagado</th>
@@ -119,6 +120,37 @@ const AffiliatesCRM = () => {
                       </div>
                     </td>
                     <td className="px-4 py-3"><PartnerBadge level={a.partnerLevel} size="sm" /></td>
+
+                    {/* Rango de Arquitecta. Si el guardado se quedo por debajo del
+                        que le toca por su total, se avisa para recalcular. */}
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      {a.rank ? (
+                        <span
+                          className="inline-flex items-center gap-1.5 pl-1 pr-2.5 py-1 rounded-full text-xs font-bold"
+                          style={{ background: `linear-gradient(135deg, ${a.rank.gradient[0]}, ${a.rank.gradient[1]})`, color: a.rank.accent }}
+                          title={`Nivel ${a.rank.level}`}
+                        >
+                          <span
+                            className="w-4 h-4 rounded-full flex items-center justify-center text-[9px]"
+                            style={{ background: a.rank.accent, color: a.rank.gradient[0] }}
+                          >
+                            {a.rank.level}
+                          </span>
+                          {a.rank.title}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-gray-300">—</span>
+                      )}
+                      {a.rankPending && (
+                        <span
+                          className="block mt-1 text-[10px] font-bold text-amber-600"
+                          title="Pulsa 'Rangos de Arquitecta' en el panel admin para aplicarlo"
+                        >
+                          ⬆ le toca {a.rankPending.title}
+                        </span>
+                      )}
+                    </td>
+
                     <td className="px-4 py-3">{a.referralStats?.activeReferred || 0}</td>
                     <td className="px-4 py-3 text-amber-600 font-bold">{fmtUSD(a.referralStats?.pendingUSD)}</td>
                     <td className="px-4 py-3 text-green-600">{fmtUSD(a.referralStats?.paidUSD)}</td>

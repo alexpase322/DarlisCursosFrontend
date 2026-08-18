@@ -13,6 +13,7 @@ import CreateCoursePage from "./pages/admin/CreateCoursePage";
 import CourseManager from "./pages/admin/CourseManager";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import CourseViewer from "./pages/student/CourseViewer";
+import ContentVault from "./pages/student/ContentVault";
 import SetupAccount from './pages/SetupAccount'; 
 import InviteUser from './pages/admin/InviteUser';
 import WallPage from "./pages/WallPage";
@@ -89,6 +90,7 @@ function App() {
                  <Route path="/chat" element={<ChatPage />} />
                  <Route path="/course/:id" element={<CourseViewer />} />
                  <Route path="/course/:id/quiz" element={<QuizPage />} />
+                 <Route path="/baul" element={<ContentVault />} />
 
                  {/* Rutas de afiliada */}
                  <Route path="/afiliada/aplicar" element={<PartnerApply />} />
