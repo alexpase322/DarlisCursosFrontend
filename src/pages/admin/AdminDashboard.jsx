@@ -3,7 +3,7 @@ import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 // Importamos los iconos de Lucide
-import { Users, Mail, Plus, Trash2, Settings, X, Sparkles, ClipboardList, DollarSign, RefreshCw, CreditCard, TrendingUp, BarChart3, Landmark } from "lucide-react";
+import { Users, Mail, Plus, Trash2, Settings, X, Sparkles, ClipboardList, DollarSign, RefreshCw, CreditCard, TrendingUp, BarChart3, Landmark, ChevronLeft, ChevronRight } from "lucide-react";
 import PushNotificationsButton from "../../components/PushNotificationsButton";
 
 function AdminDashboard() {
@@ -17,6 +17,33 @@ function AdminDashboard() {
 
   // Sincronización de pagos de Stripe
   const [syncing, setSyncing] = useState(false);
+
+  // Reordenar cursos. El cambio se pinta al instante y se restaura si falla:
+  // la cuadrícula es visual, esperar al servidor en cada clic se nota mucho.
+  const [reordenando, setReordenando] = useState(false);
+
+  const moverCurso = async (index, direccion) => {
+    const destino = index + direccion;
+    if (destino < 0 || destino >= courses.length || reordenando) return;
+
+    const anterior = courses;
+    const nuevos = [...courses];
+    [nuevos[index], nuevos[destino]] = [nuevos[destino], nuevos[index]];
+    setCourses(nuevos);
+
+    setReordenando(true);
+    try {
+      const { data } = await axios.put("/courses/reorder", {
+        order: nuevos.map(c => c._id)
+      });
+      setCourses(data);
+    } catch (e) {
+      setCourses(anterior);
+      toast.error(e.response?.data?.message || "No se pudo reordenar los cursos");
+    } finally {
+      setReordenando(false);
+    }
+  };
 
   const handleSyncStripe = async () => {
     if (syncing) return;
@@ -62,8 +89,8 @@ function AdminDashboard() {
       await axios.delete(`/courses/${id}`);
       toast.success("Curso eliminado");
       setCourses(courses.filter((course) => course._id !== id));
-    } catch (error) {
-      toast.error("No se pudo eliminar el curso");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "No se pudo eliminar el curso");
     }
   };
 
@@ -286,17 +313,50 @@ function AdminDashboard() {
         ) : (
           // RESPONSIVE GRID: 1 col móvil, 2 col tablet, 3 col desktop
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {courses.map((course) => (
+            {courses.map((course, index) => (
               <div key={course._id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100 flex flex-col group h-full">
                 
                 {/* Imagen con Overlay al Hover */}
                 <div className="relative h-40 md:h-48 overflow-hidden">
-                    <img 
-                        src={course.thumbnail} 
-                        alt={course.title} 
+                    <img
+                        src={course.thumbnail}
+                        alt={course.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+
+                    {/* Orden en el listado. Van sobre la portada para no alargar
+                        la tarjeta; en una cuadrícula el movimiento es lateral,
+                        de ahí las flechas izquierda/derecha y no arriba/abajo. */}
+                    {courses.length > 1 && (
+                        <div className="absolute top-2 left-2 flex gap-1">
+                            <button
+                                type="button"
+                                onClick={() => moverCurso(index, -1)}
+                                disabled={index === 0 || reordenando}
+                                title="Mover antes"
+                                aria-label={`Mover ${course.title} antes`}
+                                className="w-8 h-8 flex items-center justify-center bg-white/90 text-[#1B3854] rounded-lg shadow-sm hover:bg-white transition disabled:opacity-40 disabled:cursor-not-allowed backdrop-blur-sm"
+                            >
+                                <ChevronLeft size={16} />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => moverCurso(index, 1)}
+                                disabled={index === courses.length - 1 || reordenando}
+                                title="Mover después"
+                                aria-label={`Mover ${course.title} después`}
+                                className="w-8 h-8 flex items-center justify-center bg-white/90 text-[#1B3854] rounded-lg shadow-sm hover:bg-white transition disabled:opacity-40 disabled:cursor-not-allowed backdrop-blur-sm"
+                            >
+                                <ChevronRight size={16} />
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Posición actual, para no perder la cuenta al reordenar */}
+                    <span className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center bg-[#1B3854]/85 text-white text-xs font-bold rounded-lg backdrop-blur-sm">
+                        {index + 1}
+                    </span>
                 </div>
 
                 <div className="p-4 md:p-6 flex flex-col grow">

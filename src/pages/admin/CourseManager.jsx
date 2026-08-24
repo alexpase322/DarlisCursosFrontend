@@ -18,7 +18,10 @@ import {
     Pencil,
     Check,
     ImagePlus,
-    Loader2
+    Loader2,
+    ChevronUp,
+    ChevronDown,
+    FolderInput
 } from "lucide-react";
 
 function CourseManager() {
@@ -54,6 +57,12 @@ function CourseManager() {
 
   const [editandoRecurso, setEditandoRecurso] = useState(null);
   const [recursoForm, setRecursoForm] = useState({ label: "", url: "" });
+
+  // Bloquea los botones de flecha mientras hay una petición de orden en vuelo.
+  const [reordenando, setReordenando] = useState(false);
+
+  // Id de la clase con el selector "mover a otro módulo" abierto.
+  const [moviendoClase, setMoviendoClase] = useState(null);
 
   // La preview de la portada es un object URL: hay que liberarlo o se acumula.
   useEffect(() => {
@@ -160,6 +169,84 @@ function CourseManager() {
       toast.success("Recurso actualizado");
     } catch (err) {
       toast.error(err.response?.data?.message || "No se pudo actualizar el recurso");
+    }
+  };
+
+  // --- REORDENAR ---
+  // Se aplica el cambio en pantalla antes de que responda el servidor: mover
+  // algo tres puestos serían tres esperas si no. Si falla, se restaura.
+  // `reordenando` bloquea los botones mientras tanto, para no mandar dos
+  // listas basadas en el mismo estado.
+
+  const moverModulo = async (index, direccion) => {
+    const destino = index + direccion;
+    if (destino < 0 || destino >= course.modules.length || reordenando) return;
+
+    const anterior = course;
+    const mods = [...course.modules];
+    [mods[index], mods[destino]] = [mods[destino], mods[index]];
+    setCourse({ ...course, modules: mods });
+
+    setReordenando(true);
+    try {
+      const res = await axios.put(`/courses/${id}/modules/reorder`, {
+        order: mods.map(m => m._id)
+      });
+      setCourse(res.data);
+    } catch (err) {
+      setCourse(anterior);
+      toast.error(err.response?.data?.message || "No se pudo reordenar los módulos");
+    } finally {
+      setReordenando(false);
+    }
+  };
+
+  const moverClase = async (moduleId, index, direccion) => {
+    if (reordenando) return;
+    const modIdx = course.modules.findIndex(m => m._id === moduleId);
+    if (modIdx === -1) return;
+
+    const lecciones = course.modules[modIdx].lessons;
+    const destino = index + direccion;
+    if (destino < 0 || destino >= lecciones.length) return;
+
+    const anterior = course;
+    const nuevas = [...lecciones];
+    [nuevas[index], nuevas[destino]] = [nuevas[destino], nuevas[index]];
+    const mods = [...course.modules];
+    mods[modIdx] = { ...mods[modIdx], lessons: nuevas };
+    setCourse({ ...course, modules: mods });
+
+    setReordenando(true);
+    try {
+      const res = await axios.put(`/courses/${id}/modules/${moduleId}/lessons/reorder`, {
+        order: nuevas.map(l => l._id)
+      });
+      setCourse(res.data);
+    } catch (err) {
+      setCourse(anterior);
+      toast.error(err.response?.data?.message || "No se pudo reordenar las clases");
+    } finally {
+      setReordenando(false);
+    }
+  };
+
+  const moverAOtroModulo = async (moduleId, lessonId, targetModuleId) => {
+    if (!targetModuleId) return;
+    setReordenando(true);
+    try {
+      const res = await axios.put(
+        `/courses/${id}/modules/${moduleId}/lessons/${lessonId}/move`,
+        { targetModuleId }
+      );
+      setCourse(res.data);
+      setMoviendoClase(null);
+      const destino = res.data.modules.find(m => m._id === targetModuleId);
+      toast.success(`Clase movida a "${destino?.title || "otro módulo"}"`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "No se pudo mover la clase");
+    } finally {
+      setReordenando(false);
     }
   };
 
@@ -378,6 +465,31 @@ function CourseManager() {
                     {/* Header Módulo */}
                     <div className="bg-gray-50/50 p-5 border-b border-gray-100 flex justify-between items-center gap-3 group">
                         <div className="flex items-center gap-3 flex-1 min-w-0">
+                            {/* Flechas de orden: se desactivan en los extremos
+                                y mientras hay una petición de orden en curso. */}
+                            <div className="flex flex-col shrink-0">
+                                <button
+                                    type="button"
+                                    onClick={() => moverModulo(index, -1)}
+                                    disabled={index === 0 || reordenando}
+                                    title="Subir módulo"
+                                    aria-label={`Subir el módulo ${module.title}`}
+                                    className="text-gray-300 hover:text-[#905361] hover:bg-white rounded p-0.5 transition disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-300"
+                                >
+                                    <ChevronUp size={16} />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => moverModulo(index, 1)}
+                                    disabled={index === course.modules.length - 1 || reordenando}
+                                    title="Bajar módulo"
+                                    aria-label={`Bajar el módulo ${module.title}`}
+                                    className="text-gray-300 hover:text-[#905361] hover:bg-white rounded p-0.5 transition disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-300"
+                                >
+                                    <ChevronDown size={16} />
+                                </button>
+                            </div>
+
                             <span className="w-8 h-8 flex items-center justify-center bg-white rounded-lg text-gray-400 text-sm font-bold shadow-sm border border-gray-100 shrink-0">{index + 1}</span>
 
                             {editandoModulo === module._id ? (
@@ -425,7 +537,7 @@ function CourseManager() {
                     <div className="p-2 sm:p-5">
                         {module.lessons.length > 0 ? (
                             <ul className="space-y-3 mb-4">
-                                {module.lessons.map((lesson) => (
+                                {module.lessons.map((lesson, lessonIndex) => (
                                     <li key={lesson._id} className="bg-white border border-gray-100 rounded-xl p-4 group/lesson hover:shadow-sm transition-all">
                                         
                                         {/* Fila Principal de la Lección */}
@@ -472,6 +584,28 @@ function CourseManager() {
                                         ) : (
                                         <div className="flex justify-between items-start mb-2 gap-2">
                                             <div className="flex items-center overflow-hidden gap-3">
+                                                <div className="flex flex-col shrink-0">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => moverClase(module._id, lessonIndex, -1)}
+                                                        disabled={lessonIndex === 0 || reordenando}
+                                                        title="Subir clase"
+                                                        aria-label={`Subir la clase ${lesson.title}`}
+                                                        className="text-gray-300 hover:text-[#905361] hover:bg-gray-50 rounded p-0.5 transition disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-300"
+                                                    >
+                                                        <ChevronUp size={14} />
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => moverClase(module._id, lessonIndex, 1)}
+                                                        disabled={lessonIndex === module.lessons.length - 1 || reordenando}
+                                                        title="Bajar clase"
+                                                        aria-label={`Bajar la clase ${lesson.title}`}
+                                                        className="text-gray-300 hover:text-[#905361] hover:bg-gray-50 rounded p-0.5 transition disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-300"
+                                                    >
+                                                        <ChevronDown size={14} />
+                                                    </button>
+                                                </div>
                                                 <div className="text-[#905361] bg-[#FDE5E5] p-2 rounded-full shrink-0"><PlayCircle size={18} /></div>
                                                 <div className="min-w-0">
                                                     <p className="font-semibold text-gray-700 text-sm truncate">{lesson.title}</p>
@@ -498,6 +632,17 @@ function CourseManager() {
                                                     <Pencil size={16} />
                                                 </button>
 
+                                                {/* MOVER A OTRO MÓDULO — solo tiene sentido si hay más de uno */}
+                                                {course.modules.length > 1 && (
+                                                    <button
+                                                        onClick={() => setMoviendoClase(moviendoClase === lesson._id ? null : lesson._id)}
+                                                        className={`p-2 rounded-lg transition ${moviendoClase === lesson._id ? 'bg-[#FDE5E5] text-[#905361]' : 'text-gray-400 hover:bg-gray-50 hover:text-[#905361]'}`}
+                                                        title="Mover a otro módulo"
+                                                    >
+                                                        <FolderInput size={16} />
+                                                    </button>
+                                                )}
+
                                                 {/* BOTÓN TOGGLE RECURSOS */}
                                                 <button
                                                     onClick={() => setShowResourceForm(showResourceForm === lesson._id ? null : lesson._id)}
@@ -513,6 +658,35 @@ function CourseManager() {
                                                 </button>
                                             </div>
                                         </div>
+                                        )}
+
+                                        {/* --- MOVER A OTRO MÓDULO (DESPLEGABLE) --- */}
+                                        {moviendoClase === lesson._id && (
+                                            <div className="mt-3 bg-[#F7F2EF] p-4 rounded-xl border border-[#FDE5E5]">
+                                                <p className="text-xs font-bold text-[#905361] uppercase mb-3 flex items-center gap-2">
+                                                    <FolderInput size={12} /> Mover a otro módulo
+                                                </p>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {course.modules
+                                                        .filter(m => m._id !== module._id)
+                                                        .map(m => (
+                                                            <button
+                                                                key={m._id}
+                                                                type="button"
+                                                                disabled={reordenando}
+                                                                onClick={() => moverAOtroModulo(module._id, lesson._id, m._id)}
+                                                                className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-[#1B3854] font-medium hover:border-[#905361] hover:bg-[#905361] hover:text-white transition disabled:opacity-50"
+                                                            >
+                                                                <Folder size={13} className="inline mr-1.5 -mt-0.5" />
+                                                                {m.title}
+                                                            </button>
+                                                        ))}
+                                                </div>
+                                                <p className="text-[11px] text-gray-500 mt-3">
+                                                    La clase entra al final del módulo elegido y conserva sus recursos y
+                                                    el avance de las alumnas.
+                                                </p>
+                                            </div>
                                         )}
 
                                         {/* --- ZONA DE RECURSOS (DESPLEGABLE) --- */}
