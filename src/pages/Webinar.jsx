@@ -19,7 +19,7 @@ import ScrollReveal from "../components/ScrollReveal";
 //  - Loom: 'https://www.loom.com/embed/XXXX'
 //  - Cualquier URL .mp4 directa (se usará tag <video>)
 const VIDEO_URL = import.meta.env.VITE_WEBINAR_VIDEO_URL ||
-    "https://youtu.be/RkCZGxltey8"; // ← reemplaza por el real
+    "https://youtu.be/C7qxk5iIFQE"; // ← reemplaza por el real
 
 const TITLE = "Cómo construir un negocio digital desde casa sin descuidar a tu familia";
 const SUBTITLE = "Webinar gratuito — 30 minutos que pueden cambiar tu próxima década";
