@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"; 
 // AÑADIDO: Importamos icono X para cerrar en móvil
-import { LayoutDashboard, MessageCircle, BookOpen, User, Users, ShieldCheck, X, Sparkles, Heart, Quote, Archive } from "lucide-react";
+import { LayoutDashboard, MessageCircle, BookOpen, User, Users, ShieldCheck, X, Sparkles, Heart, Quote, Archive, Layers } from "lucide-react";
 
 // AÑADIDO: Recibimos isOpen y closeSidebar
 const Sidebar = ({ isOpen, closeSidebar }) => {
@@ -13,6 +13,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
     { name: "Testimonios", path: "/testimonios", icon: <Quote size={20} /> },
     { name: "Mis Cursos", path: "/dashboard", icon: <BookOpen size={20} /> },
     { name: "Baúl de Contenido", path: "/baul", icon: <Archive size={20} /> },
+    { name: "Mapa de Pilares", path: "/mapa-pilares", icon: <Layers size={20} /> },
     { name: "Chat", path: "/chat", icon: <MessageCircle size={20} /> },
     { name: "Mi Perfil", path: "/perfil", icon: <User size={20} /> },
   ];
