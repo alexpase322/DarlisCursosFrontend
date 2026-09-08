@@ -15,6 +15,7 @@ import StudentDashboard from "./pages/student/StudentDashboard";
 import CourseViewer from "./pages/student/CourseViewer";
 import ContentVault from "./pages/student/ContentVault";
 import MapaPilares from "./pages/student/MapaPilares";
+import ConstructorPublicaciones from "./pages/student/ConstructorPublicaciones";
 import SetupAccount from './pages/SetupAccount'; 
 import InviteUser from './pages/admin/InviteUser';
 import WallPage from "./pages/WallPage";
@@ -94,6 +95,7 @@ function App() {
                  <Route path="/course/:id/quiz" element={<QuizPage />} />
                  <Route path="/baul" element={<ContentVault />} />
                  <Route path="/mapa-pilares" element={<MapaPilares />} />
+                 <Route path="/constructor" element={<ConstructorPublicaciones />} />
 
                  {/* Rutas de afiliada */}
                  <Route path="/afiliada/aplicar" element={<PartnerApply />} />

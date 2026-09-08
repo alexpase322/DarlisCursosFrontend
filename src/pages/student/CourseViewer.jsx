@@ -17,6 +17,7 @@ import {
     Loader2
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import LessonTutor from "../../components/LessonTutor";
 
 function CourseViewer() {
   const { id } = useParams();
@@ -29,6 +30,11 @@ function CourseViewer() {
   const [progress, setProgress] = useState({ percent: 0, lessonsTotal: 0, lessonsCompleted: 0, hasQuiz: false, completed: false, quizPassed: false });
   const [completedIds, setCompletedIds] = useState(new Set());
   const [marking, setMarking] = useState(false);
+
+  // Módulo al que pertenece la clase abierta (solo para mostrarlo en el tutor).
+  const moduloActual = course?.modules?.find(m =>
+    (m.lessons || []).some(l => l._id === currentLesson?._id)
+  );
   const { user } = useAuth();
 
   // --- CORRECCIÓN CRÍTICA DE YOUTUBE ---
@@ -68,8 +74,8 @@ function CourseViewer() {
             }
         }
         setCompletedIds(done);
-      } catch (error) {
-        console.error("Error al cargar curso");
+      } catch (err) {
+        console.error("Error al cargar curso", err);
         navigate("/dashboard");
       } finally {
         setLoading(false);
@@ -83,7 +89,7 @@ function CourseViewer() {
     try {
       const { data } = await axios.get(`/courses/${id}/progress`);
       setProgress(data);
-    } catch (e) { /* noop */ }
+    } catch { /* el progreso es secundario: si falla, la clase se ve igual */ }
   };
 
   const toggleLessonComplete = async (lesson) => {
@@ -102,8 +108,8 @@ function CourseViewer() {
         toast.success("Lección marcada");
       }
       fetchProgress();
-    } catch (e) {
-      toast.error("Error al actualizar progreso");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Error al actualizar progreso");
     } finally {
       setMarking(false);
     }
@@ -314,6 +320,13 @@ function CourseViewer() {
         </div>
 
       </div>
+
+      {/* Tutora de la clase: burbuja flotante, solo con una clase abierta */}
+      <LessonTutor
+        courseId={course?._id}
+        lesson={currentLesson}
+        moduleTitle={moduloActual?.title}
+      />
     </div>
   );
 }
