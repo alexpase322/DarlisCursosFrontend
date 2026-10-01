@@ -315,7 +315,7 @@ const HomePage = () => {
           <div className="flex items-center gap-4 mb-5 md:mb-8 text-marino/45">
             <span className="cota">Proyecto 01</span>
             <span className="linea-cota flex-1 max-w-[120px] h-px bg-marino/20" />
-            <span className="cota">Membresía anual</span>
+            <span className="cota">Programa de formación</span>
           </div>
 
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-6 items-center">
@@ -476,7 +476,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* --- SECCIÓN 1: ¿QUÉ ES ESTA MEMBRESÍA? --- */}
+      {/* --- SECCIÓN 1: ¿QUÉ ES ESTE PROGRAMA? --- */}
       <section className="py-24 bg-white textura-grano relative">
         <div className="max-w-[1200px] mx-auto px-6">
           <motion.div 
@@ -502,7 +502,7 @@ const HomePage = () => {
                 ¿Qué es Arquitecta de tu Propio Éxito?
               </h2>
               <p className="text-gray-600 text-lg leading-relaxed">
-                Arquitecta de tu Propio Éxito no es solo una membresía de contenido. Es un <strong>espacio de acompañamiento</strong> donde aprenderás a construir tu propio camino en el negocio digital.
+                Arquitecta de tu Propio Éxito no es solo un programa de contenido. Es un <strong>espacio de acompañamiento</strong> donde aprenderás a construir tu propio camino en el negocio digital.
               </p>
               <p className="text-gray-600 text-lg leading-relaxed">
                 Aprenderás con clases en vivo, guía práctica, comunidad y una mentalidad alineada para dejar de sentirte confundida y comenzar a <strong>avanzar con intención</strong>.
@@ -518,7 +518,7 @@ const HomePage = () => {
         <div className="max-w-[1200px] mx-auto px-6 relative z-10">
           <div className="text-center mb-16">
             <Target className="text-[#FDE5E5] mx-auto mb-6" size={48} />
-            <h2 className="text-4xl lg:text-5xl font-black text-white">Esta membresía es para ti si...</h2>
+            <h2 className="text-4xl lg:text-5xl font-black text-white">Este programa de formación es para ti si...</h2>
           </div>
 
           <motion.div 
@@ -545,12 +545,12 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* --- SECCIÓN 3: QUÉ INCLUYE LA MEMBRESÍA --- */}
+      {/* --- SECCIÓN 3: QUÉ INCLUYE EL PROGRAMA --- */}
       <section className="py-24 bg-ivory textura-grano relative">
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="text-center mb-16">
             <span className="text-[#905361] font-bold tracking-widest uppercase text-sm mb-3 block">Todo lo que necesitas</span>
-            <h2 className="text-4xl lg:text-5xl font-black text-[#1B3854]">¿Qué incluye la membresía?</h2>
+            <h2 className="text-4xl lg:text-5xl font-black text-[#1B3854]">¿Qué incluye el programa de formación?</h2>
           </div>
 
           <motion.div 
@@ -782,6 +782,10 @@ const HomePage = () => {
                     <button onClick={() => handleSubscribe(PLAN_IDS.MONTHLY)} disabled={loading} className="brillo-hover w-full py-4 rounded-2xl font-semibold bg-rosa text-vino hover:bg-vino hover:text-white hover:shadow-vino active:scale-[0.98] transition-all duration-300 text-lg disabled:opacity-60">
                         {loading ? <Loader2 className="animate-spin mx-auto"/> : "Elegir Mensual"}
                     </button>
+                    <p className="text-[11.5px] text-marino/50 text-center mt-3 leading-snug">
+                        Se renueva automáticamente cada mes. Cancelas cuando quieras.{" "}
+                        <Link to="/terminos" className="underline underline-offset-2 hover:text-vino">Compra no reembolsable</Link>.
+                    </p>
                 </motion.div>
             </div>
 
@@ -848,6 +852,10 @@ const HomePage = () => {
                             >
                                 {loading ? <Loader2 className="animate-spin mx-auto" /> : "Quiero mi acceso de por vida"}
                             </button>
+                            <p className="text-[11.5px] text-white/55 text-center mt-3 leading-snug">
+                                Pago único, sin renovación. Acceso inmediato, por eso la{" "}
+                                <Link to="/terminos" className="underline underline-offset-2 hover:text-white">compra no es reembolsable</Link>.
+                            </p>
 
                             <div className="mt-5 pt-5 border-t border-white/15">
                                 <p className="text-xs text-white/70 leading-relaxed">
@@ -869,7 +877,7 @@ const HomePage = () => {
             <span className="text-[#905361] font-bold tracking-widest uppercase text-sm">Plan de Afiliadas</span>
             <h2 className="text-4xl font-bold text-[#1B3854] mt-2 mb-4">Recomienda y gana ingresos recurrentes</h2>
             <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-              Cada alumna que recomiendes y se inscriba a la membresía te genera comisión cada vez que pague — mes tras mes, mientras siga activa.
+              Cada alumna que recomiendes y se inscriba al programa de formación te genera comisión cada vez que pague — mes tras mes, mientras siga activa.
             </p>
           </div>
 
@@ -899,7 +907,7 @@ const HomePage = () => {
               <Sparkles className="text-[#FDE5E5] mb-4" size={32} />
               <h3 className="text-2xl md:text-3xl font-bold mb-3">Lo que hace especial esta comisión</h3>
               <p className="text-gray-300 text-lg leading-relaxed max-w-3xl">
-                Tú refieres una vez y sigues ganando. Mientras la alumna que invitaste mantenga su membresía activa,
+                Tú refieres una vez y sigues ganando. Mientras la alumna que invitaste siga activa en el programa,
                 cada cobro que ella haga genera ingresos recurrentes para ti. No es un pago único — es un flujo.
               </p>
             </div>
@@ -1055,10 +1063,10 @@ const HomePage = () => {
       <footer className="bg-[#1B3854] text-gray-400 py-12 text-center border-t border-gray-700">
         <div className="max-w-4xl mx-auto px-6">
             <h2 className="text-2xl font-bold text-white mb-6">MomsDigitales<span className="text-[#905361]">.</span></h2>
-            <div className="flex justify-center gap-8 mb-8 text-sm font-medium">
-                <a href="#" className="hover:text-white transition">Términos</a>
-                <a href="#" className="hover:text-white transition">Privacidad</a>
-                <a href="#" className="hover:text-white transition">Soporte</a>
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 mb-8 text-sm font-medium">
+                <Link to="/terminos" className="hover:text-white transition">Términos del servicio</Link>
+                <Link to="/privacidad" className="hover:text-white transition">Privacidad</Link>
+                <Link to="/soporte" className="hover:text-white transition">Soporte</Link>
             </div>
             <p>&copy; 2026 MomsDigitales. Todos los derechos reservados.</p>
         </div>
