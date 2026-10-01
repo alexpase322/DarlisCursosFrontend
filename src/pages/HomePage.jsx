@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import axios from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-hot-toast";
@@ -13,7 +13,7 @@ import {
 import darlisImg from "../assets/DarlisFoto.png"
 import alexImg from "../assets/Alex foto.png"
 import equipoHeroImg from "../assets/FotoDarlisHero.jpeg"
-import Seo, { faqSchema, productSchema } from "../components/Seo";
+import Seo from "../components/Seo";
 import { seoConfigs } from "../seo";
 import FloatingCTA from "../components/FloatingCTA";
 import AnimatedCounter from "../components/AnimatedCounter";
@@ -23,7 +23,6 @@ import { getReferral, captureReferralFromUrl } from "../utils/referral";
 
 const HomePage = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   // --- ESTADOS PARA EL FORMULARIO DE CONTACTO ---
@@ -51,7 +50,6 @@ const HomePage = () => {
       desc: "Prepara el terreno y demuele viejas estructuras de empleada.",
       topics: ["Ingeniería Mental y Reprogramación", "La Oficina de Proyectos (Notion & Time Blocking)"],
       icon: <Hammer size={24} />,
-      color: "bg-blue-100 text-blue-700"
     },
     {
       phase: "Fase 2: Diseño de Interiores",
@@ -59,7 +57,6 @@ const HomePage = () => {
       desc: "Diseña una identidad visual en redes sociales y crea contenido que conecte.",
       topics: ["Estudio de Diseño (Canva Expert)", "Producción Visual (CapCut Pro)"],
       icon: <Palette size={24} />,
-      color: "bg-pink-100 text-pink-700"
     },
     {
       phase: "Fase 3: Tecnología",
@@ -67,7 +64,6 @@ const HomePage = () => {
       desc: "Usa maquinaria pesada para trabajar menos, producir más y automatizar tu negocio.",
       topics: ["Ingeniería de Prompts", "Dobles Digitales & Avatares", "Redacción con ChatGPT"],
       icon: <Bot size={24} />,
-      color: "bg-purple-100 text-purple-700"
     },
     {
       phase: "Fase 4: Vías de Acceso",
@@ -75,7 +71,6 @@ const HomePage = () => {
       desc: "Cómo atraer clientes a tu negocio digital utilizando las diferentes plataformas.",
       topics: ["Instagram: La Gran Avenida", "TikTok, Live & Shop: La Autopista Viral"],
       icon: <Smartphone size={24} />,
-      color: "bg-orange-100 text-orange-700"
     },
     {
       phase: "Fase 5: Arquitectura Web",
@@ -83,7 +78,6 @@ const HomePage = () => {
       desc: "Aprende desde 0 a crear tu oficina virtual y sitios web.",
       topics: ["Tu Oficina Express (Beacons)", "Ingeniería de Landing Pages"],
       icon: <Layout size={24} />,
-      color: "bg-teal-100 text-teal-700"
     },
     {
       phase: "Fase 6: Subcontratos",
@@ -91,7 +85,6 @@ const HomePage = () => {
       desc: "Factura rápido trabajando con marcas y franquicias.",
       topics: ["Contratista UGC", "Franquicias Digitales (Amazon Influencer)"],
       icon: <DollarSign size={24} />,
-      color: "bg-green-100 text-green-700"
     },
     {
       phase: "Fase 7: Inmobiliaria",
@@ -99,15 +92,13 @@ const HomePage = () => {
       desc: "Aprende a darle propósito a tu conocimiento: crea y vende tus propios productos digitales.",
       topics: ["Validación de Ideas", "Creación de Infoproductos", "Meta Ads (Publicidad)"],
       icon: <Package size={24} />,
-      color: "bg-indigo-100 text-indigo-700"
     },
     {
       phase: "Fase 8: Administración",
       title: "Finanzas Inteligentes",
       desc: "Asegura que el edificio no colapse por falta de presupuesto.",
       topics: ["Mentalidad de Dueña", "Profit First & Tablas de Costos"],
-      icon: <PieChart size={24} />,
-      color: "bg-red-100 text-red-700"
+      icon: <PieChart size={24} />
     }
   ];
 
@@ -182,30 +173,58 @@ const HomePage = () => {
         const data = await response.json();
 
         if (data.success) {
-            toast.success("¡Mensaje enviado con éxito! Te responderemos pronto.");
+            toast.success("Mensaje enviado. Te responderemos pronto.");
             setContactForm({ name: "", email: "", message: "" }); 
             e.target.reset(); 
         } else {
-            toast.error("Hubo un problema al enviar el mensaje. Intenta de nuevo.");
+            toast.error("No pudimos enviar tu mensaje. Intenta de nuevo.");
         }
 
-    } catch (error) {
-        toast.error("Error de conexión. Verifica tu internet.");
+    } catch {
+        toast.error("No pudimos enviar tu mensaje. Revisa tu conexión e intenta de nuevo.");
     } finally {
         setSendingContact(false);
     }
   };
 
   // --- ANIMACIONES ---
+  // Muelle en vez de easing por duración: el movimiento tiene peso y frena
+  // solo, en lugar de llegar y detenerse en seco.
+  const MUELLE = { type: "spring", stiffness: 90, damping: 18, mass: 0.9 };
+
   const fadeInUp = {
-    hidden: { opacity: 0, y: 60 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+    hidden: { opacity: 0, y: 44 },
+    visible: { opacity: 1, y: 0, transition: MUELLE }
   };
 
+  // Nada entra todo de golpe: los hijos se escalonan.
   const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } }
   };
+
+  const hijo = {
+    hidden: { opacity: 0, y: 26 },
+    visible: { opacity: 1, y: 0, transition: MUELLE }
+  };
+
+  // Barra de progreso de lectura. El muelle evita que dé saltos con la rueda.
+  const { scrollYProgress } = useScroll();
+  const progresoLectura = useSpring(scrollYProgress, { stiffness: 120, damping: 28, restDelta: 0.001 });
+
+  // Paralaje suave de la foto del hero: se mueve menos que la página, lo que
+  // da sensación de profundidad sin marear.
+  const { scrollY } = useScroll();
+  const heroY = useTransform(scrollY, [0, 600], [0, 70]);
+
+  // La barra superior se vuelve de cristal al separarse del borde.
+  const [scrolleado, setScrolleado] = useState(false);
+  useEffect(() => {
+    const alScroll = () => setScrolleado(window.scrollY > 24);
+    alScroll();
+    window.addEventListener("scroll", alScroll, { passive: true });
+    return () => window.removeEventListener("scroll", alScroll);
+  }, []);
 
   return (
     <>
@@ -213,76 +232,209 @@ const HomePage = () => {
       <FloatingCTA />
     <div className="min-h-screen bg-[#F7F2EF] font-sans overflow-x-hidden">
       
+      {/* Progreso de lectura: una línea finísima arriba que dice cuánto queda.
+          Da sensación de recorrido en una página larga. */}
+      <motion.div
+        aria-hidden="true"
+        className="fixed top-0 left-0 right-0 h-[3px] origin-left z-50 bg-gradient-to-r from-vino via-[#b8707f] to-marino"
+        style={{ scaleX: progresoLectura }}
+      />
+
       {/* --- NAVBAR --- */}
-      <nav className="flex justify-between items-center px-6 md:px-12 py-6 w-full max-w-[1400px] mx-auto relative z-20">
-        <div className="text-2xl font-bold text-[#1B3854]">MomsDigitales<span className="text-[#905361]">.</span></div>
-        
-        <div className="flex items-center gap-8">
-          <Link 
-            to="/agencia" 
-            className="hidden md:block font-bold text-[#1B3854] hover:text-[#905361] transition duration-300"
-          >
-            Agencia BluePrint
+      {/* Fija y de cristal al separarse del borde: antes se iba con el scroll y
+          la alumna perdía el acceso al CTA a mitad de página. */}
+      <nav
+        className={`sticky top-0 z-40 transition-all duration-500 ${
+          scrolleado
+            ? "bg-ivory/80 backdrop-blur-xl border-b border-marino/[0.07] shadow-suave"
+            : "bg-transparent border-b border-transparent"
+        }`}
+      >
+        <div className={`flex justify-between items-center px-6 md:px-12 w-full max-w-[1400px] mx-auto transition-all duration-500 ${scrolleado ? "py-3.5" : "py-6"}`}>
+          <Link to="/" className="font-display text-2xl md:text-[1.7rem] font-bold text-marino tracking-tight">
+            MomsDigitales<span className="text-vino">.</span>
           </Link>
 
-          {user ? (
-              <Link 
-              to="/dashboard" 
-              className="px-6 py-2 rounded-full bg-[#1B3854] text-white font-bold hover:bg-[#905361] transition duration-300"
+          <div className="flex items-center gap-6 md:gap-8">
+            <Link
+              to="/agencia"
+              className="hidden md:inline-block relative font-medium text-marino/80 hover:text-vino transition-colors duration-300 group"
             >
-              Ir al Dashboard
+              Agencia BluePrint
+              {/* Subrayado que se dibuja de izquierda a derecha */}
+              <span className="absolute -bottom-1 left-0 h-[1.5px] w-0 bg-vino transition-all duration-300 group-hover:w-full" />
             </Link>
-          ) : (
-              <Link 
-              to="/login" 
-              className="px-6 py-2 rounded-full border-2 border-[#1B3854] text-[#1B3854] font-bold hover:bg-[#1B3854] hover:text-white transition duration-300"
-            >
-              Iniciar Sesión
-            </Link>
-          )}
+
+            {user ? (
+              <Link
+                to="/dashboard"
+                className="px-6 py-2.5 rounded-full bg-marino text-white font-semibold text-sm shadow-suave hover:bg-vino hover:shadow-vino active:scale-[0.97] transition-all duration-300"
+              >
+                Ir al Dashboard
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="px-6 py-2.5 rounded-full border border-marino/25 text-marino font-semibold text-sm hover:bg-marino hover:text-white hover:border-marino active:scale-[0.97] transition-all duration-300"
+              >
+                Iniciar Sesión
+              </Link>
+            )}
+          </div>
         </div>
       </nav>
 
-      {/* --- HERO SECTION --- */}
-      <header className="relative px-6 pt-16 pb-32 lg:pt-32 lg:pb-48 w-full max-w-[1400px] mx-auto flex flex-col-reverse lg:flex-row items-center gap-16 lg:gap-24">
-        <motion.div 
-          className="lg:w-1/2 space-y-8 text-center lg:text-left"
-          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
-        >
-          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FDE5E5] text-[#5E2B35] font-semibold text-sm tracking-wide mb-2">
-            <Sparkles size={16} /> Tu independencia financiera empieza hoy
-          </span>
-          <h1 className="text-5xl lg:text-7xl font-extrabold text-[#1B3854] leading-[1.1]">
-            Conviértete en la <span className="text-[#905361]">arquitecta</span> de tu propio éxito.
-          </h1>
-          <p className="text-xl text-gray-600 max-w-lg mx-auto lg:mx-0 leading-relaxed">
-            Una membresía para mujeres que quieren aprender, en vivo y en comunidad, a descubrir distintas formas de monetización digital, desarrollar la mentalidad correcta y encontrar el camino que mejor se adapta a su realidad, sus metas y la vida que desean construir.
-          </p>
-          <div className="pt-6 flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
-            <a href="#planes" className="px-10 py-4 bg-[#905361] text-white rounded-full font-bold text-lg shadow-xl hover:bg-[#5E2B35] hover:scale-105 transition transform duration-300 text-center">
-              Quiero unirme hoy
-            </a>
-            
-            {!user && (
-                <Link to="/login" className="px-10 py-4 bg-white text-[#1B3854] border border-gray-200 rounded-full font-bold shadow hover:shadow-md transition text-center">
-                Ya tengo una cuenta
-                </Link>
-            )}
-          </div>
-        </motion.div>
+      {/* --- HERO · PLANO DE OBRA --- */}
+      {/* La marca se llama Arquitecta y el temario son fases de obra. El hero
+          deja de ser "texto a la izquierda, foto a la derecha" y pasa a leerse
+          como la primera lámina de un proyecto. */}
+      <header className="relative min-h-[100dvh] flex flex-col justify-center overflow-hidden textura-grano">
 
-        <motion.div 
-          className="lg:w-1/2 relative"
-          initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 1 }}
-        >
-          <div className="absolute top-0 right-10 w-[500px] h-[500px] bg-[#FDE5E5] rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
-          <div className="absolute -bottom-10 left-10 w-[400px] h-[400px] bg-[#905361] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-          
-          {/* CUADRO DE IMAGEN AJUSTADO PARA SER MÁS ALARGADO */}
-          <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl transform rotate-2 hover:rotate-0 transition duration-500 border-4 border-white aspect-[4/5] max-w-md mx-auto">
-             <img src={equipoHeroImg} alt="Comunidad MomsDigitales" className="w-full h-full object-cover"/>
+        {/* Papel milimetrado, difuminado hacia los bordes */}
+        <div aria-hidden="true" className="absolute inset-0 reticula-plano reticula-difuminada pointer-events-none" />
+
+        {/* Orbes de color por detrás de la retícula */}
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none -z-10">
+          <div className="absolute -top-48 -right-40 w-[720px] h-[720px] rounded-full bg-rosa opacity-70 blur-[130px] animate-blob" />
+          <div className="absolute top-1/4 -left-48 w-[560px] h-[560px] rounded-full bg-vino opacity-[0.12] blur-[130px] animate-blob animation-delay-2000" />
+        </div>
+
+        {/* Trazos que se dibujan solos, como si alguien pasara el lápiz */}
+        <svg aria-hidden="true" className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
+          <line x1="7%" y1="0" x2="7%" y2="100%" stroke="#1B3854" strokeWidth="1" strokeOpacity="0.14"
+                className="trazo-dibujado" style={{ "--largo": 1400 }} />
+          <line x1="0" y1="86%" x2="100%" y2="86%" stroke="#1B3854" strokeWidth="1" strokeOpacity="0.14"
+                className="trazo-dibujado" style={{ "--largo": 2000, animationDelay: "0.35s" }} />
+          <circle cx="7%" cy="86%" r="4" fill="none" stroke="#905361" strokeWidth="1.5" strokeOpacity="0.5"
+                  className="trazo-dibujado" style={{ "--largo": 30, animationDelay: "1.6s" }} />
+        </svg>
+
+        <div className="relative w-full max-w-[1400px] mx-auto px-6 md:px-12 pt-6 pb-10">
+
+          {/* Cartela del plano */}
+          <div className="flex items-center gap-4 mb-5 md:mb-8 text-marino/45">
+            <span className="cota">Proyecto 01</span>
+            <span className="linea-cota flex-1 max-w-[120px] h-px bg-marino/20" />
+            <span className="cota">Membresía anual</span>
           </div>
-        </motion.div>
+
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-6 items-center">
+
+            {/* ── Titular: ocupa 7 de 12 columnas y se sale del margen ── */}
+            <div className="lg:col-span-7 lg:-mr-16 relative z-20">
+              <span
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 backdrop-blur-sm border border-vino/15 text-vino-oscuro font-semibold text-[13px] shadow-suave mb-6"
+                style={{ animation: "aparecerArriba .8s cubic-bezier(.16,1,.3,1) both", animationDelay: "1.1s" }}
+              >
+                <Sparkles size={15} className="text-vino" /> Tu independencia financiera empieza hoy
+              </span>
+
+              {/* Cada línea sube desde debajo de su propio renglón, escalonada.
+                  Es lo que hace que el titular entre en vez de solo aparecer. */}
+              <h1 className="font-display font-bold text-marino leading-[0.92] tracking-[-0.035em]"
+                  style={{ fontSize: "clamp(2.6rem, min(7.8vw, 11.5vh), 6.4rem)" }}>
+                <span className="mascara-linea"><span style={{ animationDelay: "0.15s" }}>Conviértete</span></span>
+                <span className="mascara-linea"><span style={{ animationDelay: "0.28s" }}>en la{" "}
+                  <em className="text-vino not-italic relative">
+                    arquitecta
+                    {/* Subrayado trazado a mano, se dibuja después del texto */}
+                    <svg aria-hidden="true" className="absolute left-0 -bottom-1 w-full" height="16" viewBox="0 0 300 16" preserveAspectRatio="none">
+                      <path d="M2 11 C 70 3, 150 14, 298 5" fill="none" stroke="#E9C9C5" strokeWidth="7" strokeLinecap="round"
+                            className="trazo-dibujado" style={{ "--largo": 320, animationDelay: "0.95s" }} />
+                    </svg>
+                  </em>
+                </span></span>
+                <span className="mascara-linea"><span style={{ animationDelay: "0.41s" }}>de tu propio éxito.</span></span>
+              </h1>
+
+              <p className="mt-6 text-[17px] text-marino/65 max-w-[29rem] leading-relaxed"
+                 style={{ animation: "aparecerArriba .8s cubic-bezier(.16,1,.3,1) both", animationDelay: "1.25s" }}>
+                Aprende en vivo y en comunidad las distintas formas de monetización digital,
+                y encuentra el camino que encaja con tu realidad y la vida que quieres construir.
+              </p>
+
+              <div className="mt-7 flex flex-col sm:flex-row gap-4"
+                   style={{ animation: "aparecerArriba .8s cubic-bezier(.16,1,.3,1) both", animationDelay: "1.4s" }}>
+                <a href="#planes"
+                   className="brillo-hover group px-9 py-4 bg-vino text-white rounded-full font-semibold text-lg shadow-vino hover:bg-vino-oscuro hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 inline-flex items-center justify-center gap-2">
+                  Quiero unirme hoy
+                  <Rocket size={18} className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-0.5" />
+                </a>
+                {!user && (
+                  <Link to="/login"
+                        className="px-9 py-4 bg-white/75 backdrop-blur-sm text-marino border border-marino/12 rounded-full font-semibold shadow-suave hover:shadow-media hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 text-center">
+                    Ya tengo una cuenta
+                  </Link>
+                )}
+              </div>
+            </div>
+
+            {/* ── Foto: encuadrada como una lámina, con marcas de esquina ── */}
+            <motion.div
+              className="lg:col-span-5 relative"
+              style={{ y: heroY }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ ...MUELLE, delay: 0.55 }}
+            >
+              <div className="relative max-w-[26rem] mx-auto lg:mx-0 lg:ml-auto">
+                {/* Marcas de encuadre, como las de una lámina de dibujo */}
+                <span aria-hidden="true" className="absolute -top-3 -left-3 w-7 h-7 border-t-2 border-l-2 border-vino/45 rounded-tl-sm" />
+                <span aria-hidden="true" className="absolute -bottom-3 -right-3 w-7 h-7 border-b-2 border-r-2 border-vino/45 rounded-br-sm" />
+
+                <div className="relative rounded-[1.6rem] overflow-hidden shadow-alta ring-1 ring-white/70 border-[6px] border-white aspect-[4/5]">
+                  <img src={equipoHeroImg}
+                       alt="Darlis Franco con la comunidad de alumnas de Arquitecta de tu Propio Éxito"
+                       className="w-full h-full object-cover" />
+                  <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-marino/40 to-transparent" />
+                </div>
+
+                {/* Cota lateral: la medida que acota la lámina */}
+                <div aria-hidden="true" className="hidden lg:flex absolute -left-12 top-0 bottom-0 flex-col items-center justify-center gap-2 text-marino/35">
+                  <span className="w-px flex-1 bg-marino/15" />
+                  <span className="cota rotate-180" style={{ writingMode: "vertical-rl" }}>En vivo cada semana</span>
+                  <span className="w-px flex-1 bg-marino/15" />
+                </div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ ...MUELLE, delay: 1.5 }}
+                  className="absolute -bottom-7 -left-6 lg:-left-16 z-20 flex items-center gap-3 bg-white/95 backdrop-blur-xl rounded-2xl px-5 py-3.5 shadow-alta ring-1 ring-marino/5 whitespace-nowrap animate-flotar"
+                >
+                  <span className="w-10 h-10 rounded-xl bg-rosa flex items-center justify-center text-vino shrink-0">
+                    <HeartHandshake size={20} />
+                  </span>
+                  <div className="text-left">
+                    <p className="font-semibold text-marino text-sm leading-tight">Comunidad en vivo</p>
+                    <p className="text-xs text-marino/55">Mentorías cada mes con Darlis</p>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* ── Pie de lámina: las cifras como línea de cota ── */}
+          <div
+            className="mt-10 lg:mt-14 pt-6 border-t border-marino/10 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-5"
+            style={{ animation: "aparecerArriba .9s cubic-bezier(.16,1,.3,1) both", animationDelay: "1.6s" }}
+          >
+            {[
+              { k: "01", v: "8 fases", d: "De los cimientos al negocio" },
+              { k: "02", v: "En vivo", d: "Mentorías cada mes" },
+              { k: "03", v: "Comunidad", d: "Privada y activa" },
+              { k: "04", v: "A tu ritmo", d: "Biblioteca siempre abierta" }
+            ].map((c) => (
+              <div key={c.k} className="flex gap-3">
+                <span className="cota text-vino/55 pt-1.5">{c.k}</span>
+                <div>
+                  <p className="font-display text-xl text-marino font-bold leading-tight">{c.v}</p>
+                  <p className="text-[13px] text-marino/55 leading-snug mt-0.5">{c.d}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </header>
 
       {/* MARQUEE de stats / mensajes que se desliza */}
@@ -296,7 +448,7 @@ const HomePage = () => {
       ]} />
 
       {/* Stats con counters animados */}
-      <section className="py-20 bg-gradient-to-br from-[#F7F2EF] to-white">
+      <section className="py-20 bg-ivory textura-grano relative" style={{ backgroundImage: "radial-gradient(120% 90% at 50% 0%, #FFFFFF 0%, #FBF7F4 45%, #F7F2EF 100%)" }}>
         <div className="max-w-[1200px] mx-auto px-6">
           <ScrollReveal>
             <div className="text-center mb-12">
@@ -308,15 +460,15 @@ const HomePage = () => {
             {[
               { value: 500, suffix: "+", label: "Mamás formadas", color: "#905361" },
               { value: 12,  suffix: "",  label: "Cursos disponibles", color: "#1B3854" },
-              { value: 95,  suffix: "%", label: "Recomendarían", color: "#16a34a" },
-              { value: 24,  suffix: "/7", label: "Comunidad activa", color: "#D4AF37" }
+              { value: 95,  suffix: "%", label: "Recomendarían", color: "#905361" },
+              { value: 24,  suffix: "/7", label: "Comunidad activa", color: "#1B3854" }
             ].map((s, i) => (
               <ScrollReveal key={i} delay={i * 0.1} direction="scale">
-                <div className="bg-white rounded-2xl p-6 text-center shadow-md hover:shadow-xl transition-shadow border border-gray-100">
-                  <p className="text-4xl md:text-5xl font-extrabold mb-2" style={{ color: s.color }}>
+                <div className="group bg-white/80 backdrop-blur-sm rounded-[1.4rem] p-7 text-center hover:bg-white hover:shadow-media hover:-translate-y-1 transition-all duration-500">
+                  <p className="font-display tabular text-5xl md:text-[3.4rem] font-bold mb-1.5 leading-none" style={{ color: s.color }}>
                     <AnimatedCounter value={s.value} suffix={s.suffix} />
                   </p>
-                  <p className="text-sm text-gray-600 font-medium">{s.label}</p>
+                  <p className="text-[13px] text-marino/60 font-medium tracking-wide">{s.label}</p>
                 </div>
               </ScrollReveal>
             ))}
@@ -325,7 +477,7 @@ const HomePage = () => {
       </section>
 
       {/* --- SECCIÓN 1: ¿QUÉ ES ESTA MEMBRESÍA? --- */}
-      <section className="py-24 bg-white relative">
+      <section className="py-24 bg-white textura-grano relative">
         <div className="max-w-[1200px] mx-auto px-6">
           <motion.div 
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
@@ -361,7 +513,7 @@ const HomePage = () => {
       </section>
 
       {/* --- SECCIÓN 2: ¿PARA QUIÉN ES? --- */}
-      <section className="py-24 bg-[#1B3854] relative overflow-hidden">
+      <section className="py-24 bg-marino textura-grano relative overflow-hidden before:absolute before:inset-x-0 before:top-0 before:h-24 before:bg-gradient-to-b before:from-ivory before:to-transparent before:opacity-20 before:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-24 after:bg-gradient-to-t after:from-ivory after:to-transparent after:opacity-20 after:pointer-events-none">
         <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
         <div className="max-w-[1200px] mx-auto px-6 relative z-10">
           <div className="text-center mb-16">
@@ -394,7 +546,7 @@ const HomePage = () => {
       </section>
 
       {/* --- SECCIÓN 3: QUÉ INCLUYE LA MEMBRESÍA --- */}
-      <section className="py-24 bg-[#F7F2EF] relative">
+      <section className="py-24 bg-ivory textura-grano relative">
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="text-center mb-16">
             <span className="text-[#905361] font-bold tracking-widest uppercase text-sm mb-3 block">Todo lo que necesitas</span>
@@ -406,7 +558,7 @@ const HomePage = () => {
             initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer}
           >
             {/* 1. Mentorías en vivo */}
-            <motion.div variants={fadeInUp} className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
+            <motion.div variants={fadeInUp} className="group bg-white/70 backdrop-blur-sm p-8 rounded-[2rem] hover:bg-white hover:shadow-media hover:-translate-y-1 transition-all duration-500">
               <div className="w-14 h-14 bg-[#FDE5E5] text-[#905361] rounded-2xl flex items-center justify-center mb-6">
                 <Video size={28} />
               </div>
@@ -415,7 +567,7 @@ const HomePage = () => {
             </motion.div>
 
             {/* 2. Módulos pre grabados */}
-            <motion.div variants={fadeInUp} className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
+            <motion.div variants={fadeInUp} className="group bg-white/70 backdrop-blur-sm p-8 rounded-[2rem] hover:bg-white hover:shadow-media hover:-translate-y-1 transition-all duration-500">
               <div className="w-14 h-14 bg-[#1B3854] text-white rounded-2xl flex items-center justify-center mb-6">
                 <PlayCircle size={28} />
               </div>
@@ -424,8 +576,8 @@ const HomePage = () => {
             </motion.div>
 
             {/* 3. Contenido nuevo */}
-            <motion.div variants={fadeInUp} className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
-              <div className="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
+            <motion.div variants={fadeInUp} className="group bg-white/70 backdrop-blur-sm p-8 rounded-[2rem] hover:bg-white hover:shadow-media hover:-translate-y-1 transition-all duration-500">
+              <div className="w-14 h-14 bg-rosa text-vino rounded-2xl flex items-center justify-center mb-6 transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6">
                 <CalendarPlus size={28} />
               </div>
               <h3 className="text-xl font-bold text-[#1B3854] mb-3">Contenido nuevo cada mes</h3>
@@ -433,8 +585,8 @@ const HomePage = () => {
             </motion.div>
 
             {/* 4. Comunidad */}
-            <motion.div variants={fadeInUp} className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 hover:shadow-lg transition-shadow lg:col-span-1 md:col-start-1 lg:col-start-auto">
-              <div className="w-14 h-14 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center mb-6">
+            <motion.div variants={fadeInUp} className="group bg-white/70 backdrop-blur-sm p-8 rounded-[2rem] hover:bg-white hover:shadow-media hover:-translate-y-1 transition-all duration-500 lg:col-span-1 md:col-start-1 lg:col-start-auto">
+              <div className="w-14 h-14 bg-arena text-marino rounded-2xl flex items-center justify-center mb-6 transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6">
                 <HeartHandshake size={28} />
               </div>
               <h3 className="text-xl font-bold text-[#1B3854] mb-3">Comunidad privada de Arquitectas</h3>
@@ -442,7 +594,7 @@ const HomePage = () => {
             </motion.div>
 
             {/* 5. Recursos listos */}
-            <motion.div variants={fadeInUp} className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 hover:shadow-lg transition-shadow lg:col-span-1 md:col-start-2 lg:col-start-auto">
+            <motion.div variants={fadeInUp} className="group bg-white/70 backdrop-blur-sm p-8 rounded-[2rem] hover:bg-white hover:shadow-media hover:-translate-y-1 transition-all duration-500 lg:col-span-1 md:col-start-2 lg:col-start-auto">
               <div className="w-14 h-14 bg-[#905361] text-white rounded-2xl flex items-center justify-center mb-6">
                 <Rocket size={28} />
               </div>
@@ -454,7 +606,7 @@ const HomePage = () => {
       </section>
 
       {/* --- SECCIÓN: CURRICULUM / QUE APRENDERÁS --- */}
-      <section className="py-32 bg-white relative">
+      <section className="py-32 bg-white textura-grano relative">
         <div className="max-w-[1400px] mx-auto px-6">
             <div className="text-center mb-16 max-w-3xl mx-auto">
                 <h4 className="text-[#905361] font-bold tracking-widest uppercase text-sm mb-3">Programa Académico</h4>
@@ -469,22 +621,37 @@ const HomePage = () => {
                 initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer}
             >
                 {CURRICULUM.map((item, index) => (
-                    <motion.div 
-                        key={index} 
-                        variants={fadeInUp}
-                        className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 flex gap-5 group"
+                    <motion.div
+                        key={index}
+                        variants={hijo}
+                        className="group relative bg-white/70 backdrop-blur-sm rounded-[1.4rem] p-6 pl-7 flex gap-5 transition-all duration-500 hover:bg-white hover:shadow-media hover:-translate-y-1"
                     >
-                        <div className={`w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 ${item.color} bg-opacity-20 group-hover:scale-110 transition-transform`}>
-                            {item.icon}
+                        {/* Barra de acento que crece al pasar el cursor: sustituye
+                            al borde permanente de antes. */}
+                        <span
+                            aria-hidden="true"
+                            className="absolute left-0 top-6 bottom-6 w-[3px] rounded-full bg-vino/15 transition-all duration-500 group-hover:bg-vino group-hover:top-3 group-hover:bottom-3"
+                        />
+
+                        <div className="relative flex-shrink-0">
+                            <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-rosa text-vino transition-all duration-500 group-hover:bg-vino group-hover:text-white group-hover:rotate-[-6deg]">
+                                {item.icon}
+                            </div>
+                            {/* El número de fase hace de ancla: da orden sin
+                                necesitar un color distinto por tarjeta. */}
+                            <span className="tabular absolute -top-2 -right-2 w-6 h-6 rounded-full bg-marino text-white text-[11px] font-bold flex items-center justify-center shadow-suave">
+                                {index + 1}
+                            </span>
                         </div>
-                        <div>
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">{item.phase}</span>
-                            <h3 className="text-xl font-bold text-[#1B3854] mb-2">{item.title}</h3>
-                            <p className="text-sm text-gray-500 mb-3">{item.desc}</p>
-                            <ul className="space-y-1">
+
+                        <div className="min-w-0">
+                            <span className="text-[11px] font-semibold text-vino/70 uppercase tracking-[0.12em]">{item.phase}</span>
+                            <h3 className="text-xl font-bold text-marino mt-0.5 mb-2">{item.title}</h3>
+                            <p className="text-sm text-marino/60 mb-3 leading-relaxed">{item.desc}</p>
+                            <ul className="space-y-1.5">
                                 {item.topics.map((topic, i) => (
-                                    <li key={i} className="flex items-center gap-2 text-sm text-gray-700 font-medium">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-[#905361]"></div>
+                                    <li key={i} className="flex items-start gap-2.5 text-sm text-marino/85 font-medium">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-vino mt-[0.45rem] shrink-0" />
                                         {topic}
                                     </li>
                                 ))}
@@ -497,7 +664,7 @@ const HomePage = () => {
       </section>
 
       {/* --- TEAM SECTION --- */}
-      <section className="py-32 bg-[#F7F2EF] relative">
+      <section className="py-32 bg-ivory textura-grano relative">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="text-center mb-20 max-w-3xl mx-auto">
             <h4 className="text-[#905361] font-bold tracking-widest uppercase text-sm mb-3">Equipo Fundador</h4>
@@ -549,7 +716,7 @@ const HomePage = () => {
       </section>
 
       {/* --- CARACTERÍSTICAS --- */}
-      <section className="py-24 bg-[#1B3854] text-white">
+      <section className="py-24 bg-marino text-white textura-grano relative overflow-hidden before:absolute before:inset-x-0 before:top-0 before:h-24 before:bg-gradient-to-b before:from-ivory before:to-transparent before:opacity-20 before:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-24 after:bg-gradient-to-t after:from-ivory after:to-transparent after:opacity-20 after:pointer-events-none">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="flex flex-col lg:flex-row items-center justify-between mb-16 gap-10">
             <motion.h2 initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} className="text-3xl lg:text-4xl font-bold max-w-xl">
@@ -584,24 +751,24 @@ const HomePage = () => {
       </section>
 
       {/* --- PRECIOS --- */}
-      <section id="planes" className="py-32 bg-[#F7F2EF]">
+      <section id="planes" className="py-32 bg-ivory textura-grano relative">
         <div className="max-w-6xl mx-auto px-6">
             <div className="text-center mb-20">
-                <h2 className="text-4xl font-bold text-[#1B3854] mb-4">Invierte en tu Futuro</h2>
-                <p className="text-gray-500 text-lg">Elige el plan que mejor se adapte a tu ritmo.</p>
+                <h2 className="text-4xl md:text-[3.2rem] font-bold text-marino mb-4 leading-[1.08]">Invierte en tu futuro</h2>
+                <p className="text-marino/60 text-lg">Elige el plan que mejor se adapte a tu ritmo.</p>
             </div>
 
             <div className="max-w-md mx-auto">
                 {/* PLAN MENSUAL */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-                    className="p-10 bg-white rounded-[2rem] border border-gray-100 shadow-xl hover:shadow-2xl transition-all flex flex-col h-full"
+                    className="p-10 bg-white rounded-[2rem] shadow-media hover:shadow-alta hover:-translate-y-1 transition-all duration-500 flex flex-col h-full"
                 >
                     <span className="inline-block self-start px-3 py-1 rounded-full bg-[#FDE5E5] text-[#905361] text-[11px] font-bold uppercase tracking-widest mb-3">
                         Suscripción
                     </span>
                     <h3 className="text-2xl font-bold text-[#1B3854] mb-2">Mensual</h3>
-                    <div className="mb-6"><span className="text-5xl font-bold text-[#1B3854]">$50</span><span className="text-gray-400 text-sm">/mes</span></div>
+                    <div className="mb-7 flex items-baseline gap-1"><span className="font-display tabular text-[3.4rem] font-bold text-marino leading-none">$50</span><span className="text-marino/45 text-sm font-medium">/mes</span></div>
                     <ul className="space-y-4 mb-8 flex-1">
                         {[
                             "Acceso completo a todos los cursos",
@@ -609,10 +776,10 @@ const HomePage = () => {
                             "Clases en vivo y recursos descargables",
                             "Cancela cuando quieras"
                         ].map((f, i) => (
-                            <li key={i} className="flex gap-3 text-sm text-gray-600"><Check size={18} className="text-green-500 shrink-0"/> {f}</li>
+                            <li key={i} className="flex gap-3 text-sm text-gray-600"><Check size={17} className="text-vino shrink-0 mt-0.5"/> {f}</li>
                         ))}
                     </ul>
-                    <button onClick={() => handleSubscribe(PLAN_IDS.MONTHLY)} disabled={loading} className="w-full py-4 rounded-xl font-bold bg-[#FDE5E5] text-[#905361] hover:bg-[#905361] hover:text-white transition-all text-lg">
+                    <button onClick={() => handleSubscribe(PLAN_IDS.MONTHLY)} disabled={loading} className="brillo-hover w-full py-4 rounded-2xl font-semibold bg-rosa text-vino hover:bg-vino hover:text-white hover:shadow-vino active:scale-[0.98] transition-all duration-300 text-lg disabled:opacity-60">
                         {loading ? <Loader2 className="animate-spin mx-auto"/> : "Elegir Mensual"}
                     </button>
                 </motion.div>
@@ -669,7 +836,7 @@ const HomePage = () => {
                         <div className="w-full lg:w-auto lg:min-w-[300px] bg-white/10 backdrop-blur border border-white/20 rounded-3xl p-8 text-center">
                             <p className="text-xs uppercase tracking-widest text-white/60 font-bold mb-2">Inversión única</p>
                             <div className="mb-1">
-                                <span className="text-6xl font-extrabold">$297</span>
+                                <span className="font-display tabular text-[4rem] font-bold leading-none">$297</span>
                                 <span className="text-white/60 text-lg"> USD</span>
                             </div>
                             <p className="text-sm text-white/70 mb-6">Una sola vez. Nunca más.</p>
@@ -677,7 +844,7 @@ const HomePage = () => {
                             <button
                                 onClick={() => handleSubscribe(PLAN_IDS.LIFETIME)}
                                 disabled={loading}
-                                className="w-full py-4 rounded-xl font-bold bg-gradient-to-r from-[#D4AF37] to-[#c19b2e] text-[#1B3854] hover:from-[#e0bc44] hover:to-[#d0aa3a] shadow-xl transition-all text-lg disabled:opacity-70"
+                                className="brillo-hover w-full py-4 rounded-2xl font-bold bg-gradient-to-r from-[#E3C25A] to-[#C9A227] text-marino hover:from-[#EBCE6E] hover:to-[#D6B13A] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] shadow-alta transition-all duration-300 text-lg disabled:opacity-70"
                             >
                                 {loading ? <Loader2 className="animate-spin mx-auto" /> : "Quiero mi acceso de por vida"}
                             </button>
@@ -696,7 +863,7 @@ const HomePage = () => {
       </section>
 
       {/* --- AFILIADAS --- */}
-      <section id="afiliadas" className="py-32 bg-white">
+      <section id="afiliadas" className="py-32 bg-white textura-grano relative">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <span className="text-[#905361] font-bold tracking-widest uppercase text-sm">Plan de Afiliadas</span>
@@ -781,7 +948,7 @@ const HomePage = () => {
       </section>
 
       {/* --- SECCIÓN DE CONTACTO --- */}
-      <section id="contacto" className="py-24 bg-white relative">
+      <section id="contacto" className="py-24 bg-white textura-grano relative">
         <div className="max-w-[1200px] mx-auto px-6">
             <motion.div 
                 className="bg-[#1B3854] rounded-[3rem] p-10 md:p-16 overflow-hidden relative shadow-2xl"
