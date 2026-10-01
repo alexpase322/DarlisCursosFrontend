@@ -135,7 +135,7 @@ const HomePage = () => {
   // Prioridad: config del servidor (runtime) → variable de build → valor fijo.
   const PLAN_IDS = {
     MONTHLY: priceConfig.monthly || "price_1SnZK0DP5qCZDXVtTwJzTKDX",
-    // Pago único $247 (acceso de por vida + activación como Partner).
+    // Pago único $297 (acceso de por vida + activación como Partner).
     LIFETIME: priceConfig.lifetime || import.meta.env.VITE_STRIPE_PRICE_LIFETIME || ""
   };
 
@@ -655,7 +655,7 @@ const HomePage = () => {
                                     "Acceso permanente a todos los cursos, presentes y futuros",
                                     "Activación inmediata como Partner (afiliada)",
                                     "Tu link de afiliada personal desde el primer día",
-                                    "Ganas $197 USD por cada persona que traigas con este plan",
+                                    "Ganas $237.60 USD por cada persona que traigas con este plan",
                                     "Comunidad privada y mentorías incluidas de por vida"
                                 ].map((f, i) => (
                                     <li key={i} className="flex gap-3 text-sm md:text-base text-white/90">
@@ -669,7 +669,7 @@ const HomePage = () => {
                         <div className="w-full lg:w-auto lg:min-w-[300px] bg-white/10 backdrop-blur border border-white/20 rounded-3xl p-8 text-center">
                             <p className="text-xs uppercase tracking-widest text-white/60 font-bold mb-2">Inversión única</p>
                             <div className="mb-1">
-                                <span className="text-6xl font-extrabold">$247</span>
+                                <span className="text-6xl font-extrabold">$297</span>
                                 <span className="text-white/60 text-lg"> USD</span>
                             </div>
                             <p className="text-sm text-white/70 mb-6">Una sola vez. Nunca más.</p>
@@ -710,7 +710,7 @@ const HomePage = () => {
           <div className="grid md:grid-cols-2 gap-6 mb-16 max-w-3xl mx-auto">
             {[
               { plan: "Mensual", price: "$50", pct: "40%", win: "$20 cada mes" },
-              { plan: "Pago único", price: "$247", pct: "fija", win: "$197 por venta" }
+              { plan: "Pago único", price: "$297", pct: "80%", win: "$237.60 por venta" }
             ].map((c, i) => (
               <motion.div
                 key={i}

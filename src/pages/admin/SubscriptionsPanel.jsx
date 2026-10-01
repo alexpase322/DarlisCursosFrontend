@@ -299,7 +299,7 @@ const SubscriptionsPanel = () => {
   );
 };
 
-const PLAN_DEFAULTS = { monthly: 50, quarterly: 120, yearly: 397, lifetime: 247 };
+const PLAN_DEFAULTS = { monthly: 50, quarterly: 120, yearly: 397, lifetime: 297 };
 
 const ManualPaymentModal = ({ user, onClose, onSaved }) => {
   const today = new Date().toISOString().slice(0, 10);
@@ -369,7 +369,7 @@ const ManualPaymentModal = ({ user, onClose, onSaved }) => {
               className="w-full px-3 py-2 border border-gray-200 rounded-lg"
             >
               <option value="monthly">Mensual ($50)</option>
-              <option value="lifetime">Pago único / de por vida ($247)</option>
+              <option value="lifetime">Pago único / de por vida ($297)</option>
               <option value="quarterly">Trimestral ($120) · legacy</option>
               <option value="yearly">Anual ($397) · legacy</option>
             </select>
