@@ -11,15 +11,9 @@ import Seo, { faqSchema } from "../components/Seo";
 import FloatingCTA from "../components/FloatingCTA";
 import ScrollReveal from "../components/ScrollReveal";
 
-// ────────────────────────────────────────────────────────────
-// CAMBIA AQUÍ EL VIDEO DEL WEBINAR
-// Opciones soportadas:
-//  - YouTube: 'https://www.youtube.com/watch?v=XXXX' o el embed
-//  - Vimeo: 'https://player.vimeo.com/video/XXXX'
-//  - Loom: 'https://www.loom.com/embed/XXXX'
-//  - Cualquier URL .mp4 directa (se usará tag <video>)
+
 const VIDEO_URL = import.meta.env.VITE_WEBINAR_VIDEO_URL ||
-    "https://youtu.be/EcYX3x5YX9k"; // ← reemplaza por el real
+    "https://youtu.be/iKuP8dsvN6I"; // ← reemplaza por el real
 
 const TITLE = "Cómo construir un negocio digital desde casa sin descuidar a tu familia";
 const SUBTITLE = "Webinar gratuito — 30 minutos que pueden cambiar tu próxima década";
