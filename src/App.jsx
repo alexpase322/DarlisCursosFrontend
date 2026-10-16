@@ -19,6 +19,8 @@ import ConstructorPublicaciones from "./pages/student/ConstructorPublicaciones";
 import SetupAccount from './pages/SetupAccount'; 
 import InviteUser from './pages/admin/InviteUser';
 import WallPage from "./pages/WallPage";
+import TareasPage from "./pages/TareasPage";
+import AnunciosPage from "./pages/AnunciosPage";
 import ChatPage from './pages/ChatPage';
 import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import HomePage from './pages/HomePage';
@@ -94,6 +96,8 @@ function App() {
                  <Route path="/dashboard" element={<StudentDashboard />} />
                  <Route path="/perfil" element={<ProfilePage />} />
                  <Route path="/muro" element={<WallPage />} />
+                 <Route path="/tareas" element={<TareasPage />} />
+                 <Route path="/anuncios" element={<AnunciosPage />} />
                  <Route path="/testimonios" element={<TestimonialsPage />} />
                  <Route path="/alumna/:id" element={<PublicProfilePage />} />
                  <Route path="/chat" element={<ChatPage />} />

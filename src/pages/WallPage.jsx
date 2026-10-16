@@ -4,11 +4,25 @@ import axios from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-hot-toast";
 // Importamos iconos modernos
-import { Image, Send, Heart, MessageCircle, Trash2, X, MoreHorizontal } from "lucide-react";
+import { Image, Send, Heart, MessageCircle, Trash2, X, MoreHorizontal, Paperclip, FileText, Download, Megaphone } from "lucide-react";
 import AvatarFrame from "../components/AvatarFrame";
 
-function WallPage() {
+// Los tres tableros (muro, tareas, anuncios) comparten esta pantalla. Cambian
+// el origen de los datos, quién puede publicar y los textos; la lógica de
+// comentarios, reacciones, borrado y lightbox es la misma.
+// Sin props se comporta exactamente como el muro de siempre.
+function WallPage({
+  board = "muro",
+  titulo,
+  bajada,
+  soloAdminPublica = false,
+  permiteArchivos = false,
+  placeholder,
+  textoBoton = "Publicar",
+  textoVacio = "Todavía no hay nada por aquí."
+}) {
   const { user } = useAuth();
+  const puedePublicar = !soloAdminPublica || user?.role === "admin";
   const [posts, setPosts] = useState([]);
   const [newPostContent, setNewPostContent] = useState("");
   const [newPostImage, setNewPostImage] = useState(null);
@@ -19,15 +33,17 @@ function WallPage() {
   const [commentText, setCommentText] = useState("");
 
   useEffect(() => {
+    setPosts([]);
     fetchPosts();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [board]);
 
   const fetchPosts = async () => {
     try {
-      const res = await axios.get("/posts");
+      const res = await axios.get(`/posts?board=${board}`);
       setPosts(res.data);
-    } catch (error) {
-      console.error(error);
+    } catch {
+      /* el feed se queda como estaba; no hay nada que mostrar */
     }
   };
 
@@ -38,6 +54,7 @@ function WallPage() {
     setLoading(true);
     const formData = new FormData();
     formData.append("content", newPostContent);
+    formData.append("board", board);
     if (newPostImage) formData.append("image", newPostImage);
 
     try {
@@ -47,9 +64,9 @@ function WallPage() {
       setPosts([res.data, ...posts]);
       setNewPostContent("");
       setNewPostImage(null);
-      toast.success("¡Publicado con éxito!");
+      toast.success("Publicado");
     } catch (error) {
-      toast.error("Error al publicar");
+      toast.error(error.response?.data?.message || "Error al publicar");
     } finally {
       setLoading(false);
     }
@@ -61,8 +78,8 @@ function WallPage() {
       setPosts(posts.map(post =>
         post._id === postId ? { ...post, likes: res.data } : post
       ));
-    } catch (error) {
-      console.error(error);
+    } catch {
+      /* el feed se queda como estaba; no hay nada que mostrar */
     }
   };
 
@@ -70,8 +87,8 @@ function WallPage() {
     try {
       const { data } = await axios.put(`/posts/${postId}/react/${type}`);
       setPosts(posts.map(p => p._id === postId ? { ...p, reactions: data.reactions } : p));
-    } catch (error) {
-      console.error(error);
+    } catch {
+      /* el feed se queda como estaba; no hay nada que mostrar */
     }
   };
 
@@ -81,8 +98,8 @@ function WallPage() {
       await axios.delete(`/posts/${postId}`);
       setPosts(posts.filter(p => p._id !== postId));
       toast.success("Eliminado");
-    } catch (error) {
-      toast.error("No tienes permiso para eliminar esto");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "No tienes permiso para eliminar esto");
     }
   };
 
@@ -94,15 +111,34 @@ function WallPage() {
             post._id === postId ? { ...post, comments: res.data } : post
         ));
         setCommentText("");
-    } catch (error) {
-        toast.error("Error al comentar");
+    } catch (err) {
+        toast.error(err.response?.data?.message || "No se pudo publicar tu comentario");
     }
   };
 
   return (
     <div className="max-w-2xl mx-auto py-6 px-4">
-      
+
+      {titulo && (
+        <header className="mb-7">
+          <h1 className="text-3xl font-bold text-[#1B3854]">{titulo}</h1>
+          {bajada && <p className="text-gray-500 mt-1.5 leading-relaxed">{bajada}</p>}
+        </header>
+      )}
+
+      {/* Quien no puede publicar en este tablero ve por qué, en vez de un hueco
+          sin explicación donde las demás tienen un formulario. */}
+      {!puedePublicar && (
+        <div className="bg-[#FDE5E5] rounded-3xl p-5 mb-8 flex items-start gap-3">
+          <Megaphone size={20} className="text-[#905361] shrink-0 mt-0.5" />
+          <p className="text-sm text-[#5E2B35] leading-relaxed">
+            Los anuncios los publica el equipo. Tú puedes comentarlos y reaccionar.
+          </p>
+        </div>
+      )}
+
       {/* 1. CAJA DE PUBLICAR (Diseño Minimalista) */}
+      {puedePublicar && (
       <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-8 transition-shadow hover:shadow-md">
         <div className="flex gap-4">
           <img 
@@ -114,15 +150,25 @@ function WallPage() {
             <textarea
               className="w-full bg-gray-50 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-[#FDE5E5] resize-none text-gray-700 placeholder-gray-400 transition-all border border-transparent focus:border-[#905361]/20"
               rows="2"
-              placeholder={`¿Qué hay de nuevo, ${user.username}?`}
+              placeholder={placeholder || `¿Qué hay de nuevo, ${user.username}?`}
               value={newPostContent}
               onChange={(e) => setNewPostContent(e.target.value)}
             ></textarea>
             
             {/* Preview de imagen */}
-            {newPostImage && (
+            {newPostImage && !newPostImage.type?.startsWith("image/") && (
+                <div className="mt-3 flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl p-3">
+                    <FileText size={20} className="text-[#905361] shrink-0" />
+                    <span className="text-sm text-gray-700 truncate flex-1">{newPostImage.name}</span>
+                    <button type="button" onClick={() => setNewPostImage(null)} className="text-gray-400 hover:text-red-500 shrink-0">
+                        <X size={16} />
+                    </button>
+                </div>
+            )}
+
+            {newPostImage && newPostImage.type?.startsWith("image/") && (
                 <div className="mt-3 relative inline-block group">
-                    <img src={URL.createObjectURL(newPostImage)} alt="Preview" className="h-32 rounded-xl object-cover shadow-sm border border-gray-200" />
+                    <img src={URL.createObjectURL(newPostImage)} alt="Vista previa de la imagen a publicar" className="h-32 rounded-xl object-cover shadow-sm border border-gray-200" />
                     <button 
                         onClick={() => setNewPostImage(null)} 
                         className="absolute -top-2 -right-2 bg-white text-gray-500 hover:text-red-500 rounded-full p-1 shadow-md border border-gray-200 transition"
@@ -134,9 +180,14 @@ function WallPage() {
 
             <div className="flex justify-between items-center mt-4 border-t border-gray-50 pt-3">
               <label className="cursor-pointer text-gray-500 hover:text-[#905361] hover:bg-[#FDE5E5] px-4 py-2 rounded-xl transition-all text-sm font-medium flex items-center gap-2">
-                <Image size={18} />
-                <span>Foto</span>
-                <input type="file" className="hidden" accept="image/*" onChange={e => setNewPostImage(e.target.files[0])} />
+                {permiteArchivos ? <Paperclip size={18} /> : <Image size={18} />}
+                <span>{permiteArchivos ? "Adjuntar" : "Foto"}</span>
+                <input
+                  type="file"
+                  className="hidden"
+                  accept={permiteArchivos ? "image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip" : "image/*"}
+                  onChange={e => setNewPostImage(e.target.files[0])}
+                />
               </label>
               
               <button 
@@ -148,7 +199,7 @@ function WallPage() {
                     <span className="animate-pulse">Publicando...</span>
                 ) : (
                     <>
-                        <span>Publicar</span>
+                        <span>{textoBoton}</span>
                         <Send size={16} />
                     </>
                 )}
@@ -157,9 +208,22 @@ function WallPage() {
           </div>
         </div>
       </div>
+      )}
 
       {/* 2. FEED DE POSTS */}
       <div className="space-y-6">
+        {posts.length === 0 && (
+          <div className="bg-white rounded-3xl border border-dashed border-gray-200 py-16 px-6 text-center">
+            <div className="w-16 h-16 bg-[#FDE5E5] text-[#905361] rounded-full flex items-center justify-center mx-auto mb-5">
+              <MessageCircle size={28} />
+            </div>
+            <p className="text-lg font-bold text-[#1B3854] mb-1.5">{textoVacio}</p>
+            {puedePublicar && (
+              <p className="text-sm text-gray-500">Sé la primera en publicar algo.</p>
+            )}
+          </div>
+        )}
+
         {posts.map((post) => (
             <div key={post._id} className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-300">
             
@@ -215,6 +279,32 @@ function WallPage() {
 
             {/* Contenido Imagen — object-contain para NO recortar fotos verticales.
                 El fondo crema rellena el espacio sobrante y se ve intencional. */}
+            {/* Entrega de tarea: no es una imagen, así que se ofrece para abrir
+                o descargar en vez de intentar pintarla. */}
+            {post.attachment?.url && (
+              <a
+                href={post.attachment.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mx-5 mb-4 flex items-center gap-3 bg-gray-50 hover:bg-[#FDE5E5] border border-gray-200 hover:border-[#905361]/30 rounded-xl p-3.5 transition-all group/adj"
+              >
+                <span className="w-10 h-10 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-[#905361] shrink-0">
+                  <FileText size={18} />
+                </span>
+                <span className="flex-1 min-w-0">
+                  <span className="block text-sm font-semibold text-gray-700 truncate group-hover/adj:text-[#905361] transition-colors">
+                    {post.attachment.name || "Archivo adjunto"}
+                  </span>
+                  {post.attachment.size > 0 && (
+                    <span className="block text-xs text-gray-400">
+                      {(post.attachment.size / 1024 / 1024).toFixed(2)} MB
+                    </span>
+                  )}
+                </span>
+                <Download size={17} className="text-gray-400 group-hover/adj:text-[#905361] shrink-0 transition-colors" />
+              </a>
+            )}
+
             {post.image && (
                 <button
                     type="button"
