@@ -13,7 +13,7 @@ import ScrollReveal from "../components/ScrollReveal";
 
 
 const VIDEO_URL = import.meta.env.VITE_WEBINAR_VIDEO_URL ||
-    "https://youtu.be/iKuP8dsvN6I"; // ← reemplaza por el real
+    "https://youtu.be/uxknsqNVb0A"; // ← reemplaza por el real
 
 const TITLE = "Cómo construir un negocio digital desde casa sin descuidar a tu familia";
 const SUBTITLE = "Webinar gratuito — 30 minutos que pueden cambiar tu próxima década";
